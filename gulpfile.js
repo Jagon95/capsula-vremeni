@@ -24,7 +24,7 @@ gulp.task('watch', (() => {
 }));
 
 gulp.task('build-js', () => {
-    gulp.src(['node_modules/jquery/dist/jquery.js', 'libs/OwlCarousel2-2.2.1/dist/owl.carousel.js', 'js/main.js'])
+    gulp.src(['libs/jquery/dist/jquery.js', 'libs/owl.carousel/dist/owl.carousel.js', 'js/main.js'])
         .pipe(concat('script.js'))
         // .pipe(uglify())
         .pipe(gulp.dest('js'));
@@ -32,10 +32,10 @@ gulp.task('build-js', () => {
 
 gulp.task('build-css', () => {
     gulp.src([
-        'node_modules/semantic-ui/dist/semantic.css',
-        'node_modules/bootstrap/dist/css/bootstrap.css',
-        'libs/OwlCarousel2-2.2.1/dist/assets/owl.carousel.css',
-        'libs/OwlCarousel2-2.2.1/dist/assets/owl.theme.default.css',
+        'libs/semantic/dist/semantic.css',
+        'libs/bootstrap/dist/css/bootstrap.css',
+        'libs/owl.carousel/dist/assets/owl.carousel.css',
+        'libs/owl.carousel/dist/assets/owl.theme.default.css',
     ])
         .pipe(cssMin())
         .pipe(concat('libs.min.css'))
