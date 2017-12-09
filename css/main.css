@@ -1,0 +1,70 @@
+#first, #third {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#f4f4f4+0,ebebeb+71,f9f9f9+100 */
+    background: #f4f4f4; /* Old browsers */
+    background: -moz-linear-gradient(top, #f4f4f4 0%, #ebebeb 71%, #f9f9f9 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #f4f4f4 0%,#ebebeb 71%,#f9f9f9 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #f4f4f4 0%,#ebebeb 71%,#f9f9f9 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f4f4', endColorstr='#f9f9f9',GradientType=0 ); /* IE6-9 */
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+#third {
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.header img {
+
+}
+
+html {
+
+}
+
+#first h1, h2, h3, h4, div, p {
+    font-weight: 300;
+    font-family: "Open Sans", sans-serif;
+}
+
+h2 {
+    font-size: 36px;
+    padding: 12px 0 18px;
+    margin: 0;
+    text-align: center;
+}
+
+h3 {
+    font-size: 18px;
+    padding: 8px 0 18px;
+    margin: 0;
+}
+
+.advices.ui.list {
+    font-size: 16px;
+}
+
+.one-page {
+    padding: 5rem 0;
+}
+
+#third .card > .image {
+    padding: 20px 0;
+}
+#third .card .image > img {
+    max-height: 80px;
+    width: auto;
+}
+
+#third .card,
+#fifth .container .advantage-wrapper > div {
+    margin-bottom: 18pt;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.owl-carousel .item {
+    background-color: cadetblue;
+    width: 200px;
+    height:200px;
+}
