@@ -66,5 +66,5 @@ h3 {
 .owl-carousel .item {
     background-color: cadetblue;
     width: 200px;
-    height:200px;
+    min-height:200px;
 }

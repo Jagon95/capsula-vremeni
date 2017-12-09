@@ -21,10 +21,17 @@ gulp.task('reloader', () => {
 gulp.task('watch', (() => {
     // gulp.watch(['css/*.css', 'index.html', 'js/script.js'], ['reloader']);
     gulp.watch(['js/main.js'], ['build-js']);
+    gulp.watch(['css/main.css'], ['build-css']);
 }));
 
 gulp.task('build-js', () => {
-    gulp.src(['libs/jquery/dist/jquery.js', 'libs/owl.carousel/dist/owl.carousel.js', 'js/main.js'])
+    gulp.src([
+        'libs/jquery/dist/jquery.js',
+        'libs/owl.carousel/dist/owl.carousel.js',
+        'libs/photoswipe/dist/photoswipe.js',
+        'libs/photoswipe/dist/photoswipe-ui-default.js',
+        'js/main.js'
+    ])
         .pipe(concat('script.js'))
         // .pipe(uglify())
         .pipe(gulp.dest('js'));
@@ -36,6 +43,9 @@ gulp.task('build-css', () => {
         'libs/bootstrap/dist/css/bootstrap.css',
         'libs/owl.carousel/dist/assets/owl.carousel.css',
         'libs/owl.carousel/dist/assets/owl.theme.default.css',
+        'libs/photoswipe/dist/photoswipe.css',
+        'libs/photoswipe/dist/default-skin/default-skin.css',
+        'css/main.css'
     ])
         .pipe(cssMin())
         .pipe(concat('libs.min.css'))
@@ -44,3 +54,4 @@ gulp.task('build-css', () => {
 
 
 gulp.task('default', ['connect', 'watch']);
+gulp.task('build', ['build-js', 'build-css']);
