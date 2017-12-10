@@ -15,6 +15,16 @@ function openPhotoSwipe (items) {
     gallery.init();
 }
 
+function processSrcPaths (items, src, msrc) {
+    return items.map((item) => {
+        return {
+            ...item,
+            src: src + '/' + item['name'],
+            msrc: msrc ? msrc + '/' + item['name'] : ''
+        };
+    })
+}
+
 
 $(document).ready(function(){
     $(".owl-carousel").owlCarousel({
@@ -41,21 +51,30 @@ $(document).ready(function(){
     let items = {
         safe: [
             {
-                msrc: '/img/thumbnails/vip3.jpg',
-                src: '/img/vip3.jpg',
+                name: 'vip3.jpg',
                 w: 1000,
                 h: 1000
             },
             {
-                src: '/img/vip4.jpg',
+                name: 'vip4.jpg',
                 w: 997,
                 h: 1200
             },
         ]
     };
     $('.tumbnail').click(function () {
-        let _items = items[$(this).data('imageCategory')];
+        let _items = processSrcPaths(items[$(this).data('imageCategory')], 'img/photos', 'img/thumbnails');
         openPhotoSwipe(_items);
+    });
+
+    let header = new Headhesive('.menu-header', {
+        offset: '#second',
+        offsetSide: 'top',
+        classes: {
+            clone:   'header--clone',
+            stick:   'header--stick',
+            unstick: 'header--unstick'
+        }
     });
     
 

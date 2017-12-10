@@ -46,6 +46,15 @@ h3 {
     padding: 5rem 0;
 }
 
+#first {
+    padding-top: 0;
+}
+
+.menu-header {
+    height: 80px;
+    background-color: rgba(0,0,0,.3);
+}
+
 #third .card > .image {
     padding: 20px 0;
 }
@@ -65,6 +74,37 @@ h3 {
 
 .owl-carousel .item {
     background-color: cadetblue;
-    width: 200px;
-    min-height:200px;
+    width: 300px;
+    min-height: 300px;
+}
+
+.header--clone {
+
+    /* Required styles */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9000;
+
+    /* Additional styles */
+
+    /* Translate -100% to move off screen */
+    -webkit-transform: translateY(-100%);
+    -ms-transform: translateY(-100%);
+    transform: translateY(-100%);
+
+    /* Animations */
+    -webkit-transition: all 300ms ease-in-out;
+    -moz-transition: all 300ms ease-in-out;
+    transition: all 300ms ease-in-out;
+
+}
+
+.header--stick {
+
+    /* Translate back to 0%; */
+    -webkit-transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    transform: translateY(0%);
 }

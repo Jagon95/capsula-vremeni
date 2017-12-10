@@ -33,6 +33,7 @@ gulp.task('build-js', () => {
         'libs/owl.carousel/dist/owl.carousel.js',
         'libs/photoswipe/dist/photoswipe.js',
         'libs/photoswipe/dist/photoswipe-ui-default.js',
+        'libs/Headhesive.js/dist/headhesive.js',
         'js/main.js'
     ])
         .pipe(concat('script.js'))
@@ -60,8 +61,8 @@ gulp.task('build-css', () => {
 gulp.task('thumbnails', () => {
     gulp.src('img/photos/*')
         .pipe(imageresize({
-            width: 200,
-            height: 200,
+            width: 300,
+            height: 300,
             upscale: false,
             crop: true,
             gravity: 'North'
