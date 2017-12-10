@@ -1,8 +1,3 @@
-/**
- * Created by User on 004 04.12.17.
- */
-
-
 function openPhotoSwipe (items) {
     let pswpElement = $('.pswp').get(0);
     // build items array
@@ -46,7 +41,7 @@ $(document).ready(function(){
     let items = {
         safe: [
             {
-                msrc: '/img/tumbnails/vip3.jpg',
+                msrc: '/img/thumbnails/vip3.jpg',
                 src: '/img/vip3.jpg',
                 w: 1000,
                 h: 1000

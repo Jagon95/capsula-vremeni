@@ -3,6 +3,9 @@ let connect = require('gulp-connect');
 let cssMin = require('gulp-clean-css');
 let concat = require('gulp-concat');
 let uglify = require('gulp-uglify');
+let imageresize = require('gulp-image-resize');
+let imagemin = require('gulp-imagemin');
+let pngquant = require('imagemin-pngquant');
 
 gulp.task('connect', () => {
     connect.server({
@@ -50,6 +53,26 @@ gulp.task('build-css', () => {
         .pipe(cssMin())
         .pipe(concat('libs.min.css'))
         .pipe(gulp.dest('css'))
+});
+
+
+
+gulp.task('thumbnails', () => {
+    gulp.src('img/photos/*')
+        .pipe(imageresize({
+            width: 200,
+            height: 200,
+            upscale: false,
+            crop: true,
+            gravity: 'North'
+        }))
+        .pipe(imagemin({
+            progressive: true,
+            // set this if you are using svg images
+            // svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()]
+        }))
+        .pipe(gulp.dest('img/thumbnails'));
 });
 
 
