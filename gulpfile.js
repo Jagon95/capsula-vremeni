@@ -1,11 +1,14 @@
-let gulp = require('gulp');
-let connect = require('gulp-connect');
-let cssMin = require('gulp-clean-css');
-let concat = require('gulp-concat');
-let uglify = require('gulp-uglify');
-let imageresize = require('gulp-image-resize');
-let imagemin = require('gulp-imagemin');
-let pngquant = require('imagemin-pngquant');
+const gulp = require('gulp');
+const connect = require('gulp-connect');
+const cssMin = require('gulp-clean-css');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const imageresize = require('gulp-image-resize');
+const imagemin = require('gulp-imagemin');
+const pngquant = require('imagemin-pngquant');
+const babel = require('gulp-babel');
+const merge = require('merge-stream');
+const rename = require('gulp-rename');
 
 gulp.task('connect', () => {
     connect.server({
@@ -27,15 +30,15 @@ gulp.task('watch', (() => {
     gulp.watch(['css/main.css'], ['build-css']);
 }));
 
-gulp.task('build-js', () => {
-    gulp.src([
-        'libs/jquery/dist/jquery.js',
-        'libs/owl.carousel/dist/owl.carousel.js',
-        'libs/photoswipe/dist/photoswipe.js',
-        'libs/photoswipe/dist/photoswipe-ui-default.js',
-        'libs/Headhesive.js/dist/headhesive.js',
-        'js/main.js'
-    ])
+gulp.task('build-js', ['babel'], () => {
+        gulp.src([
+            'libs/jquery/dist/jquery.js',
+            'libs/owl.carousel/dist/owl.carousel.js',
+            'libs/photoswipe/dist/photoswipe.js',
+            'libs/photoswipe/dist/photoswipe-ui-default.js',
+            'libs/Headhesive.js/dist/headhesive.js',
+            'js/babel-main.js'
+        ])
         .pipe(concat('script.js'))
         // .pipe(uglify())
         .pipe(gulp.dest('js'));
@@ -56,6 +59,17 @@ gulp.task('build-css', () => {
         .pipe(gulp.dest('css'))
 });
 
+
+gulp.task('babel', () => {
+    gulp.src('js/main.js')
+        .pipe(babel({
+            presets: ['stage-3']
+        }))
+        .pipe(rename({
+            prefix: 'babel-'
+        }))
+        .pipe(gulp.dest('js/'));
+});
 
 
 gulp.task('thumbnails', () => {

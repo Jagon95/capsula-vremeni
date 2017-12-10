@@ -18,9 +18,9 @@ function openPhotoSwipe (items) {
 function processSrcPaths (items, src, msrc) {
     return items.map((item) => {
         return {
-            ...item,
             src: src + '/' + item['name'],
-            msrc: msrc ? msrc + '/' + item['name'] : ''
+            msrc: msrc ? msrc + '/' + item['name'] : '',
+            ...item
         };
     })
 }
@@ -62,7 +62,7 @@ $(document).ready(function(){
             },
         ]
     };
-    $('.tumbnail').click(function () {
+    $('.thumbnail').click(function () {
         let _items = processSrcPaths(items[$(this).data('imageCategory')], 'img/photos', 'img/thumbnails');
         openPhotoSwipe(_items);
     });
@@ -75,6 +75,36 @@ $(document).ready(function(){
             stick:   'header--stick',
             unstick: 'header--unstick'
         }
+    });
+
+
+    let controls = $('.tab-controllers [data-tab]');
+    let tabs = $('.tabs [data-tab]');
+    let tabContainer = $('.tabs-container');
+    let tabsArray = Array.from(tabs, (tab) => {
+        return $(tab).data('tab');
+    });
+    tabContainer.data({
+        'active-tab': tabs.filter(':visible').data('tab')
+    });
+
+    function switchTo(tab) {
+        tabs.addClass('d-none');
+        controls.removeClass('blue');
+        tabs.filter(`[data-tab="${tab}"]`).removeClass('d-none');
+        controls.filter(`[data-tab="${tab}"]`).addClass('blue');
+        tabContainer.data('active-tab', tab);
+    }
+
+    function switchNext() {
+        let nextIndex = (tabsArray.indexOf(tabContainer.data('active-tab')) + 1) % tabsArray.length;
+        switchTo(tabsArray[nextIndex]);
+    }
+
+    setInterval(switchNext, 5e3);
+
+    controls.click(function () {
+        switchTo($(this).data('tab'))
     });
     
 

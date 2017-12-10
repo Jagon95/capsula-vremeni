@@ -10,14 +10,20 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-3": "^6.24.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
     "gulp-clean-css": "^3.9.0",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.0.0",
     "gulp-image-resize": "^0.13.0",
     "gulp-imagemin": "^4.0.0",
+    "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
-    "imagemin-pngquant": "^5.0.1"
+    "imagemin-pngquant": "^5.0.1",
+    "merge-stream": "^1.0.1"
   },
   "dependencies": {}
 }
