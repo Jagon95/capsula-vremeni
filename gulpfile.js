@@ -9,6 +9,9 @@ const pngquant = require('imagemin-pngquant');
 const babel = require('gulp-babel');
 const merge = require('merge-stream');
 const rename = require('gulp-rename');
+const purify = require('gulp-purifycss');
+const csso = require('gulp-csso');
+const cleanCSS = require('gulp-clean-css');
 
 gulp.task('connect', () => {
     connect.server({
@@ -44,19 +47,31 @@ gulp.task('build-js', ['babel'], () => {
         .pipe(gulp.dest('js'));
 });
 
-gulp.task('build-css', () => {
+gulp.task('build-css', ['build-js', 'purify-css'], () => {
     gulp.src([
-        'libs/semantic/dist/semantic.css',
-        'libs/bootstrap/dist/css/bootstrap.css',
+        'css/purified.css',
         'libs/owl.carousel/dist/assets/owl.carousel.css',
         'libs/owl.carousel/dist/assets/owl.theme.default.css',
         'libs/photoswipe/dist/photoswipe.css',
         'libs/photoswipe/dist/default-skin/default-skin.css',
         'css/main.css'
     ])
-        .pipe(cssMin())
         .pipe(concat('libs.min.css'))
+        .pipe(csso())
+        // .pipe(cleanCSS({
+        //     level: 2
+        // }))
         .pipe(gulp.dest('css'))
+});
+
+gulp.task('purify-css', () => {
+    gulp.src([
+        'libs/bootstrap/dist/css/bootstrap.css',
+        'libs/semantic/dist/semantic.css'
+    ])
+        .pipe(purify(['index.html', 'js/main.js']))
+        .pipe(concat('purified.css'))
+        .pipe(gulp.dest('css'));
 });
 
 
