@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
     <script src="/js/script.js"></script>
 </head>
-<body>
+<body id="kapsula">
 <div class="container-fluid one-page" id="first">
     <div class="container-fluid menu-header" id="header">
             <div class="ui container">
@@ -19,13 +19,16 @@
 
                     <div class="ui relaxed large horizontal divided link list">
                         <a class="item">
-                            <div class="middle aligned content header">Terms and Conditions</div>
+                            <div class="middle aligned content"><i class="icon info"></i>Подробнее</div>
                         </a>
                         <a class="item">
-                            <div class="middle aligned content header">Privacy Policy</div>
+                            <div class="middle aligned content"><i class="icon users"></i>Клиенты</div>
                         </a>
                         <a class="item">
-                            <div class="middle aligned content header">Contact Us</div>
+                            <div class="middle aligned content"><i class="address book outline icon"></i>Контакты</div>
+                        </a>
+                        <a class="item">
+                            <div class="middle aligned content"><i class="shop icon"></i>Корзина</div>
                         </a>
                     </div>
                     <!--<a href="#" class="item">Подробнее</a><a href="#" class="item">Заказать</a><a href="#" class="item">Контакты</a><a
@@ -247,11 +250,42 @@
         </div>
     </div>
 </div>
-<div id="fourth" class="container-fluid one-page">
+<div id="market" class="container-fluid one-page">
     <h2>Заказ капсулы времени</h2>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12">
+                <h3>Выберите капсулу:</h3>
+                <div class="owl-carousel owl-theme">
+                    <div class="item kapsula-product__wrapper">
+                        <img class="thumbnail" src="img/thumbnails/vip3.jpg" data-image-category="safe" alt="">
+                        <h4 class="kapsula-product__title">Капсула-сейф</h4>
+                        <span class="kapsula-product__price">27 000</span>
+                        <button class="ui primary button kapsula-product__buy-button">
+                            <i class="shop icon"></i>В корзину
+                        </button>
+                    </div>
+                    <div class="item kapsula-product__wrapper">
+                        <img class="thumbnail" src="img/thumbnails/vip3.jpg" data-image-category="safe" alt="">
+                        <h4 class="kapsula-product__title">Капсула-сейф</h4>
+                        <div class="ui labeled button" tabindex="0">
+                            <div class="ui primary button">
+                                В корзину
+                            </div>
+                            <a class="ui basic primary left pointing label">
+                                27 000 руб.
+                            </a>
+                        </div>
+                    </div>
+                    <div class="item"><h4>3</h4></div>
+                    <div class="item"><h4>4</h4></div>
+                    <div class="item"><h4>5</h4></div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h3>Выберите дополнительные опции:</h3>
                 <div class="owl-carousel owl-theme">
                     <div class="item">
                         <img class="thumbnail" src="img/thumbnails/vip3.jpg" data-image-category="safe" alt="">

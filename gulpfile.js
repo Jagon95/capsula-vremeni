@@ -2,7 +2,7 @@ const gulp = require('gulp');
 const connect = require('gulp-connect');
 const cssMin = require('gulp-clean-css');
 const concat = require('gulp-concat');
-const uglify = require('gulp-uglify');
+const uglify = require('gulp-uglifyjs');
 const imageresize = require('gulp-image-resize');
 const imagemin = require('gulp-imagemin');
 const pngquant = require('imagemin-pngquant');
@@ -12,6 +12,8 @@ const rename = require('gulp-rename');
 const purify = require('gulp-purifycss');
 const csso = require('gulp-csso');
 const cleanCSS = require('gulp-clean-css');
+const autoprefixer = require('gulp-autoprefixer');
+const sass = require('gulp-sass');
 
 gulp.task('connect', () => {
     connect.server({
@@ -21,16 +23,15 @@ gulp.task('connect', () => {
     });
 });
 
-
 gulp.task('reloader', () => {
-    gulp.src(['css/libs.min.css', 'index.html', 'js/script.js'])
-        .pipe(connect.reload());
+    connect.reload();
 });
 
 gulp.task('watch', (() => {
     // gulp.watch(['css/*.css', 'index.html', 'js/script.js'], ['reloader']);
     gulp.watch(['js/main.js'], ['build-js']);
-    gulp.watch(['css/main.css'], ['build-css']);
+    gulp.watch(['scss/**/*.sass', 'scss/**/*.scss'], ['build-css']);
+    // gulp.watch(['scss/**/*.sass', 'scss/**/*.scss'], ['sass']);
 }));
 
 gulp.task('build-js', ['babel'], () => {
@@ -43,13 +44,16 @@ gulp.task('build-js', ['babel'], () => {
             'js/babel-main.js'
         ])
         .pipe(concat('script.js'))
-        // .pipe(uglify())
-        .pipe(gulp.dest('js'));
+        .pipe(uglify())
+        .pipe(gulp.dest('js'))
+        .pipe(connect.reload());
 });
 
-gulp.task('build-css', ['build-js', 'purify-css'], () => {
+gulp.task('build-css', ['sass'], () => {
     gulp.src([
-        'css/purified.css',
+        // 'css/purified.css',
+        'libs/bootstrap/dist/css/bootstrap.css',
+        'libs/semantic/dist/semantic.css',
         'libs/owl.carousel/dist/assets/owl.carousel.css',
         'libs/owl.carousel/dist/assets/owl.theme.default.css',
         'libs/photoswipe/dist/photoswipe.css',
@@ -57,11 +61,19 @@ gulp.task('build-css', ['build-js', 'purify-css'], () => {
         'css/main.css'
     ])
         .pipe(concat('libs.min.css'))
-        .pipe(csso())
+        // .pipe(csso())
         // .pipe(cleanCSS({
         //     level: 2
         // }))
+        .pipe(autoprefixer({browsers: '> 1%'}))
         .pipe(gulp.dest('css'))
+        .pipe(connect.reload());
+});
+
+gulp.task('sass', () => {
+    gulp.src(['scss/**/*.sass', 'scss/**/*.scss'])
+        .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
+        .pipe(gulp.dest('css'));
 });
 
 gulp.task('purify-css', () => {
@@ -78,7 +90,7 @@ gulp.task('purify-css', () => {
 gulp.task('babel', () => {
     gulp.src('js/main.js')
         .pipe(babel({
-            presets: ['stage-3']
+            presets: ['env', 'stage-3']
         }))
         .pipe(rename({
             prefix: 'babel-'
