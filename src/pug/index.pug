@@ -1,0 +1,165 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        title Капсула времени
+        link(rel="stylesheet" type="text/css" href="css/main.min.css")
+        link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
+        script(src="js/script.js")
+    body
+        #first.container-fluid.one-page
+            #header.container-fluid.menu-header
+                .ui.container
+                    .row
+                        .col-xl-3.logo.header.item
+                            a(href='#')
+                                img.logo(src='img/logo.svg', alt='')
+                        #menu.col-xl-9.item
+                            .ui.relaxed.large.horizontal.divided.link.list
+                                each icon, item in menuItems
+                                    a.item
+                                        .middle.aligned.content
+                                            i(class=icon + ' icon')
+                                            =item
+            .container
+                .row.justify-content-center
+                    .col-xl-4.col-lg-5.col-md-10.col-sm-12.text-center
+                        h1
+                            | Капсула Времени, именной подарок
+                    .col-xl-4.col-lg-5.col-md-10.d-sm-none.d-xs-none.d-md-block.offset-lg-1
+                        h3
+                            | Более 4 лет производим оригинальные капсулы времени для корпоративных мероприятий и частных торжеств.
+                .row
+                    .col-12
+                        img.ui.fluid.image(src='img/main_new.png')
+                .row.justify-content-center
+                    .col-lg-4.col-md-10.col-sm-12.text-center
+                        .ui.primary.button
+                            i.shop.icon
+                            | В КОРЗИНУ
+                    .col-lg-4.col-md-10.d-sm-none.d-md-block.offset-lg-1
+                        p
+                            | Мы делаем Капсулы Времени любых размеров и форм.
+
+
+        #second.container-fluid.one-page
+            h2 Что такое Капсула Времени?
+            .container
+                .row.justify-content-center
+                    .col-md-10.col-sm-12
+                        h3
+                            | Капсула Времени - это оригинальный и интересный подарок, который подходит для мероприятий и торжеств по любому поводу и любого мастштаба.
+                .row.justify-content-center
+                    .col-lg-6.col-md-8.col-sm-12
+                        .ui.relaxed.list.advices
+                            .item
+                                .content Мы вас выручим, если вы:
+                            each item, icon in adviceItems
+                                .item
+                                    i(class=icon + ' icon')
+                                    .content=item
+
+
+
+
+        #third.container-fluid.one-page
+            h2 Что можно положить в капсулу?
+            .container
+                .row.justify-content-center
+                    .col-md-10.col-sm-12
+                        h3
+                            | Капсула вместительная. В нее помещается 100-120
+                            | листов А4, а также миниатюрные предметы и аксессуары.
+            .row.justify-content-center
+                .col-1.d-none.d-lg-block
+                    img(src='img/l-bg.png', alt='')
+                .col-10
+                    .container.tabs-container
+                        .row.justify-content-center.d-sm-none.d-md-flex.tab-controllers
+                            each item, tab in tabSwitchers
+                                .col-xl-2.col-md-3.col-sm-4
+                                    .ui.raised.link.fluid.blue.card(data-tab=tab)
+                                        .image.ui.center.aligned
+                                            img.ui.centered.medium.image(src='img/' + item.image)
+                                        .content.center.aligned
+                                            p=item.text
+                        .row.justify-content-center
+                            .col-lg-10.col-md-12
+                                .ui.blue.segment.container.tabs
+                                    .row.justify-content-center(data-tab='artifacts')
+                                        .col-lg-4.text-center
+                                            .image.ui.center.aligned
+                                                img.ui.centered.fluid.image(src='img/good-1.png')
+                                        .col-lg-8
+                                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
+                                            | cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, quas
+                                            | quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod,
+                                            | tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut
+                                            | consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro
+                                            | quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio,
+                                            | recusandae! Consequatur magni obcaecati omnis ullam?
+                                    .row.justify-content-center.d-none(data-tab='mails')
+                                        .col-lg-4.text-center
+                                            .image.ui.center.aligned
+                                                img.ui.centered.fluid.image(src='img/good-2.png')
+                                        .col-lg-8
+                                            p
+                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
+                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
+                                                | voluptate voluptates? Eligendi!
+                                            p
+                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
+                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
+                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
+                                                | ipsam!
+                                    .row.justify-content-center.d-none(data-tab='plans')
+                                        .col-lg-4.text-center
+                                            .image.ui.center.aligned
+                                                img.ui.centered.fluid.image(src='img/good-3.png')
+                                        .col-lg-8
+                                            p
+                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
+                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
+                                                | voluptate voluptates? Eligendi!
+                                            p
+                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
+                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
+                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
+                                                | ipsam!
+                                    .row.justify-content-center.d-none(data-tab='photos')
+                                        .col-lg-4.text-center
+                                            .image.ui.center.aligned
+                                                img.ui.centered.fluid.image(src='img/good-4.png')
+                                        .col-lg-8
+                                            p
+                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
+                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
+                                                | voluptate voluptates? Eligendi!
+                                            p
+                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
+                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
+                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
+                                                | ipsam!
+                                    .row.justify-content-center.d-none(data-tab='memories')
+                                        .col-lg-4.text-center
+                                            .image.ui.center.aligned
+                                                img.ui.centered.fluid.image(src='img/good-5.png')
+                                        .col-lg-8
+                                            p
+                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
+                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
+                                                | voluptate voluptates? Eligendi!
+                                            p
+                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
+                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
+                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
+                                                | ipsam!
+                .col-1.d-none.d-lg-block.right.floated
+                    img(src='img/r-bg.png', style='float: right', alt='')
+
+
+        include photoswipe.html

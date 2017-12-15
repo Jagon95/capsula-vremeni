@@ -1,0 +1,37 @@
+{
+  "menuItems": {
+    "Подробнее": "info",
+    "Клиенты": "users",
+    "Контакты": "address book outline",
+    "Корзина": "shop"
+  },
+  "adviceItems": {
+    "hourglass end": "Ограничены во времени (сделаем за 1 день)",
+    "delete calendar": "Не смогли заранее купить то, что запланировали;",
+    "crosshairs": "Не можете определиться с подарком;",
+    "thumbs outline up": "Хотите что-то по настоящему оригинальное и необычное;",
+    "ruble": "Строго ограничены в бюджете;"
+  },
+  "tabSwitchers": {
+    "artifacts": {
+      "image": "good-1.png",
+      "text": "Атрибуты прошлого"
+    },
+    "mails": {
+      "image": "good-2.png",
+      "text": "Письма и открытки"
+    },
+    "plans": {
+      "image": "good-3.png",
+      "text": "Чертежи и планы"
+    },
+    "photos": {
+      "image": "good-4.png",
+      "text": "Фотографии"
+    },
+    "memories": {
+      "image": "good-5.png",
+      "text": "Памятные вещи"
+    }
+  }
+}

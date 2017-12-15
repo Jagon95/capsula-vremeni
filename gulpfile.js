@@ -14,12 +14,14 @@ const csso = require('gulp-csso');
 const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
+const pug = require('gulp-pug');
+const data = require('gulp-data');
 
 gulp.task('connect', () => {
     connect.server({
         livereload: true,
         port: 1488,
-        root: '.'
+        root: 'build/'
     });
 });
 
@@ -28,10 +30,9 @@ gulp.task('reloader', () => {
 });
 
 gulp.task('watch', (() => {
-    // gulp.watch(['css/*.css', 'index.html', 'js/script.js'], ['reloader']);
-    gulp.watch(['js/main.js'], ['build-js']);
-    gulp.watch(['scss/**/*.sass', 'scss/**/*.scss'], ['build-css']);
-    // gulp.watch(['scss/**/*.sass', 'scss/**/*.scss'], ['sass']);
+    gulp.watch(['src/js/**/*.js'], ['build-js']);
+    gulp.watch(['src/scss/**/*.sass', 'src/scss/**/*.scss'], ['build-css']);
+    gulp.watch(['src/pug/**/*.pug'], ['pug']);
 }));
 
 gulp.task('build-js', ['babel'], () => {
@@ -41,39 +42,39 @@ gulp.task('build-js', ['babel'], () => {
             'libs/photoswipe/dist/photoswipe.js',
             'libs/photoswipe/dist/photoswipe-ui-default.js',
             'libs/Headhesive.js/dist/headhesive.js',
-            'js/babel-main.js'
+            'tmp/js/babel-main.js'
         ])
         .pipe(concat('script.js'))
         .pipe(uglify())
-        .pipe(gulp.dest('js'))
+        .pipe(gulp.dest('build/js'))
         .pipe(connect.reload());
 });
 
 gulp.task('build-css', ['sass'], () => {
     gulp.src([
-        // 'css/purified.css',
+        // 'tmp/css/purified.css',
         'libs/bootstrap/dist/css/bootstrap.css',
         'libs/semantic/dist/semantic.css',
         'libs/owl.carousel/dist/assets/owl.carousel.css',
         'libs/owl.carousel/dist/assets/owl.theme.default.css',
         'libs/photoswipe/dist/photoswipe.css',
         'libs/photoswipe/dist/default-skin/default-skin.css',
-        'css/main.css'
+        'tmp/css/main.css'
     ])
-        .pipe(concat('libs.min.css'))
+        .pipe(concat('main.min.css'))
         // .pipe(csso())
         // .pipe(cleanCSS({
         //     level: 2
         // }))
         .pipe(autoprefixer({browsers: '> 1%'}))
-        .pipe(gulp.dest('css'))
+        .pipe(gulp.dest('build/css'))
         .pipe(connect.reload());
 });
 
 gulp.task('sass', () => {
-    gulp.src(['scss/**/*.sass', 'scss/**/*.scss'])
+    gulp.src(['src/scss/**/*.sass', 'src/scss/**/*.scss'])
         .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
-        .pipe(gulp.dest('css'));
+        .pipe(gulp.dest('tmp/css'));
 });
 
 gulp.task('purify-css', () => {
@@ -83,19 +84,27 @@ gulp.task('purify-css', () => {
     ])
         .pipe(purify(['index.html', 'js/main.js']))
         .pipe(concat('purified.css'))
-        .pipe(gulp.dest('css'));
+        .pipe(gulp.dest('tmp/css'));
 });
 
 
 gulp.task('babel', () => {
-    gulp.src('js/main.js')
+    gulp.src('src/js/main.js')
         .pipe(babel({
             presets: ['env', 'stage-3']
         }))
         .pipe(rename({
             prefix: 'babel-'
         }))
-        .pipe(gulp.dest('js/'));
+        .pipe(gulp.dest('tmp/js'));
+});
+
+gulp.task('pug', () => {
+    gulp.src('src/pug/**/*.pug')
+        .pipe(data(file => require('./src/data.json')))
+        .pipe(pug())
+        .pipe(gulp.dest('build'))
+        .pipe(connect.reload());
 });
 
 
