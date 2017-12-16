@@ -86,80 +86,50 @@ html
                         .row.justify-content-center
                             .col-lg-10.col-md-12
                                 .ui.blue.segment.container.tabs
-                                    .row.justify-content-center(data-tab='artifacts')
-                                        .col-lg-4.text-center
-                                            .image.ui.center.aligned
-                                                img.ui.centered.fluid.image(src='img/good-1.png')
-                                        .col-lg-8
-                                            | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
-                                            | cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, quas
-                                            | quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod,
-                                            | tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut
-                                            | consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro
-                                            | quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio,
-                                            | recusandae! Consequatur magni obcaecati omnis ullam?
-                                    .row.justify-content-center.d-none(data-tab='mails')
-                                        .col-lg-4.text-center
-                                            .image.ui.center.aligned
-                                                img.ui.centered.fluid.image(src='img/good-2.png')
-                                        .col-lg-8
-                                            p
-                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
-                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
-                                                | voluptate voluptates? Eligendi!
-                                            p
-                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
-                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
-                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
-                                                | ipsam!
-                                    .row.justify-content-center.d-none(data-tab='plans')
-                                        .col-lg-4.text-center
-                                            .image.ui.center.aligned
-                                                img.ui.centered.fluid.image(src='img/good-3.png')
-                                        .col-lg-8
-                                            p
-                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
-                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
-                                                | voluptate voluptates? Eligendi!
-                                            p
-                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
-                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
-                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
-                                                | ipsam!
-                                    .row.justify-content-center.d-none(data-tab='photos')
-                                        .col-lg-4.text-center
-                                            .image.ui.center.aligned
-                                                img.ui.centered.fluid.image(src='img/good-4.png')
-                                        .col-lg-8
-                                            p
-                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
-                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
-                                                | voluptate voluptates? Eligendi!
-                                            p
-                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
-                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
-                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
-                                                | ipsam!
-                                    .row.justify-content-center.d-none(data-tab='memories')
-                                        .col-lg-4.text-center
-                                            .image.ui.center.aligned
-                                                img.ui.centered.fluid.image(src='img/good-5.png')
-                                        .col-lg-8
-                                            p
-                                                | Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                                                | Aliquid corporis debitis eligendi harum illo inventore nulla odit officia,
-                                                | pariatur placeat quo recusandae rerum sapiente soluta, suscipit veritatis
-                                                | voluptate voluptates? Eligendi!
-                                            p
-                                                | Accusantium, ad aliquid aspernatur at blanditiis corporis, cumque dolorem
-                                                | dolores, doloribus earum eos eum eveniet facilis fuga in neque obcaecati
-                                                | porro praesentium quaerat quasi qui ratione sapiente. Deserunt, inventore,
-                                                | ipsam!
+                                    each item, tab in tabs
+                                        .row.justify-content-center.d-none(data-tab=tab)
+                                            .col-lg-4.text-center
+                                                .image.ui.center.aligned
+                                                    img.ui.centered.fluid.image(src='img/' + item.image)
+                                            .col-lg-8=item.text
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 
+        #market.container-fluid.one-page
+            h2 Заказ капсулы времени
+            .container
+                .row.justify-content-center
+                    .col-12
+                        h3 Выберите капсулу:
+                        .owl-carousel.owl-theme
+                            .item.kapsula-product__wrapper
+                                img.thumbnail(src='img/thumbnails/vip3.jpg', data-image-category='safe', alt='')
+                                h4.kapsula-product__title Капсула-сейф
+                                .ui.labeled.button.kapsula-product__price-button-group(tabindex='0')
+                                    .ui.primary.button.kapsula-product__buy-button
+                                        | В корзину
+                                    a.ui.basic.primary.left.pointing.label.kapsula-product__price
+                                        | 27 000
+                            .item
+                                h4 3
+                            .item
+                                h4 4
+                            .item
+                                h4 5
+                .row.justify-content-center
+                    .col-12
+                        h3 Выберите дополнительные опции:
+                        .owl-carousel.owl-theme
+                            .item
+                                img.thumbnail(src='img/thumbnails/vip3.jpg', data-image-category='safe', alt='')
+                                h4 Капсула-сейф
+                            .item
+                                h4 2
+                            .item
+                                h4 3
+                            .item
+                                h4 4
+                            .item
+                                h4 5
 
         include photoswipe.html

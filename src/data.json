@@ -33,5 +33,27 @@
       "image": "good-5.png",
       "text": "Памятные вещи"
     }
+  },
+  "tabs": {
+    "artifacts": {
+      "image": "good-1.png",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+    },
+    "mails": {
+      "image": "good-2.png",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+    },
+    "plans": {
+      "image": "good-3.png",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+    },
+    "photos": {
+      "image": "good-4.png",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+    },
+    "memories": {
+      "image": "good-5.png",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+    }
   }
 }

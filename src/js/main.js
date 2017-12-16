@@ -100,7 +100,7 @@ $(document).ready(function(){
         let nextIndex = (tabsArray.indexOf(tabContainer.data('active-tab')) + 1) % tabsArray.length;
         switchTo(tabsArray[nextIndex]);
     }
-
+    switchNext();
     setInterval(switchNext, 5e3);
 
     controls.click(function () {
