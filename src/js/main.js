@@ -18,8 +18,8 @@ function openPhotoSwipe (items) {
 function processSrcPaths (items, src, msrc) {
     return items.map((item) => {
         return {
-            src: src + '/' + item['name'],
-            msrc: msrc ? msrc + '/' + item['name'] : '',
+            src: src + '/' + item['file'],
+            msrc: msrc ? msrc + '/' + item['file'] : '',
             ...item
         };
     })
@@ -48,27 +48,42 @@ $(document).ready(function(){
         }
     });
 
-    let items = {
-        safe: [
-            {
-                name: 'vip3.jpg',
-                w: 1000,
-                h: 1000
-            },
-            {
-                name: 'vip4.jpg',
-                w: 997,
-                h: 1200
-            },
-        ]
-    };
-    $('.thumbnail').click(function () {
-        let _items = processSrcPaths(items[$(this).data('imageCategory')], 'img/photos', 'img/thumbnails');
-        openPhotoSwipe(_items);
+    // $('[data-animate-type]').waypoint(function() {
+    //     $(this).addClass('fadeInLeft');
+    // }, { offset: '100%'});
+
+    $('[data-animate-type]').addClass('fade animated').waypoint(function () {
+        let el = $(this.element);
+        el.addClass(el.data('animateType'));
+    }, {
+        offset: '50%'
+    });
+
+    //     let el = $(e);
+    //     el.addClass('fade');
+    //     new Waypoint({
+    //         element: e,
+    //         handler: function() {
+    //             el.addClass(el.data('animatedType')).removeClass('fade');
+    //             console.log(el.data('animatedType'));
+    //         }
+    //     });
+    // });
+    // let waypoint = new Waypoint({
+    //     element: document.getElementById('basic-waypoint'),
+    //     handler: function() {
+    //         notify('Basic waypoint triggered')
+    //     }
+    // });
+
+    $('[data-thumbnail-id]').click(function () {
+        let productId = $(this).data('thumbnailId');
+        let items = processSrcPaths(kapsulaProducts[productId]['images'], 'img/photos', 'img/thumbnails');
+        openPhotoSwipe(items);
     });
 
     let header = new Headhesive('.menu-header', {
-        offset: '#second',
+        offset: '#about_capsule',
         offsetSide: 'top',
         classes: {
             clone:   'header--clone',
@@ -89,9 +104,9 @@ $(document).ready(function(){
     });
 
     function switchTo(tab) {
-        tabs.addClass('d-none');
+        tabs.fadeOut();
         controls.removeClass('blue');
-        tabs.filter(`[data-tab="${tab}"]`).removeClass('d-none');
+        tabs.filter(`[data-tab="${tab}"]`).fadeIn();
         controls.filter(`[data-tab="${tab}"]`).addClass('blue');
         tabContainer.data('active-tab', tab);
     }
@@ -106,6 +121,15 @@ $(document).ready(function(){
     controls.click(function () {
         switchTo($(this).data('tab'))
     });
-    
+
+
+    const productTemplate = $('#product-template').html();
+    let counter = 0;
+    function addToCart() {
+        let newElement = $('<div>').html(productTemplate).children();
+        newElement.find('[data-template-index]').html(++counter);
+        $('.shopping-cart__body').append(newElement);
+    }
+    window.a = addToCart;
 
 });

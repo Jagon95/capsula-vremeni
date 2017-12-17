@@ -16,6 +16,7 @@ const autoprefixer = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
 const pug = require('gulp-pug');
 const data = require('gulp-data');
+const copy = require('gulp-copy');
 
 gulp.task('connect', () => {
     connect.server({
@@ -42,10 +43,12 @@ gulp.task('build-js', ['babel'], () => {
             'libs/photoswipe/dist/photoswipe.js',
             'libs/photoswipe/dist/photoswipe-ui-default.js',
             'libs/Headhesive.js/dist/headhesive.js',
+            'libs/parallax.js/parallax.js',
+            'libs/waypoints/lib/jquery.waypoints.js',
             'tmp/js/babel-main.js'
         ])
         .pipe(concat('script.js'))
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(gulp.dest('build/js'))
         .pipe(connect.reload());
 });
@@ -59,6 +62,7 @@ gulp.task('build-css', ['sass'], () => {
         'libs/owl.carousel/dist/assets/owl.theme.default.css',
         'libs/photoswipe/dist/photoswipe.css',
         'libs/photoswipe/dist/default-skin/default-skin.css',
+        'libs/animate.css/animate.css',
         'tmp/css/main.css'
     ])
         .pipe(concat('main.min.css'))
@@ -102,7 +106,9 @@ gulp.task('babel', () => {
 gulp.task('pug', () => {
     gulp.src('src/pug/**/*.pug')
         .pipe(data(file => require('./src/data.json')))
-        .pipe(pug())
+        .pipe(pug({
+            pretty: true
+        }))
         .pipe(gulp.dest('build'))
         .pipe(connect.reload());
 });
@@ -123,9 +129,14 @@ gulp.task('thumbnails', () => {
             // svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         }))
-        .pipe(gulp.dest('img/thumbnails'));
+        .pipe(gulp.dest('build/img/thumbnails'));
 });
 
+gulp.task('copy', () => {
+    gulp.src('img/**').pipe(gulp.dest('build/img'));        // TODO: not just copy, but also optimise
+    gulp.src('libs/photoswipe/dist/default-skin/*.*').pipe(gulp.dest('build/css'));
+    gulp.src('libs/semantic/dist/themes/default/**').pipe(gulp.dest('build/css/themes/default'));
+});
 
 gulp.task('default', ['connect', 'watch']);
-gulp.task('build', ['build-js', 'build-css']);
+gulp.task('build', ['build-js', 'build-css', 'copy', 'thumbnails']);
