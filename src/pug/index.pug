@@ -6,8 +6,9 @@ html
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js")
-    body
-        #first.container-fluid.one-page
+        script var kapsulaProducts = !{JSON.stringify(products)}
+    body#kapsula
+        #introduction.container-fluid.introduction__page
             #header.container-fluid.menu-header
                 .ui.container
                     .row
@@ -23,7 +24,7 @@ html
                                             =item
             .container
                 .row.justify-content-center
-                    .col-xl-4.col-lg-5.col-md-10.col-sm-12.text-center
+                    .col-xl-4.col-lg-5.col-md-10.col-sm-12
                         h1
                             | Капсула Времени, именной подарок
                     .col-xl-4.col-lg-5.col-md-10.d-sm-none.d-xs-none.d-md-block.offset-lg-1
@@ -33,7 +34,7 @@ html
                     .col-12
                         img.ui.fluid.image(src='img/main_new.png')
                 .row.justify-content-center
-                    .col-lg-4.col-md-10.col-sm-12.text-center
+                    .col-lg-4.col-md-10.col-sm-12
                         .ui.primary.button
                             i.shop.icon
                             | В КОРЗИНУ
@@ -42,10 +43,10 @@ html
                             | Мы делаем Капсулы Времени любых размеров и форм.
 
 
-        #second.container-fluid.one-page
-            h2 Что такое Капсула Времени?
-            .container
-                .row.justify-content-center
+        #about_capsule.container-fluid.about-capsule__page
+            h2(data-animate-type="fadeIn") Что такое Капсула Времени?
+            .container(data-animate-type="fadeInUp")
+                .row.justify-content-center.animated
                     .col-md-10.col-sm-12
                         h3
                             | Капсула Времени - это оригинальный и интересный подарок, который подходит для мероприятий и торжеств по любому поводу и любого мастштаба.
@@ -62,14 +63,13 @@ html
 
 
 
-        #third.container-fluid.one-page
+        #capsule_content.container-fluid.capsule-content__page
             h2 Что можно положить в капсулу?
-            .container
+            .container(data-animate-type="fadeInLeft")
                 .row.justify-content-center
                     .col-md-10.col-sm-12
                         h3
-                            | Капсула вместительная. В нее помещается 100-120
-                            | листов А4, а также миниатюрные предметы и аксессуары.
+                            | Капсула вместительная. В нее помещается 100-120 листов А4, а также миниатюрные предметы и аксессуары.
             .row.justify-content-center
                 .col-1.d-none.d-lg-block
                     img(src='img/l-bg.png', alt='')
@@ -78,44 +78,48 @@ html
                         .row.justify-content-center.d-sm-none.d-md-flex.tab-controllers
                             each item, tab in tabSwitchers
                                 .col-xl-2.col-md-3.col-sm-4
-                                    .ui.raised.link.fluid.blue.card(data-tab=tab)
-                                        .image.ui.center.aligned
+                                    .ui.raised.link.fluid.blue.card.card-tab-switcher__wrapper(data-tab=tab)
+                                        .image.ui.center.aligned.card-tab-switcher__image-wrapper
                                             img.ui.centered.medium.image(src='img/' + item.image)
                                         .content.center.aligned
                                             p=item.text
                         .row.justify-content-center
                             .col-lg-10.col-md-12
-                                .ui.blue.segment.container.tabs
+                                .ui.blue.segment.container.tabs.tab-page__wrapper
                                     each item, tab in tabs
-                                        .row.justify-content-center.d-none(data-tab=tab)
-                                            .col-lg-4.text-center
-                                                .image.ui.center.aligned
+                                        .row.justify-content-center.tab-page__content(data-tab=tab)
+                                            .col-lg-4.tab-page__image-wrapper
+                                                .ui.image
                                                     img.ui.centered.fluid.image(src='img/' + item.image)
                                             .col-lg-8=item.text
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 
-        #market.container-fluid.one-page
+        .container-fluid.titanium-capsule-parallax(
+            data-image-src='img/IMG_1713.jpg',
+            data-parallax='scroll',
+            data-speed='0.8'
+        )
+        #market.container-fluid.market__page
             h2 Заказ капсулы времени
             .container
                 .row.justify-content-center
                     .col-12
                         h3 Выберите капсулу:
                         .owl-carousel.owl-theme
-                            .item.kapsula-product__wrapper
-                                img.thumbnail(src='img/thumbnails/vip3.jpg', data-image-category='safe', alt='')
-                                h4.kapsula-product__title Капсула-сейф
-                                .ui.labeled.button.kapsula-product__price-button-group(tabindex='0')
-                                    .ui.primary.button.kapsula-product__buy-button
-                                        | В корзину
-                                    a.ui.basic.primary.left.pointing.label.kapsula-product__price
-                                        | 27 000
-                            .item
-                                h4 3
-                            .item
-                                h4 4
-                            .item
-                                h4 5
+                            each product, name in products
+                                .item.product__wrapper(data-product-id=name)
+                                    img.thumbnail(
+                                        src='img/thumbnails/' + product.images[0].file,
+                                        alt=product.description,
+                                        data-thumbnail-id=name
+                                    )
+                                    h4.product__title=product.title
+                                    .ui.labeled.button.product__price-button-group(tabindex='0')
+                                        .ui.primary.button.product__buy-button
+                                            | В корзину
+                                        a.ui.basic.primary.left.pointing.label.product__price
+                                            =product.price
                 .row.justify-content-center
                     .col-12
                         h3 Выберите дополнительные опции:
@@ -131,5 +135,53 @@ html
                                 h4 4
                             .item
                                 h4 5
+
+        #shopping_cart.container-fluid.shopping-cart__page
+            h2 Корзина
+            .container
+                .row.justify-content-center
+                    .col-lg-6
+                        table.ui.celled.table.shopping-cart__wrapper
+                            thead.shopping-cart__header
+                                tr.shopping-cart__header-row
+                                    th.shopping-cart__number_cell #
+                                    th.shopping-cart__item-name_cell(colspan=2) Наименование
+                                    th.shopping-cart__price_cell Цена
+                            tbody.shopping-cart__body
+                                - var index = 0
+                                each i in [1,2,3,4,5]
+                                    tr.shopping-cart__row
+                                        td.middle.aligned.shopping-cart__number_cell=++index
+                                        td.shopping-cart__product-name_cell
+                                            h4.ui.image.header
+                                                img.ui.medium.bordered.image.shopping-cart__product-image(
+                                                    src='img/thumbnails/vip3.jpg',
+                                                    data-thumbnail-id='kapsula-safe'
+                                                )
+                                                .content Капсула-сейф
+                                                    .sub.header Подзаголовок
+                                        td.middle.aligned.shopping-cart__actions_cell
+                                            button.small.ui.red.icon.button.shopping-cart__action: i.icon.trash
+                                        td.middle.aligned.shopping-cart__price_cell
+                                            span.shopping-cart__price 100500
+                                template.d-none#product-template
+                                    tr.shopping-cart__row
+                                        td.middle.aligned.shopping-cart__number_cell(data-template-index)
+                                        td.shopping-cart__product-name_cell
+                                            h4.ui.image.header
+                                                img.ui.medium.bordered.image.shopping-cart__product-image(
+                                                src='img/thumbnails/vip3.jpg',
+                                                data-thumbnail-id='kapsula-safe'
+                                                )
+                                                .content Капсула-сейф
+                                                    .sub.header Подзаголовок
+                                        td.middle.aligned.shopping-cart__actions_cell
+                                            button.small.ui.red.icon.button.shopping-cart__action: i.icon.trash
+                                        td.middle.aligned.shopping-cart__price_cell
+                                            span.shopping-cart__price 100500
+                            tfoot.shopping-cart__footer
+                                tr.shopping-cart__footer-row
+                                    th.shopping-cart-result-title-cell(colspan=3) Итого
+                                    th.shopping-cart-result-price-cell 1141
 
         include photoswipe.html

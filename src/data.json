@@ -55,5 +55,87 @@
       "image": "good-5.png",
       "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
     }
+  },
+  "products": {
+    "kapsula-safe": {
+      "id": "kapsula-safe",
+      "title": "Капсула-сейф",
+      "description": "",
+      "images": [
+        {
+          "file": "vip3.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "vip4.jpg",
+          "w": 997,
+          "h": 1200
+        },
+        {
+          "file": "vip5.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "vip6.jpg",
+          "w": 1200,
+          "h": 969
+        },
+        {
+          "file": "vip7.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "vip8.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "vip9.jpg",
+          "w": 1200,
+          "h": 936
+        },
+        {
+          "file": "vip10.jpg",
+          "w": 1200,
+          "h": 897
+        },
+        {
+          "file": "vip11.jpg",
+          "w": 1142,
+          "h": 1280
+        },
+        {
+          "file": "vip12.jpg",
+          "w": 1200,
+          "h": 1085
+        }
+      ],
+      "price": 27000
+    },
+    "kapsula-titanium": {
+      "title": "Титановая капсула",
+      "description": "",
+      "images": [
+        {
+          "file": "t35-1.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "t35-2.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "t35-3.jpg",
+          "w": 1000,
+          "h": 1000
+        }
+      ],
+      "price": 12000
+    }
   }
 }
