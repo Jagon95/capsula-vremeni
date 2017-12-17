@@ -57,8 +57,7 @@
     }
   },
   "products": {
-    "kapsula-safe": {
-      "id": "kapsula-safe",
+    "capsule-safe": {
       "title": "Капсула-сейф",
       "description": "",
       "images": [
@@ -115,7 +114,7 @@
       ],
       "price": 27000
     },
-    "kapsula-titanium": {
+    "capsule-titanium": {
       "title": "Титановая капсула",
       "description": "",
       "images": [
@@ -136,6 +135,28 @@
         }
       ],
       "price": 12000
+    },
+    "capsule-gold": {
+      "title": "Капсула \"GOLD\"",
+      "description": "",
+      "price": 10000,
+      "images": [
+        {
+          "file": "l35-1.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "l35-2.jpg",
+          "w": 1000,
+          "h": 1000
+        },
+        {
+          "file": "l35-3.jpg",
+          "w": 1000,
+          "h": 1000
+        }
+      ]
     }
   }
 }

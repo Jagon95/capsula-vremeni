@@ -17,6 +17,11 @@ const sass = require('gulp-sass');
 const pug = require('gulp-pug');
 const data = require('gulp-data');
 const copy = require('gulp-copy');
+const env = require('gulp-environments');
+
+const dev = env.development;
+const prod = env.production;
+
 
 gulp.task('connect', () => {
     connect.server({
@@ -45,12 +50,13 @@ gulp.task('build-js', ['babel'], () => {
             'libs/Headhesive.js/dist/headhesive.js',
             'libs/parallax.js/parallax.js',
             'libs/waypoints/lib/jquery.waypoints.js',
+            'libs/semantic/dist/semantic.js',
             'tmp/js/babel-main.js'
         ])
         .pipe(concat('script.js'))
-        // .pipe(uglify())
+        .pipe(prod(uglify()))
         .pipe(gulp.dest('build/js'))
-        .pipe(connect.reload());
+        .pipe(dev(connect.reload()));
 });
 
 gulp.task('build-css', ['sass'], () => {
@@ -62,17 +68,17 @@ gulp.task('build-css', ['sass'], () => {
         'libs/owl.carousel/dist/assets/owl.theme.default.css',
         'libs/photoswipe/dist/photoswipe.css',
         'libs/photoswipe/dist/default-skin/default-skin.css',
-        'libs/animate.css/animate.css',
+        // 'libs/animate.css/animate.css',
         'tmp/css/main.css'
     ])
         .pipe(concat('main.min.css'))
-        // .pipe(csso())
+        .pipe(prod(csso()))
         // .pipe(cleanCSS({
         //     level: 2
         // }))
-        .pipe(autoprefixer({browsers: '> 1%'}))
+        .pipe(prod(autoprefixer({browsers: '> 1%'})))
         .pipe(gulp.dest('build/css'))
-        .pipe(connect.reload());
+        .pipe(dev(connect.reload()));
 });
 
 gulp.task('sass', () => {
@@ -120,7 +126,7 @@ gulp.task('thumbnails', () => {
             width: 300,
             height: 300,
             upscale: false,
-            crop: true,
+            crop: false,
             gravity: 'North'
         }))
         .pipe(imagemin({
@@ -138,5 +144,7 @@ gulp.task('copy', () => {
     gulp.src('libs/semantic/dist/themes/default/**').pipe(gulp.dest('build/css/themes/default'));
 });
 
-gulp.task('default', ['connect', 'watch']);
-gulp.task('build', ['build-js', 'build-css', 'copy', 'thumbnails']);
+gulp.task('set-dev', dev.task);
+
+gulp.task('default', ['set-dev', 'connect', 'watch']);
+gulp.task('build', ['pug', 'build-js', 'build-css', 'copy', 'thumbnails']);
