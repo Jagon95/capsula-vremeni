@@ -1,9 +1,10 @@
+function isMobile() {
+    return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||navigator.vendor||window.opera)
+}
+
 function openPhotoSwipe (items) {
-    let pswpElement = $('.pswp').get(0);
-    // build items array
-    // define options (if needed)
+    let pswpElement = $('.pswp:first').get(0);
     let options = {
-        // history & focus options are disabled on CodePen
         history: false,
         focus: false,
         bgOpacity: .9,
@@ -33,13 +34,15 @@ function addListiners(wrapper, context) {
         let items = processSrcPaths(kapsulaProducts[productId]['images'], 'img/photos', 'img/thumbnails');
         openPhotoSwipe(items);
     });
-    $('[data-behavior-dimmer]', wrapper).dimmer({
-        on: 'hover'
-    });
     $('[data-request-function]', wrapper).click(function () {
         let el = $(this);
         context[el.data('requestFunction')](el.data('functionArgument'));
     });
+    if (!isMobile()) {
+        $('[data-behavior-dimmer]', wrapper).dimmer({
+            on: 'hover'
+        });
+    }
 }
 
 
@@ -65,25 +68,31 @@ $(document).ready(function(){
         }
     });
 
-    $('[data-animate-type]').css('visibility', 'hidden').waypoint(function (direction) {
-        // if (direction)
-        let el = $(this.element);
-        el.transition(el.data('animateType'), transitionSettings);
-        this.destroy();
-    }, waypointAnimationSettings);
+    if(!isMobile()) {
+        $('.titanium-capsule-parallax:first').parallax({
+            imageSrc: 'img/IMG_1713.jpg',
+            speed: .7
+        });
 
-    $('[data-animate-indexed]').css('visibility', 'hidden').waypoint(function () {
-        let el = $(this.element);
-        let offset = el.data('animate-indexed');
-        if (offset <= .25) {
-            el.transition('fade left', transitionSettings);
-        } else if (offset < .75) {
-            el.transition('fade up', transitionSettings);
-        } else {
-            el.transition('fade right', transitionSettings);
-        }
-        this.destroy();
-    }, waypointAnimationSettings);
+        $('[data-animate-type]').css('visibility', 'hidden').waypoint(function () {
+            let el = $(this.element);
+            el.transition(el.data('animateType'), transitionSettings);
+            this.destroy();
+        }, waypointAnimationSettings);
+
+        $('[data-animate-indexed]').css('visibility', 'hidden').waypoint(function () {
+            let el = $(this.element);
+            let offset = el.data('animate-indexed');
+            if (offset <= .25) {
+                el.transition('fade left', transitionSettings);
+            } else if (offset < .75) {
+                el.transition('fade up', transitionSettings);
+            } else {
+                el.transition('fade right', transitionSettings);
+            }
+            this.destroy();
+        }, waypointAnimationSettings);
+    }
 
     let header = new Headhesive('.menu-header', {
         offset: '#introduction',
@@ -96,7 +105,7 @@ $(document).ready(function(){
     });
 
 
-    $('.capsule-content__page').waypoint(function () {
+    $('.capsule-content__page:first').waypoint(function () {
         let requests = {
             switchTo
         };
@@ -131,13 +140,14 @@ $(document).ready(function(){
         offset: '100%'
     });
 
-    $('.market__page').waypoint(function () {
+    $('.market__page:first').waypoint(function () {
         const requests = {
             addToCart,
             removeFromCart
         };
         console.log('init Market');
-        const productTemplate = $('#product-template').html();
+        const productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`).html();
+        $('[data-product-template]').remove();
         // let cartCounter = 0;
         let cartItems = [];
         function addToCart(id) {
@@ -170,7 +180,7 @@ $(document).ready(function(){
             });
         }
 
-        let shoppingCart = $('.shopping-cart__page');
+        let shoppingCart = $('.shopping-cart__page:first');
         function removeFromCart(id) {
             let index = cartItems.indexOf(id);
             if (index === -1) {
