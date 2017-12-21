@@ -94,7 +94,7 @@ $(document).ready(function(){
         }, waypointAnimationSettings);
     }
 
-    let header = new Headhesive('.menu-header', {
+    let header = new Headhesive('.menu-header__wrapper', {
         offset: '#introduction',
         offsetSide: 'bottom',
         classes: {

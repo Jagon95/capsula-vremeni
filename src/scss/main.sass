@@ -42,6 +42,10 @@ h3
   content: '\00a0руб.'
 
 #kapsula
+  .menu-header
+    &__item, &__item i
+      transition: .3s ease
+
   .introduction__page
     +gradient-page
     +site-page
@@ -158,13 +162,11 @@ h3
     transform: translateY(0%)
 
 
-img.logo
+.menu-header__logo img
   height: 44px
   width: auto
   margin: 0
   filter: grayscale(100%)
   transition: all 0.5s ease
-
-
-img.logo:hover
-  filter: grayscale(0)
+  &:hover
+    filter: grayscale(0)

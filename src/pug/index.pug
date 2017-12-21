@@ -10,16 +10,16 @@ html
         script var kapsulaProducts = !{JSON.stringify(products)}
     body#kapsula
         #introduction.container-fluid.introduction__page
-            #header.container-fluid.menu-header
+            #header.container-fluid.menu-header__wrapper
                 .ui.container
                     .row
-                        .col-xl-3.logo.header.item
-                            a(href='#')
-                                img.logo(src='img/logo.svg', alt='')
+                        .col-xl-3.menu-header__logo.header.item
+                            a.middle.aligned.content(href='#')
+                                img(src='img/logo.svg', alt='')
                         #menu.col-xl-9.item
                             .ui.relaxed.large.horizontal.divided.link.list
                                 each icon, item in menuItems
-                                    a.item
+                                    a.item.menu-header__item
                                         .middle.aligned.content
                                             i(class=icon + ' icon')
                                             =item
