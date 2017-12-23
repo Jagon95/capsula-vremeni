@@ -1,8 +1,16 @@
+// import 'owl.carousel/dist/assets/owl.carousel.css';
+import $ from "jquery";
+import 'imports-loader?jQuery=jquery!owl.carousel';
+import 'jquery-parallax.js';
+import 'waypoints';
+import Headhesive from 'headhesive'
+import 'semantic-ui';
+
 function isMobile() {
-    return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||navigator.vendor||window.opera)
+    return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || navigator.vendor || window.opera)
 }
 
-function openPhotoSwipe (items) {
+function openPhotoSwipe(items) {
     let pswpElement = $('.pswp:first').get(0);
     let options = {
         history: false,
@@ -12,11 +20,11 @@ function openPhotoSwipe (items) {
         hideAnimationDuration: 200
     };
 
-    let gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
+    let gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
     gallery.init();
 }
 
-function processSrcPaths (items, src, msrc) {
+function processSrcPaths(items, src, msrc) {
     return items.map((item) => {
         return {
             src: src + '/' + item['file'],
@@ -28,6 +36,7 @@ function processSrcPaths (items, src, msrc) {
 
 let transitionSettings = {duration: 700};
 let waypointAnimationSettings = {offset: '70%'};
+
 function addListiners(wrapper, context) {
     $('[data-thumbnail-id]', wrapper).css('cursor', 'pointer').click(function () {
         let productId = $(this).data('thumbnailId');
@@ -46,30 +55,30 @@ function addListiners(wrapper, context) {
 }
 
 
-$(document).ready(function(){
+$(document).ready(function () {
     $(".owl-carousel").owlCarousel({
         stagePadding: 50,
         margin: 10,
-        autoWidth:true,
+        autoWidth: true,
         autoheight: true,
-        responsive:{
-            0:{
-                items:1
+        responsive: {
+            0: {
+                items: 1
             },
             576: {
                 items: 2
             },
-            768:{
-                items:4
+            768: {
+                items: 4
             },
-            992:{
-                items:5
+            992: {
+                items: 5
             }
         }
     });
 
-    if(!isMobile()) {
-        $('.titanium-capsule-parallax:first').parallax({
+    if (!isMobile()) {
+        $('.titanium-capsule-parallax:first').removeClass('d-none').parallax({
             imageSrc: 'img/IMG_1713.jpg',
             speed: .7
         });
@@ -98,8 +107,8 @@ $(document).ready(function(){
         offset: '#introduction',
         offsetSide: 'bottom',
         classes: {
-            clone:   'header--clone',
-            stick:   'header--stick',
+            clone: 'header--clone',
+            stick: 'header--stick',
             unstick: 'header--unstick'
         }
     });
@@ -132,6 +141,7 @@ $(document).ready(function(){
             let nextIndex = (tabsArray.indexOf(tabContainer.data('active-tab')) + 1) % tabsArray.length;
             switchTo(tabsArray[nextIndex]);
         }
+
         switchNext();
         setInterval(switchNext, 5e3);
         addListiners(this.element, requests);
@@ -150,6 +160,7 @@ $(document).ready(function(){
         $('[data-product-template]').remove();
         // let cartCounter = 0;
         let cartItems = [];
+
         function addToCart(id) {
             if (cartItems.indexOf(id) !== -1) {
                 return;
@@ -181,6 +192,7 @@ $(document).ready(function(){
         }
 
         let shoppingCart = $('.shopping-cart__page:first');
+
         function removeFromCart(id) {
             let index = cartItems.indexOf(id);
             if (index === -1) {
@@ -193,7 +205,7 @@ $(document).ready(function(){
                     this.remove();
                     updateCartIndexes();
                     updateResultPrice();
-                    if(cartItems.length === 0) {
+                    if (cartItems.length === 0) {
                         $('.shopping-cart__empty-handler').transition('fade in');
                     }
                 }
@@ -214,6 +226,7 @@ $(document).ready(function(){
                 $(this).html(++counter);
             })
         }
+
         // $('.product__buy-button').click(function (e) {
         //     let el = $(this);
         //     el.addClass('active').off('click');

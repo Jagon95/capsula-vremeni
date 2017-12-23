@@ -76,7 +76,7 @@ gulp.task('build-css', ['sass'], () => {
         // .pipe(cleanCSS({
         //     level: 2
         // }))
-        .pipe(prod(autoprefixer({browsers: '> 1%'})))
+        .pipe(prod(autoprefixer({browsers: '> 0.1%'})))
         .pipe(gulp.dest('build/css'))
         .pipe(dev(connect.reload()));
 });

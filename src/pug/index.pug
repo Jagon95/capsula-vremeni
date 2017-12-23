@@ -6,7 +6,7 @@ html
         title Капсула времени
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
-        script(src="js/script.js")
+        script(src="js/script.js" async)
         script var kapsulaProducts = !{JSON.stringify(products)}
     body#kapsula
         #introduction.container-fluid.introduction__page
@@ -100,7 +100,7 @@ html
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 
-        .container-fluid.d-none.d-md-block.titanium-capsule-parallax
+        .container-fluid.d-none.titanium-capsule-parallax
 
         #market.container-fluid.market__page
             h2(data-animate-type="fade") Заказ капсулы времени
@@ -208,5 +208,45 @@ html
                                 tr.shopping-cart__footer-row
                                     th.shopping-cart__result-title-cell(colspan=3) Итого
                                     th.shopping-cart__result-price-cell 0
+
+
+        #fifth.container-fluid.one-page
+            h2 Наши преимущества
+            .container
+                .row.justify-content-center
+                    .col-md-10.col-sm-12
+                        .row.justify-content-center.advantage-wrapper
+                            .col-lg-5.col-md-12.row
+                                .col-3.text-center
+                                    h3.ui.icon.header
+                                        i.icon.trophy
+                                .col-9 Мы лучший проект в России по производству капсул времени
+                            .col-lg-5.offset-lg-1.col-md-12.row
+                                .col-3.text-center
+                                    h3.ui.icon.header
+                                        i.icon.shipping
+                                .col-9 Доставка курьером лично в руки за 1-3 дня
+                            .col-lg-5.col-md-12.row
+                                .col-3.text-center
+                                    h3.ui.icon.header
+                                        i.icon.diamond
+                                .col-9
+                                    | Наши капсулы производятся только из лучших сплавов металла Российского
+                                    | производства
+                            .col-lg-5.offset-lg-1.col-md-12.row
+                                .col-3.text-center
+                                    h3.ui.icon.header
+                                        i.icon.settings
+                                .col-9
+                                    | У нас свое производство в двух городах России (Санкт-Петербург и Челябинск)
+                            .col-lg-5.col-md-12.row
+                                .col-3.text-center
+                                    h3.ui.icon.header
+                                        i.icon.heart.outline
+                                .col-9
+                                    | Индивидуальный подход к каждому клиенту. Мы поможем выбрать идеальный текст
+                                    | гравировки и подскажем как правильно сделать послание в будущее
+                            .col-lg-5.offset-lg-1.col-md-12.row
+
 
         include photoswipe.html
