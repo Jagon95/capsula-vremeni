@@ -3,8 +3,17 @@ import $ from "jquery";
 import 'imports-loader?jQuery=jquery!owl.carousel';
 import 'jquery-parallax.js';
 import 'waypoints';
-import Headhesive from 'headhesive'
-import 'semantic-ui';
+import Headhesive from 'headhesive';
+import 'semantic/components/transition';
+import 'semantic/components/dimmer';
+import _products from 'product.json';
+import _imageSizes from 'image_sizes.json';
+
+const products = JSON.parse(_products);
+const imageSizes = JSON.parse(_imageSizes).reduce(function(obj,item){
+    obj[item.name] = item;
+    return obj;
+}, {});
 
 function isMobile() {
     return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || navigator.vendor || window.opera)
@@ -24,14 +33,16 @@ function openPhotoSwipe(items) {
     gallery.init();
 }
 
-function processSrcPaths(items, src, msrc) {
-    return items.map((item) => {
-        return {
-            src: src + '/' + item['file'],
-            msrc: msrc ? msrc + '/' + item['file'] : '',
-            ...item
-        };
-    })
+function processImageItems(items, src, msrc) {
+    return items.reduce((res, item) => {
+        res.push({
+            src: src + '/' + item,
+            msrc: msrc ? msrc + '/' + item : '',
+            w: imageSizes[item]['width'],
+            h: imageSizes[item]['height']
+        });
+        return res;
+    }, []);
 }
 
 let transitionSettings = {duration: 700};
@@ -40,7 +51,7 @@ let waypointAnimationSettings = {offset: '70%'};
 function addListiners(wrapper, context) {
     $('[data-thumbnail-id]', wrapper).css('cursor', 'pointer').click(function () {
         let productId = $(this).data('thumbnailId');
-        let items = processSrcPaths(kapsulaProducts[productId]['images'], 'img/photos', 'img/thumbnails');
+        let items = processImageItems(products[productId]['images'], 'img/photos', 'img/thumbnails');
         openPhotoSwipe(items);
     });
     $('[data-request-function]', wrapper).click(function () {
@@ -56,7 +67,9 @@ function addListiners(wrapper, context) {
 
 
 $(document).ready(function () {
-    $(".owl-carousel").owlCarousel({
+
+
+    $(".market__carousel").owlCarousel({
         stagePadding: 50,
         margin: 10,
         autoWidth: true,
@@ -101,6 +114,22 @@ $(document).ready(function () {
             }
             this.destroy();
         }, waypointAnimationSettings);
+
+        $('.events__page:first').removeClass('d-none').waypoint(function () {
+            console.log('init Events');
+            $('.events__carousel', this.element).owlCarousel({
+                autoheight: true,
+                loop: true,
+                autoplay: true,
+                autoplayTimeout: 4000,
+                autoplayHoverPause: true,
+                lazyLoad: true
+            });
+            this.destroy();
+        }, {
+            offset: '110%'
+        });
+
     }
 
     let header = new Headhesive('.menu-header__wrapper', {
@@ -172,10 +201,10 @@ $(document).ready(function () {
             }
             cartItems.push(id);
             $(`.product__buy-button[data-product-id="${id}"]`).addClass('active');
-            let product = kapsulaProducts[id];
+            let product = products[id];
             let templateData = {
                 ...product,
-                file: 'img/thumbnails/' + product.images[0]['file'],
+                file: 'img/thumbnails/' + product.images[0],
                 index: cartItems.length,
                 id
             };
@@ -215,7 +244,7 @@ $(document).ready(function () {
         function updateResultPrice() {
             let resEl = $('.shopping-cart__result-price-cell');
             let res = cartItems.reduce((sum, productId) => {
-                return sum + kapsulaProducts[productId]['price'];
+                return sum + products[productId]['price'];
             }, 0);
             resEl.html(res);
         }

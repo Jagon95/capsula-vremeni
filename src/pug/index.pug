@@ -1,3 +1,41 @@
+-
+    const filterByKeys = function(object, keys) {
+        return Object.keys(object)
+            .filter(key => keys.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = object[key];
+                return obj;
+            }, {});
+    }
+
+mixin product_item(name, product)
+    .item.ui.card.product__wrapper(data-product-id=name)
+        .ui.image(data-behavior-dimmer, data-thumbnail-id=name)
+            .ui.inverted.dimmer
+                .content
+                    .center
+                        h2.ui.icon.header
+                            i.zoom.icon
+            img.thumbnail(
+            src='img/thumbnails/' + product.images[0],
+            alt=product.description
+            )
+        .content
+            .header.product__title=product.title
+            .ui.labeled.button.product__price-button-group(tabindex='0')
+                .ui.primary.button.product__buy-button(
+                data-request-function='addToCart'
+                data-function-argument=name
+                data-product-id=name
+                )
+                    span.product__buy-button_add
+                        | В корзину
+                    span.product__buy-button_goto
+                        a(href='#shopping_cart') Оформить
+                span.ui.basic.primary.left.pointing.label.product__price
+                    =product.price > 0 ? product.price + " руб." : "Бесплатно"
+
+
 doctype html
 html
     head
@@ -7,7 +45,6 @@ html
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
-        script var kapsulaProducts = !{JSON.stringify(products)}
     body#kapsula
         #introduction.container-fluid.introduction__page
             #header.container-fluid.menu-header__wrapper
@@ -108,48 +145,15 @@ html
                 .row.justify-content-center(data-animate-type="fade up")
                     .col-12
                         h3 Выберите капсулу:
-                        .owl-carousel.owl-theme
-                            each product, name in products
-                                .item.ui.card.product__wrapper(data-product-id=name)
-                                    .ui.image(data-behavior-dimmer, data-thumbnail-id=name)
-                                        .ui.inverted.dimmer
-                                            .content
-                                                .center
-                                                    h2.ui.icon.header
-                                                        i.zoom.icon
-                                        img.thumbnail(
-                                            src='img/thumbnails/' + product.images[0].file,
-                                            alt=product.description
-                                        )
-                                    .content
-                                        .header.product__title=product.title
-                                        .ui.labeled.button.product__price-button-group(tabindex='0')
-                                            .ui.primary.button.product__buy-button(
-                                                data-request-function='addToCart'
-                                                data-function-argument=name
-                                                data-product-id=name
-                                            )
-                                                span.product__buy-button_add
-                                                    | В корзину
-                                                span.product__buy-button_goto
-                                                    a(href='#shopping_cart') Оформить
-                                            span.ui.basic.primary.left.pointing.label.product__price
-                                                =product.price
+                        .owl-carousel.owl-theme.market__carousel
+                            each product, name in filterByKeys(products, products_categories['capsules'])
+                                +product_item(name, product)
                 .row.justify-content-center
                     .col-12
-                        h3 Выберите дополнительные опции:
-                        .owl-carousel.owl-theme
-                            .item
-                                img.thumbnail(src='img/thumbnails/vip3.jpg', data-image-category='safe', alt='')
-                                h4 Капсула-сейф
-                            .item
-                                h4 2
-                            .item
-                                h4 3
-                            .item
-                                h4 4
-                            .item
-                                h4 5
+                        h3 Выберите дополнительные аксесуары:
+                        .owl-carousel.owl-theme.market__carousel
+                            each product, name in filterByKeys(products, products_categories['options'])
+                                +product_item(name, product)
 
         #shopping_cart.container-fluid.shopping-cart__page
             h2 Корзина
@@ -248,5 +252,10 @@ html
                                     | гравировки и подскажем как правильно сделать послание в будущее
                             .col-lg-5.offset-lg-1.col-md-12.row
 
-
+        #events.container-fluid.one-page.events__page.d-none
+            h2 Какое у вас мероприятие?
+            .owl-carousel.owl-theme.events__carousel
+                each event in events
+                    .item.events__item
+                        img.owl-lazy.events__image(data-src="img/photos/" + event.image)
         include photoswipe.html

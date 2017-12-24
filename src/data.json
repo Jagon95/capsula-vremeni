@@ -56,107 +56,34 @@
       "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
     }
   },
-  "products": {
-    "capsule-safe": {
-      "title": "Капсула-сейф",
-      "description": "",
-      "images": [
-        {
-          "file": "vip3.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "vip4.jpg",
-          "w": 997,
-          "h": 1200
-        },
-        {
-          "file": "vip5.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "vip6.jpg",
-          "w": 1200,
-          "h": 969
-        },
-        {
-          "file": "vip7.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "vip8.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "vip9.jpg",
-          "w": 1200,
-          "h": 936
-        },
-        {
-          "file": "vip10.jpg",
-          "w": 1200,
-          "h": 897
-        },
-        {
-          "file": "vip11.jpg",
-          "w": 1142,
-          "h": 1280
-        },
-        {
-          "file": "vip12.jpg",
-          "w": 1200,
-          "h": 1085
-        }
-      ],
-      "price": 27000
+  "products_categories": {
+    "capsules": [
+      "capsule-safe",
+      "capsule-titanium",
+      "capsule-gold"
+    ],
+    "options": [
+      "engraving", "case"
+    ]
+  },
+  "events": [
+    {
+      "title": "Выпускной",
+      "description": "Капсула Времени — отличный подарок учителю, интересный подарок всему классу, достойный подарок школе, ведь это не просто предмет или вещь — это целая история.",
+      "image": "graduation.jpg",
+      "link": ""
     },
-    "capsule-titanium": {
-      "title": "Титановая капсула",
-      "description": "",
-      "images": [
-        {
-          "file": "t35-1.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "t35-2.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "t35-3.jpg",
-          "w": 1000,
-          "h": 1000
-        }
-      ],
-      "price": 12000
+    {
+      "title": "Первое сентября",
+      "description": "Такой подарок вовлечет детей и сотрудников школы в интересный и значимый процесс создания послания в будущее!",
+      "image": "september.jpg",
+      "link": ""
     },
-    "capsule-gold": {
-      "title": "Капсула \"GOLD\"",
-      "description": "",
-      "price": 10000,
-      "images": [
-        {
-          "file": "l35-1.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "l35-2.jpg",
-          "w": 1000,
-          "h": 1000
-        },
-        {
-          "file": "l35-3.jpg",
-          "w": 1000,
-          "h": 1000
-        }
-      ]
+    {
+      "title": "Свадьба",
+      "description": "Вы дарите не просто оригинальный предмет, а целую историю для жениха и невесты. Вы дарите «Послание в Будущее».",
+      "image": "wedding.jpg",
+      "link": ""
     }
-  }
+  ]
 }
