@@ -18,6 +18,7 @@ const pug = require('gulp-pug');
 const data = require('gulp-data');
 const copy = require('gulp-copy');
 const env = require('gulp-environments');
+const imageSize = require('image-size-export');
 
 const dev = env.development;
 const prod = env.production;
@@ -36,28 +37,28 @@ gulp.task('reloader', () => {
 });
 
 gulp.task('watch', (() => {
-    gulp.watch(['src/js/**/*.js'], ['build-js']);
+    // gulp.watch(['src/js/**/*.js'], ['build-js']);
     gulp.watch(['src/scss/**/*.sass', 'src/scss/**/*.scss'], ['build-css']);
     gulp.watch(['src/pug/**/*.pug'], ['pug']);
 }));
 
-gulp.task('build-js', ['babel'], () => {
-        gulp.src([
-            'libs/jquery/dist/jquery.js',
-            'libs/owl.carousel/dist/owl.carousel.js',
-            'libs/photoswipe/dist/photoswipe.js',
-            'libs/photoswipe/dist/photoswipe-ui-default.js',
-            'libs/Headhesive.js/dist/headhesive.js',
-            'libs/parallax.js/parallax.js',
-            'libs/waypoints/lib/jquery.waypoints.js',
-            'libs/semantic/dist/semantic.js',
-            'tmp/js/babel-main.js'
-        ])
-        .pipe(concat('script.js'))
-        .pipe(prod(uglify()))
-        .pipe(gulp.dest('build/js'))
-        .pipe(dev(connect.reload()));
-});
+// gulp.task('build-js', ['babel'], () => {
+//         gulp.src([
+//             'libs/jquery/dist/jquery.js',
+//             'libs/owl.carousel/dist/owl.carousel.js',
+//             'libs/photoswipe/dist/photoswipe.js',
+//             'libs/photoswipe/dist/photoswipe-ui-default.js',
+//             'libs/Headhesive.js/dist/headhesive.js',
+//             'libs/parallax.js/parallax.js',
+//             'libs/waypoints/lib/jquery.waypoints.js',
+//             'libs/semantic/dist/semantic.js',
+//             'tmp/js/babel-main.js'
+//         ])
+//         .pipe(concat('script.js'))
+//         .pipe(prod(uglify()))
+//         .pipe(gulp.dest('build/js'))
+//         .pipe(dev(connect.reload()));
+// });
 
 gulp.task('build-css', ['sass'], () => {
     gulp.src([
@@ -76,7 +77,7 @@ gulp.task('build-css', ['sass'], () => {
         // .pipe(cleanCSS({
         //     level: 2
         // }))
-        .pipe(prod(autoprefixer({browsers: '> 0.1%'})))
+        .pipe(prod(autoprefixer({browsers: '> 0.3%'})))
         .pipe(gulp.dest('build/css'))
         .pipe(dev(connect.reload()));
 });
@@ -110,10 +111,33 @@ gulp.task('babel', () => {
 });
 
 gulp.task('pug', () => {
+    // imageSize.record({
+    //     path: 'build/img/photos/*.jpg',
+    //     output: "src/image_sizes.json",
+    //     breakpointDelimiter: '/'
+    // });
+
     gulp.src('src/pug/**/*.pug')
-        .pipe(data(file => require('./src/data.json')))
+        .pipe(data(() => require('./src/data.json')))
+        .pipe(data(() => {
+            return {products: require('./src/product.json')};
+        }))
+        // .pipe(data(() => {
+        //     let data = require('./src/data.json');
+        //     const arr = require('./tmp/image_sizes.json');
+        //     let images = arr.reduce(function(obj,item){
+        //         obj[item.name] = item;
+        //         return obj;
+        //     }, {});
+        //
+        //     Object.keys(data.products).forEach((name) => {
+        //         data.products[name]['w'] = images[name];
+        //     });
+        //
+        //     return {images};
+        // }))
         .pipe(pug({
-            pretty: true
+            pretty: !!dev
         }))
         .pipe(gulp.dest('build'))
         .pipe(connect.reload());
@@ -138,6 +162,14 @@ gulp.task('thumbnails', () => {
         .pipe(gulp.dest('build/img/thumbnails'));
 });
 
+gulp.task('image-size', () => {
+    imageSize.record({
+        path: 'build/img/photos/*.jpg',
+        output: "src/image_sizes.json",
+        breakpointDelimiter: '/'
+    });
+});
+
 gulp.task('copy', () => {
     gulp.src('img/**').pipe(gulp.dest('build/img'));        // TODO: not just copy, but also optimise
     gulp.src('libs/photoswipe/dist/default-skin/*.*').pipe(gulp.dest('build/css'));
@@ -147,4 +179,4 @@ gulp.task('copy', () => {
 gulp.task('set-dev', dev.task);
 
 gulp.task('default', ['set-dev', 'connect', 'watch']);
-gulp.task('build', ['pug', 'build-js', 'build-css', 'copy', 'thumbnails']);
+gulp.task('build', ['pug', /*'build-js',*/ 'build-css', 'copy', 'thumbnails']);

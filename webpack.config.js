@@ -1,10 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const config = {
     entry: {
-        main: "./src/js/main.js"
+        main: "./src/js/main.js",
     },
     output: {
         path: path.resolve(__dirname, 'build/js'),
@@ -26,13 +25,25 @@ const config = {
                         loader: "imports-loader"
                     }
                 ]
+            },
+            {
+                test: /\.json/,
+                use: 'raw-loader'
+            }
+        ],
+        loaders: [
+            {
+                // test: /\.json$/,
+                // loader: 'json-loader'
             }
         ]
     },
     resolve: {
+        modules: [path.resolve(__dirname, "src"), "node_modules"],
         alias: {
             'waypoints': 'waypoints/lib/jquery.waypoints.js',
-            'semantic-ui': 'semantic-ui/dist/semantic.js'
+            // 'semantic-ui': 'semantic-ui/dist/semantic.js',
+            'semantic': "semantic-ui/dist"
         }
     },
     plugins: [
@@ -43,11 +54,13 @@ const config = {
             PhotoSwipe: 'photoswipe',
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js'
         }),
-        new UglifyJsPlugin({
+        new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,
-            parallel: true
+            parallel: 4,
         })
-    ]
+    ],
+    devtool: "source-map",
+    watch: true
 };
 
 module.exports = config;
