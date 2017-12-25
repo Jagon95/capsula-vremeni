@@ -35,6 +35,8 @@ mixin product_item(name, product)
                 span.ui.basic.primary.left.pointing.label.product__price
                     =product.price > 0 ? product.price + " руб." : "Бесплатно"
 
+mixin page_header(title)
+    h2(data-animate-type="fade in")= title
 
 doctype html
 html
@@ -46,7 +48,7 @@ html
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
     body#kapsula
-        #introduction.container-fluid.introduction__page
+        #introduction.container-fluid.one-page.introduction__page
             #header.container-fluid.menu-header__wrapper
                 .ui.container
                     .row
@@ -55,11 +57,12 @@ html
                                 img(src='img/logo.svg', alt='')
                         #menu.col-xl-9.item
                             .ui.relaxed.large.horizontal.divided.link.list
-                                each icon, item in menuItems
-                                    a.item.menu-header__item
+                                each item in menuItems
+                                    - console.log(item)
+                                    a.item.menu-header__item(href="#" + item.href)
                                         .middle.aligned.content
-                                            i(class=icon + ' icon')
-                                            =item
+                                            i(class=item.icon + ' icon')
+                                            =item.text
             .container
                 .row.justify-content-center
                     .col-xl-4.col-lg-5.col-md-10.col-sm-12
@@ -81,8 +84,8 @@ html
                             | Мы делаем Капсулы Времени любых размеров и форм.
 
 
-        #about_capsule.container-fluid.about-capsule__page
-            h2(data-animate-type="fade") Что такое Капсула Времени?
+        #about_capsule.container-fluid.one-page.about-capsule__page
+            +page_header("Что такое Капсула Времени?")
             .container(data-animate-type="fade up")
                 .row.justify-content-center.animated
                     .col-md-10.col-sm-12
@@ -92,17 +95,17 @@ html
                     .col-lg-6.col-md-8.col-sm-12
                         .ui.relaxed.list.advices
                             .item
-                                .content Мы вас выручим, если вы:
+                                .content.about-capsule__text Мы вас выручим, если вы:
                             each item, icon in adviceItems
                                 .item
                                     i(class=icon + ' icon')
-                                    .content=item
+                                    .content.about-capsule__text=item
 
 
 
 
-        #capsule_content.container-fluid.capsule-content__page
-            h2(data-animate-type="fade") Что можно положить в капсулу?
+        #capsule_content.container-fluid.one-page.capsule-content__page
+            +page_header("Что можно положить в капсулу?")
             .container(data-animate-type="fade up")
                 .row.justify-content-center
                     .col-md-10.col-sm-12
@@ -117,49 +120,50 @@ html
                             - var index = 0
                             each item, tab in tabSwitchers
                                 .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++)/(Object.keys(tabSwitchers).length - 1)))
-                                    .ui.raised.link.fluid.blue.card.card-tab-switcher__wrapper(
+                                    .ui.raised.link.fluid.card.card-tab-switcher__wrapper(
                                         data-request-function='switchTo'
                                         data-function-argument=tab
+                                        data-tab=tab
                                     )
                                         .image.ui.center.aligned.card-tab-switcher__image-wrapper
                                             img.ui.centered.medium.image(src='img/' + item.image)
-                                        .content.center.aligned
-                                            p=item.text
+                                        .content.center.aligned.card-tab-switcher__title-wrapper
+                                            p.card-tab-switcher__title=item.text
                         .row.justify-content-center(data-animate-type="fade up")
-                            .col-lg-10.col-md-12
-                                .ui.blue.segment.container.tabs.tab-page__wrapper
+                            .col-lg-10.col-md-12.tab-page__wrapper
+                                .ui.blue.segment.container.tabs.tab-page__container
                                     each item, tab in tabs
-                                        .row.justify-content-center.tab-page__content(data-tab=tab)
+                                        .row.justify-content-center.tab-page__content.transition.hidden(data-tab=tab)
                                             .col-lg-4.tab-page__image-wrapper
                                                 .ui.image
                                                     img.ui.centered.fluid.image(src='img/' + item.image)
-                                            .col-lg-8=item.text
+                                            .col-lg-8.tab-page__text=item.text
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 
         .container-fluid.d-none.titanium-capsule-parallax
 
-        #market.container-fluid.market__page
-            h2(data-animate-type="fade") Заказ капсулы времени
+        #market.container-fluid.one-page.market__page
+            +page_header("Заказ капсулы времени")
             .container
-                .row.justify-content-center(data-animate-type="fade up")
+                .row.justify-content-center
                     .col-12
-                        h3 Выберите капсулу:
-                        .owl-carousel.owl-theme.market__carousel
+                        h3(data-animate-type="fade in") Выберите капсулу:
+                        .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
                             each product, name in filterByKeys(products, products_categories['capsules'])
                                 +product_item(name, product)
                 .row.justify-content-center
                     .col-12
-                        h3 Выберите дополнительные аксесуары:
-                        .owl-carousel.owl-theme.market__carousel
+                        h3(data-animate-type="fade in") Выберите дополнительные аксесуары:
+                        .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
                             each product, name in filterByKeys(products, products_categories['options'])
                                 +product_item(name, product)
 
-        #shopping_cart.container-fluid.shopping-cart__page
-            h2 Корзина
+        #shopping_cart.container-fluid.one-page.shopping-cart__page
+            +page_header("Корзина")
             .container
-                .row.justify-content-center
-                    .col-lg-6
+                .row.justify-content-center(data-animate-type="fade up")
+                    .col-lg-6.col-md-10.col-sm-12
                         table.ui.celled.unstackable.table.shopping-cart__wrapper
                             thead.shopping-cart__header
                                 tr
@@ -214,48 +218,40 @@ html
                                     th.shopping-cart__result-price-cell 0
 
 
-        #fifth.container-fluid.one-page
-            h2 Наши преимущества
+        #adventages.container-fluid.one-page.adventages__page
+            +page_header("Наши преимущества")
             .container
                 .row.justify-content-center
                     .col-md-10.col-sm-12
-                        .row.justify-content-center.advantage-wrapper
-                            .col-lg-5.col-md-12.row
-                                .col-3.text-center
-                                    h3.ui.icon.header
-                                        i.icon.trophy
-                                .col-9 Мы лучший проект в России по производству капсул времени
-                            .col-lg-5.offset-lg-1.col-md-12.row
-                                .col-3.text-center
-                                    h3.ui.icon.header
-                                        i.icon.shipping
-                                .col-9 Доставка курьером лично в руки за 1-3 дня
-                            .col-lg-5.col-md-12.row
-                                .col-3.text-center
-                                    h3.ui.icon.header
-                                        i.icon.diamond
-                                .col-9
-                                    | Наши капсулы производятся только из лучших сплавов металла Российского
-                                    | производства
-                            .col-lg-5.offset-lg-1.col-md-12.row
-                                .col-3.text-center
-                                    h3.ui.icon.header
-                                        i.icon.settings
-                                .col-9
-                                    | У нас свое производство в двух городах России (Санкт-Петербург и Челябинск)
-                            .col-lg-5.col-md-12.row
-                                .col-3.text-center
-                                    h3.ui.icon.header
-                                        i.icon.heart.outline
-                                .col-9
-                                    | Индивидуальный подход к каждому клиенту. Мы поможем выбрать идеальный текст
-                                    | гравировки и подскажем как правильно сделать послание в будущее
-                            .col-lg-5.offset-lg-1.col-md-12.row
+                        .row.justify-content-center.advantages__wrapper(data-animate-type="fade up")
+                            each advantage, index in advantages
+                                .col-lg-6.col-md-12.row.advantages__item
+                                    .container-fluid
+                                        .row
+                                            .col-3.text-center
+                                                h3.ui.icon.header
+                                                    i(class=advantage.icon + ' icon')
+                                            .col-9=advantage.description
+                            if advantages.length % 2 === 1
+                                .col-lg-6.d-lg-flex.d-none.row
 
         #events.container-fluid.one-page.events__page.d-none
-            h2 Какое у вас мероприятие?
+            +page_header("Какое у вас мероприятие?")
             .owl-carousel.owl-theme.events__carousel
                 each event in events
                     .item.events__item
-                        img.owl-lazy.events__image(data-src="img/photos/" + event.image)
+                        img.owl-lazy.events__image(data-src="img/events/" + event.image)
+                        h3.events__title= event.title
+                        div.events__description-block
+                            span.events__description-text= event.description
+                            a.events__link(href=event.link) Подробнее
+
+        #contacts.container-fluid.one-page.contacts__page
+            +page_header("Наши контакты")
+            .row.justify-content-center
+                .col-lg-3
+
+
+
+
         include photoswipe.html

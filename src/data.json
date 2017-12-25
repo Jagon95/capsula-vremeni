@@ -1,10 +1,25 @@
 {
-  "menuItems": {
-    "Подробнее": "info",
-    "Клиенты": "users",
-    "Контакты": "address book outline",
-    "Корзина": "shop"
-  },
+  "menuItems": [
+    {
+      "text": "Подробнее",
+      "icon": "info",
+      "href": "about_capsule"
+    },
+    {
+      "text": "Клиенты",
+      "icon": "users"
+    },
+    {
+      "text": "Контакты",
+      "icon": "address book outline",
+      "href": "contacts"
+    },
+    {
+      "text": "Корзина",
+      "icon": "shop",
+      "href": "shopping_cart"
+    }
+  ],
   "adviceItems": {
     "hourglass end": "Ограничены во времени (сделаем за 1 день)",
     "delete calendar": "Не смогли заранее купить то, что запланировали;",
@@ -37,23 +52,23 @@
   "tabs": {
     "artifacts": {
       "image": "good-1.png",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+      "text": "Положите в капсулу времени предметы, которые напоминают о прошлом. Оглянитесь вокруг и посмотрите, что может войти внутрь капсулы диаметром 6-8,5 см. Старые дедушкины часы, армейский ремень, мамин фартук, ложка из семейного сервиза или бабочка жениха отлично подойдут для незабываемого послания в будущее."
     },
     "mails": {
       "image": "good-2.png",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+      "text": "Положите в капсулу памятные письма и открытки. Сохраните важные строки от близких и праздничные поздравления. Напишите письмо будущему себе, другу или родственнику. Напишите все, что только хотите. Слова пройдут сквозь время и подарят радость в момент открытия капсулы."
     },
     "plans": {
       "image": "good-3.png",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+      "text": "Во время строительства сооружения создается большое количество чертежей и планов. Сверните их аккуратным рулоном, поместите в капсулу времени и заложите в фундамент или кладку. Через много лет потомки найдут материалы вместе с пожеланиями, напутствиями и приятными воспоминаниями."
     },
     "photos": {
       "image": "good-4.png",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+      "text": "Хотите увидеть какими вы были через 5, 10, 30 лет? Какие события были и кто вас окружал? Лучше всего об этом напоят фотографии, которые вы положите в капсулу времени. Уверены, вам, друзьям и близким будет что вспомнить и обсудить во время того, как вы откроете капсулу."
     },
     "memories": {
       "image": "good-5.png",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam cupiditate dolorem, dolores enim, explicabo id illum laboriosam magnam omnis, qua quasi saepe soluta? Cupiditate eum laborum magnam odio omnis placeat quibusdam quod, tenetur! Aut dolor eius iusto numquam perferendis porro quidem, similique. Aut consequatur culpa cum dolorem eum exercitationem fugit ipsa, necessitatibus porro quam quisquam temporibus vel. Ad corporis delectus dicta dignissimos ea odio, recusandae! Consequatur magni obcaecati omnis ullam?"
+      "text": "Каждое важное событие сопровождают предметы и детали: заявление в ЗАГС, первое фото ребенка, билет в кино с той самой встречи, почетная грамота или любимая игрушка. Положите внутрь капсулы то, что вам дорого. И через годы вы порадуете себя или своих близких приятным и необычным событием — открытием собственной капсулы времени."
     }
   },
   "products_categories": {
@@ -63,7 +78,8 @@
       "capsule-gold"
     ],
     "options": [
-      "engraving", "case"
+      "engraving",
+      "case"
     ]
   },
   "events": [
@@ -84,6 +100,58 @@
       "description": "Вы дарите не просто оригинальный предмет, а целую историю для жениха и невесты. Вы дарите «Послание в Будущее».",
       "image": "wedding.jpg",
       "link": ""
+    },
+    {
+      "title": "Открытие объектов",
+      "description": "При планировании памятных встреч, форумов и съездов у людей возникает потребность в особым действе, которое станет некоей кульминацией всего процесса, памятном ритуале, в котором примут участие все гости.",
+      "image": "opening-new.jpg",
+      "link": ""
+    },
+    {
+      "title": "Подарок директору",
+      "description": "Немаловажно при выборе подарка директору тот факт что бы подарок был персональный, именной, адресованный именно руководителю.",
+      "image": "director.jpg",
+      "link": ""
+    },
+    {
+      "title": "День рождения компании",
+      "description": "Всеобщее веселье, поздравительная речь руководства с подведением итогов, награждение сотрудников которые достойно и продуктивно проявили себя. Номинации новичок года, лучший продавец, надежда года, и так далее!",
+      "image": "company.jpg",
+      "link": ""
+    },
+    {
+      "title": "Строительство",
+      "description": "Закладка капсулы времения в самом начале или окончании строительства — это добрая традиция, которую мы хотим возобновить!",
+      "image": "build.jpg",
+      "link": ""
+    },
+    {
+      "title": "Рождение малыша",
+      "description": "Необычный и трогательный подарок, который порадует в первую очередь новоиспеченных родителей, но все же будет адресован недавно появившемуся новому Человеку.",
+      "image": "birthday.jpg",
+      "link": ""
+    }
+  ],
+  "advantages": [
+    {
+      "icon": "trophy",
+      "description": "Мы лучший проект в России по производству капсул времени"
+    },
+    {
+      "icon": "shipping",
+      "description": "Доставка курьером лично в руки за 1-3 дня"
+    },
+    {
+      "icon": "diamond",
+      "description": "Наши капсулы производятся только из лучших сплавов металла Российского производства"
+    },
+    {
+      "icon": "settings",
+      "description": "У нас свое производство в двух городах России (Санкт-Петербург и Челябинск)"
+    },
+    {
+      "icon": "heart outline",
+      "description": "Индивидуальный подход к каждому клиенту. Мы поможем выбрать идеальный текст гравировки и подскажем как правильно сделать послание в будущее"
     }
   ]
 }

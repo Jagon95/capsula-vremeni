@@ -91,9 +91,15 @@ $(document).ready(function () {
     });
 
     if (!isMobile()) {
-        $('.titanium-capsule-parallax:first').removeClass('d-none').parallax({
-            imageSrc: 'img/IMG_1713.jpg',
-            speed: .7
+        $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(function () {
+            $(this.element).parallax({
+                imageSrc: 'img/IMG_1713.jpg',
+                speed: .7,
+                bleed: 50
+            });
+            this.destroy();
+        }, {
+            offset: '110%'
         });
 
         $('[data-animate-type]').css('visibility', 'hidden').waypoint(function () {
@@ -123,11 +129,22 @@ $(document).ready(function () {
                 autoplay: true,
                 autoplayTimeout: 4000,
                 autoplayHoverPause: true,
-                lazyLoad: true
+                lazyLoad: true,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    768: {
+                        items: 2
+                    },
+                    1280: {
+                        items: 3
+                    }
+                }
             });
             this.destroy();
         }, {
-            offset: '110%'
+            offset: '120%'
         });
 
     }
@@ -148,31 +165,70 @@ $(document).ready(function () {
             switchTo
         };
         console.log('init Capsule content');
-        let controls = $('.tab-controllers [data-tab]', this.element);
-        let tabs = $('.tabs [data-tab]', this.element);
-        let tabContainer = $('.tabs-container', this.element);
+        let controls = $('.card-tab-switcher__wrapper', this.element);
+        let tabs = $('.tab-page__content', this.element);
+        let tabContainer = $('.tabs-container', this.element).addClass('d-none');
         let tabsArray = Array.from(tabs, (tab) => {
             return $(tab).data('tab');
         });
-        tabContainer.data({
-            'active-tab': tabs.filter(':visible').data('tab')
-        });
+        let activeTab = tabsArray[0];
 
         function switchTo(tab) {
-            tabs.fadeOut();
-            controls.removeClass('blue');
-            tabs.filter(`[data-tab="${tab}"]`).fadeIn();
+            let _showTab = () => {
+                tabs.filter(`[data-tab="${tab}"]`).transition('fade in', {
+                    onComplete: () => {
+                        $(window).trigger('resize').trigger('scroll');
+                    }
+                });
+            };
+            if(tabs.filter(':visible').length > 0) {
+                tabs.filter(':visible').transition('fade out', {
+                    onComplete: () => {
+                        _showTab();
+                    }
+                });
+            } else {
+                _showTab();
+            }
+            controls.filter('.blue').removeClass('blue');
             controls.filter(`[data-tab="${tab}"]`).addClass('blue');
-            tabContainer.data('active-tab', tab);
+            activeTab = tab;
         }
 
         function switchNext() {
-            let nextIndex = (tabsArray.indexOf(tabContainer.data('active-tab')) + 1) % tabsArray.length;
+            let nextIndex = (tabsArray.indexOf(activeTab) + 1) % tabsArray.length;
             switchTo(tabsArray[nextIndex]);
         }
 
-        switchNext();
-        setInterval(switchNext, 5e3);
+        let timerId;
+        function startSwitcher() {
+            console.log('start Tabswither');
+            clearInterval(timerId);
+            timerId = setInterval(switchNext, 4e3);
+        }
+
+        function stopSwitcher() {
+            console.log('stop Tabswither');
+            clearInterval(timerId);
+        }
+
+        setTimeout(() => {
+            tabContainer.waypoint(function (direction) {
+                if (direction === 'down') {
+                    startSwitcher();
+                } else if (direction === 'up') {
+                    stopSwitcher();
+                }
+            }, {offset: '100%'});
+            tabContainer.waypoint(function (direction) {
+                if (direction === 'down') {
+                    stopSwitcher();
+                } else if (direction === 'up') {
+                    startSwitcher();
+                }
+            }, {offset: -100});
+        });
+        switchTo(activeTab);
         addListiners(this.element, requests);
         this.destroy();
     }, {
