@@ -8,6 +8,8 @@
             }, {});
     }
 
+- var br = '<br />'
+
 mixin product_item(name, product)
     .item.ui.card.product__wrapper(data-product-id=name)
         .ui.image(data-behavior-dimmer, data-thumbnail-id=name)
@@ -36,7 +38,7 @@ mixin product_item(name, product)
                     =product.price > 0 ? product.price + " руб." : "Бесплатно"
 
 mixin page_header(title)
-    h2(data-animate-type="fade in")= title
+    h2.page-header(data-animate-type="fade in")= title
 
 doctype html
 html
@@ -48,7 +50,7 @@ html
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
     body#kapsula
-        #introduction.container-fluid.one-page.introduction__page
+        #introduction.container-fluid.one-page.introduction__page.gradient-page
             #header.container-fluid.menu-header__wrapper
                 .ui.container
                     .row
@@ -104,7 +106,7 @@ html
 
 
 
-        #capsule_content.container-fluid.one-page.capsule-content__page
+        #capsule_content.container-fluid.one-page.capsule-content__page.gradient-page
             +page_header("Что можно положить в капсулу?")
             .container(data-animate-type="fade up")
                 .row.justify-content-center
@@ -159,7 +161,7 @@ html
                             each product, name in filterByKeys(products, products_categories['options'])
                                 +product_item(name, product)
 
-        #shopping_cart.container-fluid.one-page.shopping-cart__page
+        #shopping_cart.container-fluid.one-page.shopping-cart__page.gradient-page
             +page_header("Корзина")
             .container
                 .row.justify-content-center(data-animate-type="fade up")
@@ -231,7 +233,7 @@ html
                                             .col-3.text-center
                                                 h3.ui.icon.header
                                                     i(class=advantage.icon + ' icon')
-                                            .col-9=advantage.description
+                                            .col-9.advantages__text=advantage.description
                             if advantages.length % 2 === 1
                                 .col-lg-6.d-lg-flex.d-none.row
 
@@ -246,11 +248,35 @@ html
                             span.events__description-text= event.description
                             a.events__link(href=event.link) Подробнее
 
-        #contacts.container-fluid.one-page.contacts__page
-            +page_header("Наши контакты")
-            .row.justify-content-center
-                .col-lg-3
 
+        #gallery.container-fluid.one-page.gallery__page
+            +page_header("Галерея")
+            .owl-carousel.owl-theme.gallery__carousel
+                each photo in gallery
+                    .item.gallery__item
+                        img.owl-lazy.gallery__image(data-src="img/thumbnails/" + photo.image)
+
+        #contacts.container-fluid.one-page.footer__page.gradient-page
+            .row.justify-content-center
+                .col-lg-3.footer__col
+                    img.footer__logo(src='img/logo.svg', alt='')
+                    p «Капсула времени» — первое в России агентство посланий во времени.
+                    p 117216 г. Москва ул Старокочаловская д1 к2. Филиал «Точка» Публичного акционерного общества «Ханты-Мансийский банк Открытие»
+                    p ТОЧКА ПАО БАНКА «ФК ОТКРЫТИЕ» !{br}
+                        | PC: 40802810205500000055 !{br}
+                        | КС: 30101810845250000999 !{br}
+                        | БИК: 044525999
+                .col-lg-3.footer__col
+                    h3.ui.header.footer__header
+                        i.phone.icon
+                        .content Контактная информация
+                    p г. Челябинск, Проспект Победы, дом 160.
+                    p г. Санкт-Петербург. Набережная обводного канала, дом 138 (Красный треугольник).
+                    p +7 (499) 375-83-08
+                .col-lg-3.footer__col.footer__header
+                    h3.ui.header
+                        i.share.alternate.icon
+                        .content Мы в соц. сетях
 
 
 

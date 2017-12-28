@@ -1,15 +1,11 @@
 $primary-color: #2185d0
+$font-size: 1.2rem
+$line-height: 1.5rem
 
 h1, h2, h3, h4, div, p
   font:
     weight: 300
     family: "Open Sans", sans-serif
-
-h2
-  font-size: 3rem
-  padding: 2rem 0 3rem
-  margin: 0
-  text-align: center
 
 h3
   font-size: 1.5rem
@@ -34,31 +30,46 @@ h3
 =price-after
   content: '\00a0руб.'
 
-=regular-text
-  font-size: 1.2rem
-  line-height: 1.5rem
+=font($multiply)
+  font-size: $font-size * $multiply
+  line-height: $line-height * $multiply
+
+=header($multiply)
+  +font(1.5 * $multiply)
+  padding-bottom: 1.5rem * $multiply
+
 
 #kapsula
+  h2.page-header
+    +header(1.7)
+    margin: 0
+    text-align: center
+    padding:
+      left: 3rem
+      right: 3rem
+
   .one-page
-    +regular-text
+    +font(1)
     padding: 5rem 0
-    h2
-      padding: 0 3rem 2rem
   .menu-header
     &__item, &__item i
       transition: .3s ease
     &__wrapper
       margin-bottom: 2rem
 
+  .gradient-page
+    background: #f4f4f4
+    background: linear-gradient(to bottom, #f4f4f4 0%,#ebebeb 71%,#f9f9f9 100%)
+    border-bottom: 1px solid rgba(0,0,0,.1)
+    border-top: 1px solid rgba(0,0,0,.1)
+
   .introduction__page
-    +gradient-page
     padding-top: 0
   .about-capsule
     &__text
-      +regular-text
+      +font(1)
 
   .capsule-content__page
-    +gradient-page
   .tab-page
     &__container
       margin: 10px
@@ -70,8 +81,7 @@ h3
     &__image-wrapper
       text-align: center
     &__text
-      font-size: 1.4rem
-      line-height: 1.8rem
+      +font(1.2)
 
   .titanium-capsule-parallax
     min-height: 400px
@@ -90,11 +100,9 @@ h3
       height: 1.7rem * 2
       box-sizing: content-box
     &__title
-      font-size: 1.3rem
-      line-height: 1.7rem
+      +font(1)
   .shopping-cart
     &__page
-      +gradient-page
     &__number_cell, &__actions_cell, &__header .shopping-cart__price_cell
       text-align: center
     &__price_cell
@@ -106,22 +114,22 @@ h3
       border-left: none
     &__action
       padding: .3rem
-      font-size: 1.3rem
+      +font(1)
     &__price
-      font-size: 1.3rem
+      +font(1)
       &:after
         +price-after
     &__result-price-cell
       text-align: right
-      font-size: 1.3rem
+      +font(1)
       font-weight: bold
       &:after
         +price-after
     &__result-title-cell
-      font-weight: bold
-      font-size: 1.3rem
+      font-weight: 600
+      +font(1)
     &__empty-handler
-      font-size: 1.5rem
+      +font(1.3)
       font-weight: 600
       text-align: center
       height: 5rem
@@ -159,9 +167,12 @@ h3
         a
           color: #fff
 
-  .advantages
-    &__item
-      margin-bottom: 1rem
+  .advantages__
+    &item
+      margin-bottom: 1.5rem
+    &text
+      +font(1.2)
+
   .events
     &__image
       height: 60vh
@@ -194,6 +205,20 @@ h3
       text-overflow: ellipsis
     &__link
       float: right
+  .gallery__
+    &image
+      height: 30vh
+      width: auto
+
+  .footer__
+    &logo
+      max-height: 4rem
+      filter: grayscale(1)
+    &col
+      margin: 0 3%
+    &header
+      +font(1.2)
+
 
 .header
   &--clone
@@ -208,6 +233,8 @@ h3
   &--stick
     transform: translateY(0%)
 
+.bottom-space
+  height: 1000px
 
 .menu-header__logo img
   height: 44px
@@ -217,3 +244,6 @@ h3
   transition: all 0.5s ease
   &:hover
     filter: grayscale(0)
+
+.owl-carousel .owl-stage-outer
+  padding: 1px

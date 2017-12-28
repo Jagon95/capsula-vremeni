@@ -8,9 +8,10 @@ import 'semantic/components/transition';
 import 'semantic/components/dimmer';
 import _products from 'product.json';
 import _imageSizes from 'image_sizes.json';
+import _photos from 'photos';
 
 const products = JSON.parse(_products);
-const imageSizes = JSON.parse(_imageSizes).reduce(function(obj,item){
+const imageSizes = JSON.parse(_imageSizes).reduce(function (obj, item) {
     obj[item.name] = item;
     return obj;
 }, {});
@@ -67,29 +68,6 @@ function addListiners(wrapper, context) {
 
 
 $(document).ready(function () {
-
-
-    $(".market__carousel").owlCarousel({
-        stagePadding: 50,
-        margin: 10,
-        autoWidth: true,
-        autoheight: true,
-        responsive: {
-            0: {
-                items: 1
-            },
-            576: {
-                items: 2
-            },
-            768: {
-                items: 4
-            },
-            992: {
-                items: 5
-            }
-        }
-    });
-
     if (!isMobile()) {
         $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(function () {
             $(this.element).parallax({
@@ -128,7 +106,6 @@ $(document).ready(function () {
                 loop: true,
                 autoplay: true,
                 autoplayTimeout: 4000,
-                autoplayHoverPause: true,
                 lazyLoad: true,
                 responsive: {
                     0: {
@@ -181,7 +158,7 @@ $(document).ready(function () {
                     }
                 });
             };
-            if(tabs.filter(':visible').length > 0) {
+            if (tabs.filter(':visible').length > 0) {
                 tabs.filter(':visible').transition('fade out', {
                     onComplete: () => {
                         _showTab();
@@ -201,6 +178,7 @@ $(document).ready(function () {
         }
 
         let timerId;
+
         function startSwitcher() {
             console.log('start Tabswither');
             clearInterval(timerId);
@@ -236,6 +214,28 @@ $(document).ready(function () {
     });
 
     $('.market__page:first').waypoint(function () {
+
+        $(".market__carousel", this.element).owlCarousel({
+            stagePadding: 50,
+            margin: 10,
+            autoWidth: true,
+            autoheight: true,
+            responsive: {
+                0: {
+                    items: 1
+                },
+                576: {
+                    items: 2
+                },
+                768: {
+                    items: 4
+                },
+                992: {
+                    items: 5
+                }
+            }
+        });
+
         const requests = {
             addToCart,
             removeFromCart
@@ -324,4 +324,27 @@ $(document).ready(function () {
         offset: '100%'
     });
 
+    $('.gallery__page:first').waypoint(function () {
+        $('.gallery__carousel', this.element).owlCarousel({
+            stagePadding: 50,
+            margin: 10,
+            responsive: {
+                0: {
+                    items: 1
+                },
+                576: {
+                    items: 2
+                },
+                768: {
+                    items: 4
+                },
+                992: {
+                    items: 5
+                }
+            }
+        });
+        this.destroy();
+    }, {
+        offset: '100%'
+    });
 });
