@@ -20,14 +20,15 @@ function isMobile() {
     return /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent || navigator.vendor || window.opera)
 }
 
-function openPhotoSwipe(items) {
+function openPhotoSwipe(items, index) {
     let pswpElement = $('.pswp:first').get(0);
     let options = {
         history: false,
         focus: false,
         bgOpacity: .9,
         showAnimationDuration: 200,
-        hideAnimationDuration: 200
+        hideAnimationDuration: 200,
+        index
     };
 
     let gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
@@ -144,7 +145,7 @@ $(document).ready(function () {
         console.log('init Capsule content');
         let controls = $('.card-tab-switcher__wrapper', this.element);
         let tabs = $('.tab-page__content', this.element);
-        let tabContainer = $('.tabs-container', this.element).addClass('d-none');
+        let tabContainer = $('.tabs-container', this.element);
         let tabsArray = Array.from(tabs, (tab) => {
             return $(tab).data('tab');
         });
@@ -326,8 +327,8 @@ $(document).ready(function () {
 
     $('.gallery__page:first').waypoint(function () {
         $('.gallery__carousel', this.element).owlCarousel({
-            stagePadding: 50,
             margin: 10,
+            autoWidth: true,
             responsive: {
                 0: {
                     items: 1
@@ -343,6 +344,13 @@ $(document).ready(function () {
                 }
             }
         });
+
+        let items = processImageItems(JSON.parse(_photos).reduce((r, photo) => [...r, photo.image], []), 'img/photos', 'img/thumbnails');
+
+        $('.gallery__image').click(function () {
+            openPhotoSwipe(items, $(this).data('thumbnailIndex'));
+        });
+
         this.destroy();
     }, {
         offset: '100%'

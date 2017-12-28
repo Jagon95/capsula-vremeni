@@ -252,9 +252,9 @@ html
         #gallery.container-fluid.one-page.gallery__page
             +page_header("Галерея")
             .owl-carousel.owl-theme.gallery__carousel
-                each photo in gallery
+                each photo, index in gallery
                     .item.gallery__item
-                        img.owl-lazy.gallery__image(data-src="img/thumbnails/" + photo.image)
+                        img.owl-lazy.gallery__image(data-src="img/thumbnails/" + photo.image data-thumbnail-index=index)
 
         #contacts.container-fluid.one-page.footer__page.gradient-page
             .row.justify-content-center

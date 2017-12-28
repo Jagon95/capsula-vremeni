@@ -183,7 +183,7 @@ gulp.task('images', () => {
     let photosThumbnails = photos.reduce((r, photo) => [...r, photo.image], []);
     streams.push(gulp.src(photosThumbnails, {cwd: './img/photos/'})
         .pipe(imageresize({
-            height: 500,
+            height: 450,
             upscale: false,
             crop: false,
         }))
