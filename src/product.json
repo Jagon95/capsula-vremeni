@@ -1,0 +1,54 @@
+{
+  "capsule-safe": {
+    "title": "Капсула-сейф",
+    "description": "",
+    "images": [
+      "vip3.jpg",
+      "vip4.jpg",
+      "vip5.jpg",
+      "vip6.jpg",
+      "vip7.jpg",
+      "vip8.jpg",
+      "vip9.jpg",
+      "vip10.jpg",
+      "vip11.jpg",
+      "vip12.jpg"
+    ],
+    "price": 27000
+  },
+  "capsule-titanium": {
+    "title": "Титановая капсула",
+    "description": "",
+    "images": [
+      "t35-1.jpg",
+      "t35-2.jpg",
+      "t35-3.jpg"
+    ],
+    "price": 12000
+  },
+  "capsule-gold": {
+    "title": "Капсула \"GOLD\"",
+    "description": "",
+    "price": 10000,
+    "images": [
+      "l35-1.jpg",
+      "l35-2.jpg",
+      "l35-3.jpg"
+    ]
+  },
+  "engraving": {
+    "title": "Гравировка",
+    "description": "",
+    "price": 0,
+    "images": [
+      "engraving1.jpg",
+      "engraving2.jpg"
+    ]
+  },
+  "case": {
+  "title": "Футляр",
+    "description": "",
+    "price": 3500,
+    "images": ["case1.jpg"]
+}
+}
