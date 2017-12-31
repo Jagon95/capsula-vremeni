@@ -249,6 +249,16 @@ html
                             a.events__link(href=event.link) Подробнее
 
 
+
+
+        #clients.container-fluid.one-page.clients__page
+            +page_header("Клиенты")
+            //.container
+            .owl-carousel.owl-theme.clients__carousel
+                each client in clients
+                    .item.clients__item
+                        img.owl-lazy.clients__image(data-src="img/photos/" + client.image)
+
         #gallery.container-fluid.one-page.gallery__page
             +page_header("Галерея")
             .owl-carousel.owl-theme.gallery__carousel

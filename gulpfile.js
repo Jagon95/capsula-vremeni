@@ -1,27 +1,16 @@
 const gulp = require('gulp');
-const connect = require('gulp-connect');
-const cssMin = require('gulp-clean-css');
-const concat = require('gulp-concat');
-const uglify = require('gulp-uglifyjs');
-const imageresize = require('gulp-image-resize');
-const imagemin = require('gulp-imagemin');
-const pngquant = require('imagemin-pngquant');
-const babel = require('gulp-babel');
-const merge = require('merge-stream');
-const rename = require('gulp-rename');
-const purify = require('gulp-purifycss');
-const csso = require('gulp-csso');
-const cleanCSS = require('gulp-clean-css');
-const autoprefixer = require('gulp-autoprefixer');
-const sass = require('gulp-sass');
-const pug = require('gulp-pug');
-const data = require('gulp-data');
-const copy = require('gulp-copy');
-const env = require('gulp-environments');
 const imageSize = require('image-size-export');
-const uncss = require('gulp-uncss');
-const sequence = require('gulp-sequence');
-const mkPromise = require('gulp-stream-to-promise');
+const parallel = require('concurrent-transform');
+const os = require('os');
+const sizeOf = require('image-size');
+const loadPlugins = require('gulp-load-plugins')({
+    rename: {
+        'gulp-environments': 'env',
+        'gulp-stream-to-promise': 'mkPromise'
+    }
+});
+
+Object.assign(global, loadPlugins);
 
 const dev = env.development;
 const prod = env.production;
@@ -45,34 +34,11 @@ gulp.task('watch', (() => {
     gulp.watch(['src/pug/**/*.pug'], ['pug']);
 }));
 
-// gulp.task('build-js', ['babel'], () => {
-//         gulp.src([
-//             'libs/jquery/dist/jquery.js',
-//             'libs/owl.carousel/dist/owl.carousel.js',
-//             'libs/photoswipe/dist/photoswipe.js',
-//             'libs/photoswipe/dist/photoswipe-ui-default.js',
-//             'libs/Headhesive.js/dist/headhesive.js',
-//             'libs/parallax.js/parallax.js',
-//             'libs/waypoints/lib/jquery.waypoints.js',
-//             'libs/semantic/dist/semantic.js',
-//             'tmp/js/babel-main.js'
-//         ])
-//         .pipe(concat('script.js'))
-//         .pipe(prod(uglify()))
-//         .pipe(gulp.dest('build/js'))
-//         .pipe(dev(connect.reload()));
-// });
-
 gulp.task('build-css', ['sass'], () => {
     gulp.src([
         // 'tmp/css/purified.css',
         'libs/bootstrap/dist/css/bootstrap.css',
         'libs/semantic/dist/semantic.css',
-        'libs/owl.carousel/dist/assets/owl.carousel.css',
-        'libs/owl.carousel/dist/assets/owl.theme.default.css',
-        'libs/photoswipe/dist/photoswipe.css',
-        'libs/photoswipe/dist/default-skin/default-skin.css',
-        // 'libs/animate.css/animate.css',
         'tmp/css/main.css'
     ])
         .pipe(concat('main.min.css'))
@@ -99,7 +65,7 @@ gulp.task('purify-css', () => {
         'libs/bootstrap/dist/css/bootstrap.css',
         'libs/semantic/dist/semantic.css'
     ])
-        .pipe(purify(['index.html', 'js/main.js', 'node_modules/semantic-ui/dist/components/transition.js', 'node_modules/semantic-ui/dist/components/dimmer.js']))
+        .pipe(purifycss(['index.html', 'js/main.js', 'node_modules/semantic-ui/dist/components/transition.js', 'node_modules/semantic-ui/dist/components/dimmer.js']))
         .pipe(concat('purified.css'))
         .pipe(gulp.dest('tmp/css'));
 });
@@ -131,20 +97,6 @@ gulp.task('pug', () => {
                 gallery: require('./src/photos.json')
             };
         }))
-        // .pipe(data(() => {
-        //     let data = require('./src/data.json');
-        //     const arr = require('./tmp/image_sizes.json');
-        //     let images = arr.reduce(function(obj,item){
-        //         obj[item.name] = item;
-        //         return obj;
-        //     }, {});
-        //
-        //     Object.keys(data.products).forEach((name) => {
-        //         data.products[name]['w'] = images[name];
-        //     });
-        //
-        //     return {images};
-        // }))
         .pipe(pug({
             pretty: !!dev
         }))
@@ -154,7 +106,11 @@ gulp.task('pug', () => {
 
 
 gulp.task('images', () => {
-    let imageminConfig = [
+    const exclude = (array) => {
+        return array.map((i) => `!**/${i}`);
+    };
+
+    const imageminConfig = [
         imagemin.jpegtran({progressive: true}),
         imagemin.optipng({optimizationLevel: 5}),
         imagemin.svgo({
@@ -165,48 +121,80 @@ gulp.task('images', () => {
         })
     ];
 
+    const cores = os.cpus().length;
+
     let streams = [];
     let products = require('./src/product.json');
     let productsThumbnails = Object.values(products).reduce((r, a) => [...r, ...a.images], []);
     streams.push(gulp.src(productsThumbnails, {cwd: './img/photos/'})
-        .pipe(imageresize({
+        .pipe(changed('build/img/thumbnails'))
+        .pipe(parallel(imageResize({
             width: 300,
             height: 300,
             upscale: false,
             crop: true,
             gravity: 'North'
-        }))
-        .pipe(imagemin(imageminConfig))
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('build/img/thumbnails')));
 
     let photos = require('./src/photos.json');
     let photosThumbnails = photos.reduce((r, photo) => [...r, photo.image], []);
     streams.push(gulp.src(photosThumbnails, {cwd: './img/photos/'})
-        .pipe(imageresize({
+        .pipe(changed('build/img/thumbnails'))
+        .pipe(parallel(imageResize({
             height: 450,
             upscale: false,
-            crop: false,
-        }))
-        .pipe(imagemin(imageminConfig))
+            crop: false
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('build/img/thumbnails')));
 
-    streams.push(gulp.src(['img/**/*.jpg', 'img/**/*.png', '!img/events/*.*'], {base: '.'})
-        .pipe(imageresize({
+    const data = require('./src/data.json');
+    const clientsImages = data.clients.reduce((r, client) => [...r, client.image], []);
+    // const srcSizes = clientsImages.reduce((o, i) => Object.assign(o, {[i]: sizeOf('./img/photos/' + i)}), {});
+    streams.push(gulp.src(clientsImages, {
+        cwd: './img/photos',
+        base: '.'
+    })
+        // .pipe(changed('./build'))
+        .pipe(parallel(gm((gmfile, done) => {
+            const size = {
+                w: 1920,
+                h: 576
+            };
+            gmfile.size((err, val) => {
+                const resizeRatio = Math.max(size.h / val.height, size.w / val.width);
+                if(resizeRatio < 1) {
+                    done(err, gmfile.resize(val.width * resizeRatio, val.height * resizeRatio).gravity('Center').crop(size.w, size.h));
+                } else {
+                    done(err, gmfile.gravity('Center').crop(size.w / resizeRatio, size.h / resizeRatio));
+                }
+            });
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
+        .pipe(gulp.dest('./build'))
+    );
+
+    streams.push(gulp.src(['img/**/*.{jpg,jpeg,png}', ...exclude(clientsImages), '!img/events/*.*'], {base: '.'})
+        .pipe(changed('./build/'))
+        .pipe(parallel(imageResize({
             width: 1920,
             height: 1080,
             upscale: false,
-            crop: false,
-        }))
-        .pipe(imagemin(imageminConfig))
+            crop: false
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('./build/')));
 
     streams.push(gulp.src(['img/events/*.*'])
-        .pipe(imageresize({
+        .pipe(changed('build/img/events'))
+        .pipe(parallel(imageResize({
             height: 800,
             upscale: false,
             crop: false,
-        }))
-        .pipe(imagemin(imageminConfig))
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('build/img/events')));
 
     let promises = streams.map(mkPromise);
@@ -226,6 +214,26 @@ gulp.task('image-size', () => {
 gulp.task('copy', () => {
     gulp.src('libs/photoswipe/dist/default-skin/*.*').pipe(gulp.dest('build/css'));
     gulp.src('libs/semantic/dist/themes/default/**').pipe(gulp.dest('build/css/themes/default'));
+});
+
+gulp.task('gm', () => {
+    const size = {
+        h: 1000,
+        w: 2500
+    };
+
+    gulp.src('build/img/photos/*.*')
+        .pipe(gm(function (gmfile, done) {
+            gmfile.size((err, val) => {
+                const resizeRatio = Math.max(size.h / val.height, size.w / val.width);
+                if(resizeRatio < 1) {
+                    done(err, gmfile.resize(val.width * resizeRatio, val.height * resizeRatio).gravity('Center').crop(size.w, size.h));
+                } else {
+                    done(err, gmfile.gravity('Center').crop(size.w / resizeRatio, size.h / resizeRatio));
+                }
+            });
+        }))
+        .pipe(gulp.dest('tmp'));
 });
 
 gulp.task('set-dev', dev.task);

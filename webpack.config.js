@@ -59,8 +59,7 @@ const config = {
             parallel: 4,
         })
     ],
-    devtool: "source-map",
-    watch: true
+    // devtool: "source-map"
 };
 
 module.exports = config;

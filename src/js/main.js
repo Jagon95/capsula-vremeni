@@ -47,8 +47,11 @@ function processImageItems(items, src, msrc) {
     }, []);
 }
 
-let transitionSettings = {duration: 700};
-let waypointAnimationSettings = {offset: '70%'};
+const transitionSettings = {duration: 700};
+const waypointAnimationSettings = {offset: '70%'};
+const waypointPageSettings = {
+    offset: '110%'
+};
 
 function addListiners(wrapper, context) {
     $('[data-thumbnail-id]', wrapper).css('cursor', 'pointer').click(function () {
@@ -77,9 +80,7 @@ $(document).ready(function () {
                 bleed: 50
             });
             this.destroy();
-        }, {
-            offset: '110%'
-        });
+        }, waypointPageSettings);
 
         $('[data-animate-type]').css('visibility', 'hidden').waypoint(function () {
             let el = $(this.element);
@@ -210,9 +211,7 @@ $(document).ready(function () {
         switchTo(activeTab);
         addListiners(this.element, requests);
         this.destroy();
-    }, {
-        offset: '100%'
-    });
+    }, waypointPageSettings);
 
     $('.market__page:first').waypoint(function () {
 
@@ -321,11 +320,23 @@ $(document).ready(function () {
 
         addListiners(this.element, requests);
         this.destroy();
-    }, {
-        offset: '100%'
-    });
+    }, waypointPageSettings);
+
+    $('.clients__page:first').waypoint(function () {
+        console.log('init Clients');
+        $('.clients__carousel', this.element).owlCarousel({
+            items: 1,
+            loop: true,
+            lazyLoad: true,
+            mouseDrag: false,
+            touchDrag: false,
+        });
+
+        this.destroy();
+    }, waypointPageSettings);
 
     $('.gallery__page:first').waypoint(function () {
+        console.log('init Gallery');
         $('.gallery__carousel', this.element).owlCarousel({
             margin: 10,
             autoWidth: true,
@@ -345,14 +356,13 @@ $(document).ready(function () {
             }
         });
 
-        let items = processImageItems(JSON.parse(_photos).reduce((r, photo) => [...r, photo.image], []), 'img/photos', 'img/thumbnails');
+        const items = processImageItems(JSON.parse(_photos)
+            .reduce((r, photo) => [...r, photo.image], []), 'img/photos', 'img/thumbnails');
 
         $('.gallery__image').click(function () {
             openPhotoSwipe(items, $(this).data('thumbnailIndex'));
         });
 
         this.destroy();
-    }, {
-        offset: '100%'
-    });
+    }, waypointPageSettings);
 });
