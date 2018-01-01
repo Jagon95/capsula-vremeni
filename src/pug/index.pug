@@ -60,7 +60,6 @@ html
                         #menu.col-xl-9.item
                             .ui.relaxed.large.horizontal.divided.link.list
                                 each item in menuItems
-                                    - console.log(item)
                                     a.item.menu-header__item(href="#" + item.href)
                                         .middle.aligned.content
                                             i(class=item.icon + ' icon')
@@ -70,7 +69,7 @@ html
                     .col-xl-4.col-lg-5.col-md-10.col-sm-12
                         h1
                             | Капсула Времени, именной подарок
-                    .col-xl-4.col-lg-5.col-md-10.d-sm-none.d-xs-none.d-md-block.offset-lg-1
+                    .col-xl-4.col-lg-5.col-md-10.d-none.d-md-block.offset-lg-1
                         h3
                             | Более 4 лет производим оригинальные капсулы времени для корпоративных мероприятий и частных торжеств.
                 .row
@@ -81,7 +80,7 @@ html
                         .ui.primary.button
                             i.shop.icon
                             | В КОРЗИНУ
-                    .col-lg-4.col-md-10.d-sm-none.d-md-block.offset-lg-1
+                    .col-lg-4.col-md-10.d-none.d-md-block.offset-lg-1
                         p
                             | Мы делаем Капсулы Времени любых размеров и форм.
 
@@ -103,8 +102,36 @@ html
                                     i(class=icon + ' icon')
                                     .content.about-capsule__text=item
 
+        #events.container-fluid.one-page.events__page.d-none
+            +page_header("Какое у вас мероприятие?")
+            .owl-carousel.owl-theme.events__carousel
+                each event in events
+                    .item.events__item
+                        img.owl-lazy.events__image(data-src="img/events/" + event.image)
+                        h3.events__title= event.title
+                        div.events__description-block
+                            span.events__description-text= event.description
+                            a.events__link(href=event.link) Подробнее
 
 
+        #adventages.container-fluid.one-page.adventages__page
+            +page_header("Наши преимущества")
+            .container
+                .row.justify-content-center
+                    .col-md-10.col-sm-12
+                        .row.justify-content-center.advantages__wrapper(data-animate-type="fade up")
+                            each advantage, index in advantages
+                                .col-lg-6.col-md-12.row.advantages__item
+                                    .container-fluid
+                                        .row
+                                            .col-3.text-center
+                                                h3.ui.icon.header
+                                                    i(class=advantage.icon + ' icon')
+                                            .col-9.advantages__text=advantage.description
+                            if advantages.length % 2 === 1
+                                .col-lg-6.d-lg-flex.d-none.row
+
+        .container-fluid.d-none.titanium-capsule-parallax
 
         #capsule_content.container-fluid.one-page.capsule-content__page.gradient-page
             +page_header("Что можно положить в капсулу?")
@@ -118,7 +145,7 @@ html
                     img(src='img/l-bg.png', alt='')
                 .col-10
                     .container.tabs-container
-                        .row.justify-content-center.d-sm-none.d-md-flex.tab-controllers
+                        .row.justify-content-center.d-none.d-md-flex.tab-controllers
                             - var index = 0
                             each item, tab in tabSwitchers
                                 .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++)/(Object.keys(tabSwitchers).length - 1)))
@@ -143,7 +170,6 @@ html
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 
-        .container-fluid.d-none.titanium-capsule-parallax
 
         #market.container-fluid.one-page.market__page
             +page_header("Заказ капсулы времени")
@@ -220,37 +246,6 @@ html
                                     th.shopping-cart__result-price-cell 0
 
 
-        #adventages.container-fluid.one-page.adventages__page
-            +page_header("Наши преимущества")
-            .container
-                .row.justify-content-center
-                    .col-md-10.col-sm-12
-                        .row.justify-content-center.advantages__wrapper(data-animate-type="fade up")
-                            each advantage, index in advantages
-                                .col-lg-6.col-md-12.row.advantages__item
-                                    .container-fluid
-                                        .row
-                                            .col-3.text-center
-                                                h3.ui.icon.header
-                                                    i(class=advantage.icon + ' icon')
-                                            .col-9.advantages__text=advantage.description
-                            if advantages.length % 2 === 1
-                                .col-lg-6.d-lg-flex.d-none.row
-
-        #events.container-fluid.one-page.events__page.d-none
-            +page_header("Какое у вас мероприятие?")
-            .owl-carousel.owl-theme.events__carousel
-                each event in events
-                    .item.events__item
-                        img.owl-lazy.events__image(data-src="img/events/" + event.image)
-                        h3.events__title= event.title
-                        div.events__description-block
-                            span.events__description-text= event.description
-                            a.events__link(href=event.link) Подробнее
-
-
-
-
         #clients.container-fluid.one-page.clients__page
             +page_header("Клиенты")
             //.container
@@ -258,6 +253,15 @@ html
                 each client in clients
                     .item.clients__item
                         img.owl-lazy.clients__image(data-src="img/photos/" + client.image)
+                        .clients__description-wrapper
+                            .clients__title=client.title
+                            .clients__description.d-none.d-lg-block=client.description
+            .container
+                .row
+                    each client, index in clients
+                        .item.clients__client
+                            .clients__client-image-wrapper(data-index=index)
+                                img.clients__client-image(src="img/" + client.icon)
 
         #gallery.container-fluid.one-page.gallery__page
             +page_header("Галерея")

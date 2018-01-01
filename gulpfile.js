@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const imageSize = require('image-size-export');
 const parallel = require('concurrent-transform');
 const os = require('os');
-const sizeOf = require('image-size');
 const loadPlugins = require('gulp-load-plugins')({
     rename: {
         'gulp-environments': 'env',
@@ -36,19 +35,19 @@ gulp.task('watch', (() => {
 
 gulp.task('build-css', ['sass'], () => {
     gulp.src([
-        // 'tmp/css/purified.css',
-        'libs/bootstrap/dist/css/bootstrap.css',
-        'libs/semantic/dist/semantic.css',
         'tmp/css/main.css'
     ])
         .pipe(concat('main.min.css'))
+        .pipe(cssReplaceUrl({
+            replace: ['./../themes/default/assets/fonts', 'fonts']
+        }))
         .pipe(prod(csso()))
-        // .pipe(cleanCSS({
-        //     level: 2
-        // }))
-        .pipe(prod(uncss({
-            html: 'http://localhost:1488'
+        .pipe(prod(cleanCss({
+            level: 2
         })))
+        // .pipe(prod(uncss({
+        //     html: 'http://localhost:1488'
+        // })))
         .pipe(prod(autoprefixer({browsers: '> 0.3%'})))
         .pipe(gulp.dest('build/css'))
         .pipe(dev(connect.reload()));
@@ -152,12 +151,11 @@ gulp.task('images', () => {
 
     const data = require('./src/data.json');
     const clientsImages = data.clients.reduce((r, client) => [...r, client.image], []);
-    // const srcSizes = clientsImages.reduce((o, i) => Object.assign(o, {[i]: sizeOf('./img/photos/' + i)}), {});
     streams.push(gulp.src(clientsImages, {
         cwd: './img/photos',
         base: '.'
     })
-        // .pipe(changed('./build'))
+        .pipe(changed('./build'))
         .pipe(parallel(gm((gmfile, done) => {
             const size = {
                 w: 1920,
@@ -176,7 +174,23 @@ gulp.task('images', () => {
         .pipe(gulp.dest('./build'))
     );
 
-    streams.push(gulp.src(['img/**/*.{jpg,jpeg,png}', ...exclude(clientsImages), '!img/events/*.*'], {base: '.'})
+    const clientsIcons = data.clients.reduce((r, client) => [...r, client.icon], []);
+    streams.push(gulp.src(clientsIcons, {
+        cwd: './img/',
+        base: '.'
+    })
+        .pipe(changed('./build/'))
+        .pipe(parallel(imageResize({
+            width: 140,
+            height: 140,
+            upscale: true,
+            crop: true,
+            gravity: 'Center'
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
+        .pipe(gulp.dest('./build/')));
+
+    streams.push(gulp.src(['img/**/*.{jpg,jpeg,png}', ...exclude(clientsImages), ...exclude(clientsIcons), '!img/events/*.*'], {base: '.'})
         .pipe(changed('./build/'))
         .pipe(parallel(imageResize({
             width: 1920,
@@ -206,7 +220,7 @@ gulp.task('images', () => {
 gulp.task('image-size', () => {
     imageSize.record({
         path: 'build/img/photos/*.jpg',
-        output: "src/image_sizes.json",
+        output: "tmp/image_sizes.json",
         breakpointDelimiter: '/'
     });
 });

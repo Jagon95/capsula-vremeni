@@ -39,7 +39,7 @@ const config = {
         ]
     },
     resolve: {
-        modules: [path.resolve(__dirname, "src"), "node_modules"],
+        modules: [path.resolve(__dirname, "src"), "node_modules", path.resolve(__dirname, "tmp")],
         alias: {
             'waypoints': 'waypoints/lib/jquery.waypoints.js',
             // 'semantic-ui': 'semantic-ui/dist/semantic.js',
@@ -54,10 +54,10 @@ const config = {
             PhotoSwipe: 'photoswipe',
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js'
         }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            parallel: 4,
-        })
+        // new webpack.optimize.UglifyJsPlugin({
+        //     sourceMap: true,
+        //     parallel: 4,
+        // })
     ],
     // devtool: "source-map"
 };

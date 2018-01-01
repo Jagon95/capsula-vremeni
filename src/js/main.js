@@ -1,4 +1,3 @@
-// import 'owl.carousel/dist/assets/owl.carousel.css';
 import $ from "jquery";
 import 'imports-loader?jQuery=jquery!owl.carousel';
 import 'jquery-parallax.js';
@@ -156,7 +155,7 @@ $(document).ready(function () {
             let _showTab = () => {
                 tabs.filter(`[data-tab="${tab}"]`).transition('fade in', {
                     onComplete: () => {
-                        $(window).trigger('resize').trigger('scroll');
+                        // $(window).trigger('resize').trigger('scroll');
                     }
                 });
             };
@@ -324,13 +323,44 @@ $(document).ready(function () {
 
     $('.clients__page:first').waypoint(function () {
         console.log('init Clients');
-        $('.clients__carousel', this.element).owlCarousel({
+        let carousel = $('.clients__carousel', this.element).owlCarousel({
             items: 1,
             loop: true,
             lazyLoad: true,
             mouseDrag: false,
             touchDrag: false,
+            dots: !isMobile(),
+            autoplay: true,
+            autoplayTimeout: 4000,
+            animateOut: 'fadeOut'
         });
+
+        let toggles = $('.clients__client-image-wrapper');
+
+        if(!isMobile()) {
+            toggles.click(function () {
+                let el = $(this);
+                carousel.trigger('to.owl.carousel', el.data('index'));
+                toggles.removeClass('active');
+                el.addClass('active');
+            });
+
+            carousel.on('changed.owl.carousel', function (event) {
+                toggles.removeClass('active');
+                console.log(event.item.index);
+                toggles.filter(`[data-index=${event.item.index-3}]`).addClass('active');
+            });
+
+            toggles.filter('[data-index=0]').addClass('active');
+        } else {
+            toggles.remove();
+        }
+
+        /*$('.clients__togglers', this.element).owlCarousel({
+            items: 5,
+            loop: true,
+            center: true,
+        });*/
 
         this.destroy();
     }, waypointPageSettings);
