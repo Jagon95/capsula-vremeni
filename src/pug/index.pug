@@ -8,7 +8,7 @@
             }, {});
     }
 
-- var br = '<br />'
+- const br = '<br />'
 
 -
     function localeDate(date) {
@@ -19,6 +19,10 @@
 mixin product_item(name, product)
     .item.ui.card.product__wrapper(data-product-id=name)
         .ui.image(data-behavior-dimmer, data-thumbnail-id=name)
+            if(product.label)
+                .product__label(class=labels[product.label].color)
+                    i.icon(class=labels[product.label].icon)
+                    =i18n.market[product.label]
             .ui.inverted.dimmer
                 .content
                     .center
@@ -153,7 +157,7 @@ html
                         .row.justify-content-center.d-none.d-md-flex.tab-controllers
                             - var index = 0
                             each item, tab in tabSwitchers
-                                .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++)/(Object.keys(tabSwitchers).length - 1)))
+                                .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++) / (Object.keys(tabSwitchers).length - 1)))
                                     .ui.raised.link.fluid.card.card-tab-switcher__wrapper(
                                         data-request-function='switchTo'
                                         data-function-argument=tab
@@ -206,9 +210,9 @@ html
                             tbody.shopping-cart__body
                                 tr.shopping-cart__empty-handler
                                     td(colspan=4)=i18n.shoppingCart.empty
-                                        |
-                                        |
-                                        a(href='#market')=i18n.shoppingCart.goToMarket
+                                    |
+                                    |
+                                    a(href='#market')=i18n.shoppingCart.goToMarket
                                 template.d-none(data-product-template='desktop')
                                     tr(data-product-id='data-template-id')
                                         td.middle.aligned.shopping-cart__number_cell data-template-index
@@ -238,7 +242,6 @@ html
                                                     .sub.header Подзаголовок
                                         td.middle.aligned.shopping-cart__actions_cell
                                             button.small.ui.red.icon.button.shopping-cart__action(
-                                                data-tooltip=i18n.shoppingCart.remove data-inverted
                                                 data-request-function='removeFromCart'
                                                 data-function-argument='data-template-id'
                                             )
@@ -288,7 +291,7 @@ html
 
         #contacts.container-fluid.one-page.footer__page.gradient-page
             .row.justify-content-center
-                .col-lg-3.footer__col
+                .col-lg-3.col-md-4.col-sm-12.flex-last.flex-md-unordered.footer__col
                     img.footer__logo(src='img/logo.svg', alt='')
                     p «Капсула времени» — первое в России агентство посланий во времени.
                     p 117216 г. Москва ул Старокочаловская д1 к2. Филиал «Точка» Публичного акционерного общества «Ханты-Мансийский банк Открытие»
@@ -296,17 +299,17 @@ html
                         | РС: 40802810205500000055 !{br}
                         | КС: 30101810845250000999 !{br}
                         | БИК: 044525999
-                .col-lg-3.footer__col
-                    h3.ui.header.footer__header
+                .col-lg-3.col-md-4.col-sm-6.col-12.footer__col
+                    h3.footer__header.text-center.text-sm-left
                         i.phone.icon
-                        .content Контактная информация
+                        span.content Контактная информация
                     p г. Челябинск, Проспект Победы, дом 160.
                     p г. Санкт-Петербург. Набережная обводного канала, дом 138 (Красный треугольник).
                     p +7 (499) 375-83-08
-                .col-lg-3.footer__col.footer__header
-                    h3.ui.header
+                .col-lg-3.col-md-4.col-sm-6.col-12.footer__col
+                    h3.footer__header.text-center.text-sm-left
                         i.share.alternate.icon
-                        .content Мы в соц. сетях
+                        span.content Мы в соц. сетях
 
 
 

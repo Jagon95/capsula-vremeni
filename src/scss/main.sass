@@ -28,9 +28,9 @@ h3
 
 =gradient-page
   background: #f4f4f4
-  background: linear-gradient(to bottom, #f4f4f4 0%,#ebebeb 71%,#f9f9f9 100%)
-  border-bottom: 1px solid rgba(0,0,0,.1)
-  border-top: 1px solid rgba(0,0,0,.1)
+  background: linear-gradient(to bottom, #f4f4f4 0%, #ebebeb 71%, #f9f9f9 100%)
+  border-bottom: 1px solid rgba(0, 0, 0, .1)
+  border-top: 1px solid rgba(0, 0, 0, .1)
 
 =price-after
   content: '\00a0руб.'
@@ -47,9 +47,8 @@ h3
   +font(1.5 * $multiply)
   padding-bottom: 1.5rem * $multiply
 
-
 #kapsula
-  h2.page-header
+  .page-header
     margin: 0
     text-align: center
     +header(1.3)
@@ -58,7 +57,10 @@ h3
       right: 1rem
   .one-page
     +font(1)
-    padding: 5rem 0
+    +media-breakpoint-up(md)
+      padding: 5rem 0
+    +media-breakpoint-down(md)
+      padding: 2.5rem 0
   .menu-header__
     &navbar
       padding: 0
@@ -106,9 +108,9 @@ h3
 
   .gradient-page
     background: #f4f4f4
-    background: linear-gradient(to bottom, #f4f4f4 0%,#ebebeb 71%,#f9f9f9 100%)
-    border-bottom: 1px solid rgba(0,0,0,.1)
-    border-top: 1px solid rgba(0,0,0,.1)
+    background: linear-gradient(to bottom, #f4f4f4 0%, #ebebeb 71%, #f9f9f9 100%)
+    border-bottom: 1px solid rgba(0, 0, 0, .1)
+    border-top: 1px solid rgba(0, 0, 0, .1)
 
   .introduction__page
     padding-top: 0
@@ -179,30 +181,30 @@ h3
       text-align: center
       height: 5rem
 
-  .product
-    &__wrapper
+  .product__
+    &wrapper
       //text-align: center
       width: 250px
       //border: 1px solid rgba(#000, .1)
       //padding: 10px
       margin: 1px
-    &__price-button-group
+    &price-button-group
       display: flex
       width: 100%
-    &__price
+    &price
       //display: block
       flex-grow: 1
       cursor: auto
-      //font:
-        size: 16px
-        weight: 600
-    &__title
+    //font:
+      size: 16px
+      weight: 600
+    &title
       +font(1.1)
-    &__buy-button
+    &buy-button
       flex-grow: 1
       &_goto
         display: none
-    &__buy-button.active
+    &buy-button.active
       background-color: #db2828
       .product__buy-button_add
         display: none
@@ -210,6 +212,28 @@ h3
         display: block
         a
           color: #fff
+    &label
+      +font(.75)
+      position: absolute
+      top: 1rem
+      left: 0
+      z-index: 1
+      color: #fff
+      padding: .2rem .4rem
+      border:
+        width: .1rem
+        style: solid
+        top-right-radius: .3rem
+        bottom-right-radius: .3rem
+        left-width: 0
+      &.blue
+        background-color: $blue
+        border-color: rgba(darken($blue, 20), .8)
+      &.red
+        background-color: $red
+        border-color: rgba(darken($red, 20), .8)
+      i
+        margin: 0 .3rem
 
   .advantages__
     &item
@@ -333,18 +357,26 @@ h3
       width: auto
 
   .footer__
+    &page
+      padding-bottom: 0
+      +media-breakpoint-down(md)
+        padding:
+          left: 1rem
+          right: 1rem
     &logo
       max-height: 4rem
       filter: grayscale(1)
     &col
-      margin: 0 3%
-    &header
-      +font(1.2)
-
+      +media-breakpoint-up(lg)
+        margin: 0 3% 3rem
+      +media-breakpoint-down(md)
+        margin-bottom: 3rem
+    &header, &header i
+      +header(1)
 
 .header
   &--clone
-    background-color: rgba(240,240,240,.95)
+    background-color: rgba(240, 240, 240, .95)
     position: fixed
     top: 0
     left: 0

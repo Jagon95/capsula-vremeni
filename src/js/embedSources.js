@@ -24,5 +24,3 @@ $.fn.embed.settings.sources = {
         url    : '//vk.com/video_ext.php?{id}'
     }
 };
-
-console.log('kekeker');

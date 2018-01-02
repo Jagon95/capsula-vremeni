@@ -2,6 +2,8 @@ const gulp = require('gulp');
 const imageSize = require('image-size-export');
 const parallel = require('concurrent-transform');
 const os = require('os');
+const path = require('path');
+const moduleImporter = require('sass-module-importer');
 const loadPlugins = require('gulp-load-plugins')({
     rename: {
         'gulp-environments': 'env',
@@ -55,7 +57,10 @@ gulp.task('build-css', ['sass'], () => {
 
 gulp.task('sass', () => {
     gulp.src(['src/scss/**/*.sass', 'src/scss/**/*.scss'])
-        .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
+        .pipe(sass({
+            outputStyle: 'expanded',
+            importer: moduleImporter()
+        }).on('error', sass.logError))
         .pipe(gulp.dest('tmp/css'));
 });
 
@@ -98,7 +103,7 @@ gulp.task('pug', () => {
             };
         }))
         .pipe(pug({
-            pretty: !!dev
+            pretty: !!dev()
         }))
         .pipe(gulp.dest('build'))
         .pipe(connect.reload());

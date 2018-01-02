@@ -208,10 +208,20 @@
       "description": "В Большом Гостином Дворе Санкт-Петербурга заложили капсулу времени с посланием потомкам от великой оперной певицы Елены Образцовой.",
       "link": "/капсула-в-гостином-дворе-санкт-петерб",
       "video": {
-      "id": "ZMtTPLKrvW0",
-      "source": "youtube"
-    },
+        "id": "ZMtTPLKrvW0",
+        "source": "youtube"
+      },
       "date": 1417986000000
     }
-  ]
+  ],
+  "labels": {
+    "hit": {
+      "icon": "thumbs outline up",
+      "color": "red"
+    },
+    "new": {
+      "icon": "star",
+      "color": "blue"
+    }
+  }
 }
