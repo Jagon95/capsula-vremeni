@@ -375,7 +375,6 @@ $(document).ready(function () {
 
             carousel.on('changed.owl.carousel', function (event) {
                 toggles.removeClass('active');
-                console.log(event);
                 toggles.filter(`[data-index=${event.item.index-3}]`).addClass('active');
             });
 

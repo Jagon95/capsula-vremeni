@@ -1,20 +1,4 @@
--
-    const filterByKeys = function(object, keys) {
-        return Object.keys(object)
-            .filter(key => keys.includes(key))
-            .reduce((obj, key) => {
-                obj[key] = object[key];
-                return obj;
-            }, {});
-    }
-
-- const br = '<br />'
-
--
-    function localeDate(date) {
-        const months = i18n.months;
-        return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-    }
+include functions.js.pug
 
 mixin product_item(name, product)
     .item.ui.card.product__wrapper(data-product-id=name)
@@ -22,7 +6,7 @@ mixin product_item(name, product)
             if(product.label)
                 .product__label(class=labels[product.label].color)
                     i.icon(class=labels[product.label].icon)
-                    =i18n.market[product.label]
+                    =I18N('market.' + [product.label])
             .ui.inverted.dimmer
                 .content
                     .center
@@ -40,21 +24,22 @@ mixin product_item(name, product)
                 data-function-argument=name
                 data-product-id=name
                 )
-                    span.product__buy-button_add=i18n.product.addToCart
+                    span.product__buy-button_add=I18N("product.addToCart")
                     span.product__buy-button_goto
-                        a(href='#shopping_cart')=i18n.product.order
+                        a(href='#shopping_cart')=I18N("product.order")
                 span.ui.basic.primary.left.pointing.label.product__price
-                    =product.price > 0 ? product.price + ` ${i18n.product.currency}` : i18n.product.free
+                    =product.price > 0 ? product.price + ` ${I18N("product.currency")}` : I18N("product.free")
 
 mixin page_header(title)
     h2.page-header(data-animate-type="fade in")= title
 
 doctype html
 html
+    f()
     head
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
-        title=i18n.head.title
+        title=I18N("head.title")
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
@@ -74,7 +59,7 @@ html
                                     li.nav-item.menu-header__item
                                         a.nav-link.menu-header__link(href="#" + item.href)
                                             i(class=item.icon + ' icon')
-                                            =item.text
+                                            =get(i18n, item.text)
             .container
                 .row.justify-content-center
                     .col-xl-4.col-lg-5.col-md-10.col-sm-12
@@ -97,35 +82,35 @@ html
 
 
         #about_capsule.container-fluid.one-page.about-capsule__page
-            +page_header(i18n.aboutCapsule.header)
+            +page_header(I18N("aboutCapsule.header"))
             .container(data-animate-type="fade up")
                 .row.justify-content-center.animated
                     .col-md-10.col-sm-12
-                        h3=i18n.aboutCapsule.description
+                        h3=I18N("aboutCapsule.description")
                 .row.justify-content-center
                     .col-lg-8.col-md-10.col-sm-12
                         .ui.relaxed.list.advices
                             .item
-                                .content.about-capsule__text=i18n.aboutCapsule.listHeader
-                            each item, icon in adviceItems
+                                .content.about-capsule__text=I18N("aboutCapsule.listHeader")
+                            each item in adviceItems
                                 .item
-                                    i(class=icon + ' icon')
-                                    .content.about-capsule__text=item
+                                    i(class=item.icon + ' icon')
+                                    .content.about-capsule__text=I18N(item.text)
 
         #events.container-fluid.one-page.events__page.gradient-page.d-none
-            +page_header(i18n.events.header)
+            +page_header(I18N("events.header"))
             .owl-carousel.owl-theme.events__carousel
                 each event in events
                     .item.events__item
                         img.owl-lazy.events__image(data-src="img/events/" + event.image)
-                        h3.events__title= event.title
+                        h3.events__title=I18N(event.title)
                         div.events__description-block
-                            span.events__description-text= event.description
-                            a.events__link(href=event.link)=i18n.events.more
+                            span.events__description-text=I18N(event.description)
+                            a.events__link(href=event.link)=I18N("events.more")
 
 
         #adventages.container-fluid.one-page.adventages__page
-            +page_header(i18n.adventages.header)
+            +page_header(I18N("adventages.header"))
             .container
                 .row.justify-content-center
                     .col-md-10.col-sm-12
@@ -144,11 +129,11 @@ html
         .container-fluid.d-none.titanium-capsule-parallax
 
         #capsule_content.container-fluid.one-page.capsule-content__page
-            +page_header(i18n.capsuleContent.header)
+            +page_header(I18N("capsuleContent.header"))
             .container(data-animate-type="fade up")
                 .row.justify-content-center
                     .col-md-10.col-sm-12
-                        h3=i18n.capsuleContent.description
+                        h3=I18N("capsuleContent.description")
             .row.justify-content-center
                 .col-1.d-none.d-lg-block
                     img(src='img/l-bg.png', alt='')
@@ -156,8 +141,8 @@ html
                     .container.tabs-container
                         .row.justify-content-center.d-none.d-md-flex.tab-controllers
                             - var index = 0
-                            each item, tab in tabSwitchers
-                                .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++) / (Object.keys(tabSwitchers).length - 1)))
+                            each item, tab in tabs
+                                .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++) / (Object.keys(tabs).length - 1)))
                                     .ui.raised.link.fluid.card.card-tab-switcher__wrapper(
                                         data-request-function='switchTo'
                                         data-function-argument=tab
@@ -166,7 +151,7 @@ html
                                         .image.ui.center.aligned.card-tab-switcher__image-wrapper
                                             img.ui.centered.medium.image(src='img/' + item.image)
                                         .content.center.aligned.card-tab-switcher__title-wrapper
-                                            p.card-tab-switcher__title=item.text
+                                            p.card-tab-switcher__title=I18N(item.title)
                         .row.justify-content-center(data-animate-type="fade up")
                             .col-lg-10.col-md-12.tab-page__wrapper
                                 .ui.blue.segment.container.tabs.tab-page__container
@@ -175,29 +160,29 @@ html
                                             .col-lg-4.tab-page__image-wrapper
                                                 .ui.image
                                                     img.ui.centered.fluid.image(src='img/' + item.image)
-                                            .col-lg-8.tab-page__text=item.text
+                                            .col-lg-8.tab-page__text=I18N(item.text)
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 
 
         #market.container-fluid.one-page.gradient-page.market__page
-            +page_header(i18n.market.header)
+            +page_header(I18N("market.header"))
             .container
                 .row.justify-content-center
                     .col-12
-                        h3(data-animate-type="fade in")=i18n.market.choseCapsule
+                        h3(data-animate-type="fade in")=I18N("market.choseCapsule")
                         .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
                             each product, name in filterByKeys(products, products_categories['capsules'])
                                 +product_item(name, product)
                 .row.justify-content-center
                     .col-12
-                        h3(data-animate-type="fade in")=i18n.market.choseOptions
+                        h3(data-animate-type="fade in")=I18N("market.choseOptions")
                         .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
                             each product, name in filterByKeys(products, products_categories['options'])
                                 +product_item(name, product)
 
         #shopping_cart.container-fluid.one-page.shopping-cart__page
-            +page_header(i18n.shoppingCart.header)
+            +page_header(I18N("shoppingCart.header"))
             .container
                 .row.justify-content-center
                     .col-lg-6.col-md-10.col-sm-12
@@ -205,14 +190,14 @@ html
                             thead.shopping-cart__header
                                 tr
                                     th.shopping-cart__number_cell #
-                                    th.shopping-cart__item-name_cell(colspan=2)=i18n.shoppingCart.name
-                                    th.shopping-cart__price_cell=i18n.shoppingCart.price
+                                    th.shopping-cart__item-name_cell(colspan=2)=I18N("shoppingCart.name")
+                                    th.shopping-cart__price_cell=I18N("shoppingCart.price")
                             tbody.shopping-cart__body
                                 tr.shopping-cart__empty-handler
-                                    td(colspan=4)=i18n.shoppingCart.empty
+                                    td(colspan=4)=I18N("shoppingCart.empty")
                                     |
                                     |
-                                    a(href='#market')=i18n.shoppingCart.goToMarket
+                                    a(href='#market')=I18N("shoppingCart.goToMarket")
                                 template.d-none(data-product-template='desktop')
                                     tr(data-product-id='data-template-id')
                                         td.middle.aligned.shopping-cart__number_cell data-template-index
@@ -226,7 +211,7 @@ html
                                                     .sub.header Подзаголовок
                                         td.middle.aligned.shopping-cart__actions_cell
                                             button.small.ui.red.icon.button.shopping-cart__action(
-                                                data-tooltip=i18n.shoppingCart.remove data-inverted
+                                                data-tooltip=I18N("shoppingCart.remove") data-inverted
                                                 data-request-function='removeFromCart'
                                                 data-function-argument='data-template-id'
                                             )
@@ -250,7 +235,7 @@ html
                                             span.shopping-cart__price data-template-price
                             tfoot.shopping-cart__footer
                                 tr.shopping-cart__footer-row
-                                    th.shopping-cart__result-title-cell(colspan=3)=i18n.shoppingCart.result
+                                    th.shopping-cart__result-title-cell(colspan=3)=I18N("shoppingCart.result")
                                     th.shopping-cart__result-price-cell 0
 
 
@@ -268,8 +253,8 @@ html
                                         .clients__video-button(data-video=client.video)
                                             i.video.play.icon
                                 .col-md-6.col-sm-12.clients__description-wrapper
-                                    a.clients__title(href=client.link)=client.title
-                                    .clients__description.d-none.d-lg-block=client.description
+                                    a.clients__title(href=client.link)=I18N(client.title)
+                                    .clients__description.d-none.d-lg-block=I18N(client.description)
                                     .clients__date.d-lg-flex.d-none=localeDate(new Date(client.date))
 
 

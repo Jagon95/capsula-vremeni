@@ -1,0 +1,21 @@
+-
+    const filterByKeys = function(object, keys) {
+    return Object.keys(object)
+    .filter(key => keys.includes(key))
+    .reduce((obj, key) => {
+    obj[key] = object[key];
+    return obj;
+    }, {});
+    }
+
+- const br = '<br />'
+
+-
+    function localeDate(date) {
+    const months = i18n.months;
+    return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
+-   const get = (obj, i) => i.split('.').reduce((o, i) => o[i], obj);
+
+-   const I18N = (index) => get(i18n, index);
