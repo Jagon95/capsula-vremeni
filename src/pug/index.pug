@@ -63,7 +63,7 @@ html
                         type="button")
                             i.sidebar.icon
                         a.navbar-brand.menu-header__logo-wrapper(href="#")
-                            img(src='img/logo.svg' height="50")
+                            img.menu-header__logo(src='img/logo.svg')
                         .collapse.navbar-collapse.menu-header__menu-wrapper
                             ul.navbar-nav.menu-header__menu
                                 each item in menuItems
@@ -260,7 +260,7 @@ html
                         img.owl-lazy.clients__image(data-src="img/photos/" + client.image)
                         .container.clients__container
                             .row
-                                .col-md-6.d-md-flex.d-none.clients__video-button-wrapper.align-middle
+                                .col-md-6.col-sm-12.flex-last.flex-md-unordered.clients__video-button-wrapper.align-middle
                                     if (client.video)
                                         .clients__video-button(data-video=client.video)
                                             i.video.play.icon

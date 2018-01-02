@@ -337,12 +337,30 @@ $(document).ready(function () {
             loop: true,
             lazyLoad: true,
             mouseDrag: false,
-            touchDrag: false,
             dots: isMobile(),
             video:true,
-            // autoplay: true,
-            // autoplayTimeout: 4000,
+            autoplay: true,
+            autoplayTimeout: 4000,
             animateOut: 'fadeOut'
+        });
+
+        const calculateImageOffset = ($el) => {
+            if($el.width() / $(document).width() > 1.2) {
+                $el.css('transform', `translateX(${($(document).width() - $el.width()) / 2}px)`)
+            } else {
+                $el.css('transform', '');
+            }
+        };
+
+        carousel.on('loaded.owl.lazy', (event) => {
+            calculateImageOffset(event.element);
+        });
+
+        carousel.on('resize.owl.carousel', function(event) {
+            let $el = $(this);
+            $el.find('.clients__image[src]').each(function () {
+                calculateImageOffset($(this));
+            });
         });
 
         let toggles = $('.clients__client-image-wrapper');
@@ -357,7 +375,7 @@ $(document).ready(function () {
 
             carousel.on('changed.owl.carousel', function (event) {
                 toggles.removeClass('active');
-                console.log(event.item.index);
+                console.log(event);
                 toggles.filter(`[data-index=${event.item.index-3}]`).addClass('active');
             });
 
