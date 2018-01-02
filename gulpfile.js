@@ -89,11 +89,12 @@ gulp.task('pug', () => {
     // });
 
     gulp.src('src/pug/**/*.pug')
-        .pipe(data(() => require('./src/data.json')))
+        .pipe(data(() => require('./src/data/data.json')))
         .pipe(data(() => {
             return {
-                products: require('./src/product.json'),
-                gallery: require('./src/photos.json')
+                products: require('./src/data/product.json'),
+                gallery: require('./src/data/photos.json'),
+                i18n: require('./src/data/i18n.json')
             };
         }))
         .pipe(pug({
@@ -123,7 +124,7 @@ gulp.task('images', () => {
     const cores = os.cpus().length;
 
     let streams = [];
-    let products = require('./src/product.json');
+    let products = require('./src/data/product.json');
     let productsThumbnails = Object.values(products).reduce((r, a) => [...r, ...a.images], []);
     streams.push(gulp.src(productsThumbnails, {cwd: './img/photos/'})
         .pipe(changed('build/img/thumbnails'))
@@ -137,7 +138,7 @@ gulp.task('images', () => {
         .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('build/img/thumbnails')));
 
-    let photos = require('./src/photos.json');
+    let photos = require('./src/data/photos.json');
     let photosThumbnails = photos.reduce((r, photo) => [...r, photo.image], []);
     streams.push(gulp.src(photosThumbnails, {cwd: './img/photos/'})
         .pipe(changed('build/img/thumbnails'))
@@ -149,7 +150,7 @@ gulp.task('images', () => {
         .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('build/img/thumbnails')));
 
-    const data = require('./src/data.json');
+    const data = require('./src/data/data.json');
     const clientsImages = data.clients.reduce((r, client) => [...r, client.image], []);
     streams.push(gulp.src(clientsImages, {
         cwd: './img/photos',
@@ -159,7 +160,7 @@ gulp.task('images', () => {
         .pipe(parallel(gm((gmfile, done) => {
             const size = {
                 w: 1920,
-                h: 576
+                h: 1920*.4
             };
             gmfile.size((err, val) => {
                 const resizeRatio = Math.max(size.h / val.height, size.w / val.width);

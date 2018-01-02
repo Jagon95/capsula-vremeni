@@ -43,7 +43,8 @@ const config = {
         alias: {
             'waypoints': 'waypoints/lib/jquery.waypoints.js',
             // 'semantic-ui': 'semantic-ui/dist/semantic.js',
-            'semantic': "semantic-ui/dist"
+            'semantic': "semantic-ui/dist",
+            'bootstrap': "bootstrap/js/dist"
         }
     },
     plugins: [
@@ -51,6 +52,7 @@ const config = {
             $: 'jquery',
             jQuery: 'jquery',
             "window.jQuery": "jquery",
+            Util: 'exports-loader?Util!bootstrap/util',
             PhotoSwipe: 'photoswipe',
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js'
         }),

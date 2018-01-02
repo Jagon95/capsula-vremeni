@@ -14,7 +14,9 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
+    "bootstrap": "^4.0.0-alpha.6",
     "concurrent-transform": "^1.0.0",
+    "exports-loader": "^0.6.4",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
     "gulp-babel": "^7.0.0",
@@ -46,6 +48,7 @@
     "imports-loader": "^0.7.1",
     "json-loader": "^0.5.7",
     "merge-stream": "^1.0.1",
+    "popper.js": "^1.12.9",
     "raw-loader": "^0.5.1",
     "uglifyjs-webpack-plugin": "^1.1.4",
     "webpack": "^3.10.0"

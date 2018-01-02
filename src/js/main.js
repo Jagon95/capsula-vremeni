@@ -1,13 +1,16 @@
-import $ from "jquery";
 import 'imports-loader?jQuery=jquery!owl.carousel';
 import 'jquery-parallax.js';
 import 'waypoints';
 import Headhesive from 'headhesive';
+import 'bootstrap/collapse';
 import 'semantic/components/transition';
 import 'semantic/components/dimmer';
-import _products from 'product.json';
+import 'semantic/components/modal';
+import 'semantic/components/embed';
+import './embedSources';
+import _products from '../data/product';
 import _imageSizes from 'image_sizes.json';
-import _photos from 'photos';
+import _photos from 'data/photos';
 
 const products = JSON.parse(_products);
 const imageSizes = JSON.parse(_imageSizes).reduce(function (obj, item) {
@@ -49,7 +52,7 @@ function processImageItems(items, src, msrc) {
 const transitionSettings = {duration: 700};
 const waypointAnimationSettings = {offset: '70%'};
 const waypointPageSettings = {
-    offset: '110%'
+    offset: '130%'
 };
 
 function addListiners(wrapper, context) {
@@ -121,9 +124,7 @@ $(document).ready(function () {
                 }
             });
             this.destroy();
-        }, {
-            offset: '120%'
-        });
+        }, waypointPageSettings);
 
     }
 
@@ -137,6 +138,14 @@ $(document).ready(function () {
         }
     });
 
+    $('.menu-header__toggler').click(function () {
+        const isClone = $(this).is('.header--clone');
+        $(`${isClone ? '.header--clone' : ''} .menu-header__menu-wrapper`).collapse('toggle');
+    });
+
+    $('.menu-header__link').click(function () {
+        $(this).closest('.menu-header__menu-wrapper').collapse('hide');
+    });
 
     $('.capsule-content__page:first').waypoint(function () {
         let requests = {
@@ -329,9 +338,10 @@ $(document).ready(function () {
             lazyLoad: true,
             mouseDrag: false,
             touchDrag: false,
-            dots: !isMobile(),
-            autoplay: true,
-            autoplayTimeout: 4000,
+            dots: isMobile(),
+            video:true,
+            // autoplay: true,
+            // autoplayTimeout: 4000,
             animateOut: 'fadeOut'
         });
 
@@ -356,11 +366,20 @@ $(document).ready(function () {
             toggles.remove();
         }
 
-        /*$('.clients__togglers', this.element).owlCarousel({
-            items: 5,
-            loop: true,
-            center: true,
-        });*/
+        $('.clients__video-button', this.element).click(function () {
+            let $this = $(this);
+            $('.ui.modal').modal({
+                onHide: function () {
+                    $('.ui.embed').embed('destroy')
+                }
+            }).modal('show');
+            if($('.ui.embed').embed('get url')) {
+                $('.ui.embed').embed('change', $this.data('video').source, $this.data('video').id);
+            } else {
+                $('.ui.embed').embed($this.data('video'));
+            }
+            console.log($this.data('video'));
+        });
 
         this.destroy();
     }, waypointPageSettings);

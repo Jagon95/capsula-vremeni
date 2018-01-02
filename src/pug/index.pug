@@ -10,6 +10,12 @@
 
 - var br = '<br />'
 
+-
+    function localeDate(date) {
+        const months = i18n.months;
+        return `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
 mixin product_item(name, product)
     .item.ui.card.product__wrapper(data-product-id=name)
         .ui.image(data-behavior-dimmer, data-thumbnail-id=name)
@@ -30,12 +36,11 @@ mixin product_item(name, product)
                 data-function-argument=name
                 data-product-id=name
                 )
-                    span.product__buy-button_add
-                        | В корзину
+                    span.product__buy-button_add=i18n.product.addToCart
                     span.product__buy-button_goto
-                        a(href='#shopping_cart') Оформить
+                        a(href='#shopping_cart')=i18n.product.order
                 span.ui.basic.primary.left.pointing.label.product__price
-                    =product.price > 0 ? product.price + " руб." : "Бесплатно"
+                    =product.price > 0 ? product.price + ` ${i18n.product.currency}` : i18n.product.free
 
 mixin page_header(title)
     h2.page-header(data-animate-type="fade in")= title
@@ -45,23 +50,25 @@ html
     head
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
-        title Капсула времени
+        title=i18n.head.title
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
     body#kapsula
         #introduction.container-fluid.one-page.introduction__page.gradient-page
             #header.container-fluid.menu-header__wrapper
-                .ui.container
-                    .row
-                        .col-xl-3.menu-header__logo.header.item
-                            a.middle.aligned.content(href='#')
-                                img(src='img/logo.svg', alt='')
-                        #menu.col-xl-9.item
-                            .ui.relaxed.large.horizontal.divided.link.list
+                .container
+                    .navbar.navbar-toggleable-md.navbar-right.navbar-light.menu-header__navbar
+                        button.navbar-toggler.navbar-toggler-right.menu-header__toggler(
+                        type="button")
+                            i.sidebar.icon
+                        a.navbar-brand.menu-header__logo-wrapper(href="#")
+                            img(src='img/logo.svg' height="50")
+                        .collapse.navbar-collapse.menu-header__menu-wrapper
+                            ul.navbar-nav.menu-header__menu
                                 each item in menuItems
-                                    a.item.menu-header__item(href="#" + item.href)
-                                        .middle.aligned.content
+                                    li.nav-item.menu-header__item
+                                        a.nav-link.menu-header__link(href="#" + item.href)
                                             i(class=item.icon + ' icon')
                                             =item.text
             .container
@@ -86,24 +93,23 @@ html
 
 
         #about_capsule.container-fluid.one-page.about-capsule__page
-            +page_header("Что такое Капсула Времени?")
+            +page_header(i18n.aboutCapsule.header)
             .container(data-animate-type="fade up")
                 .row.justify-content-center.animated
                     .col-md-10.col-sm-12
-                        h3
-                            | Капсула Времени - это оригинальный и интересный подарок, который подходит для мероприятий и торжеств по любому поводу и любого мастштаба.
+                        h3=i18n.aboutCapsule.description
                 .row.justify-content-center
-                    .col-lg-6.col-md-8.col-sm-12
+                    .col-lg-8.col-md-10.col-sm-12
                         .ui.relaxed.list.advices
                             .item
-                                .content.about-capsule__text Мы вас выручим, если вы:
+                                .content.about-capsule__text=i18n.aboutCapsule.listHeader
                             each item, icon in adviceItems
                                 .item
                                     i(class=icon + ' icon')
                                     .content.about-capsule__text=item
 
-        #events.container-fluid.one-page.events__page.d-none
-            +page_header("Какое у вас мероприятие?")
+        #events.container-fluid.one-page.events__page.gradient-page.d-none
+            +page_header(i18n.events.header)
             .owl-carousel.owl-theme.events__carousel
                 each event in events
                     .item.events__item
@@ -111,11 +117,11 @@ html
                         h3.events__title= event.title
                         div.events__description-block
                             span.events__description-text= event.description
-                            a.events__link(href=event.link) Подробнее
+                            a.events__link(href=event.link)=i18n.events.more
 
 
         #adventages.container-fluid.one-page.adventages__page
-            +page_header("Наши преимущества")
+            +page_header(i18n.adventages.header)
             .container
                 .row.justify-content-center
                     .col-md-10.col-sm-12
@@ -133,13 +139,12 @@ html
 
         .container-fluid.d-none.titanium-capsule-parallax
 
-        #capsule_content.container-fluid.one-page.capsule-content__page.gradient-page
-            +page_header("Что можно положить в капсулу?")
+        #capsule_content.container-fluid.one-page.capsule-content__page
+            +page_header(i18n.capsuleContent.header)
             .container(data-animate-type="fade up")
                 .row.justify-content-center
                     .col-md-10.col-sm-12
-                        h3
-                            | Капсула вместительная. В нее помещается 100-120 листов А4, а также миниатюрные предметы и аксессуары.
+                        h3=i18n.capsuleContent.description
             .row.justify-content-center
                 .col-1.d-none.d-lg-block
                     img(src='img/l-bg.png', alt='')
@@ -171,39 +176,39 @@ html
                     img(src='img/r-bg.png', style='float: right', alt='')
 
 
-        #market.container-fluid.one-page.market__page
-            +page_header("Заказ капсулы времени")
+        #market.container-fluid.one-page.gradient-page.market__page
+            +page_header(i18n.market.header)
             .container
                 .row.justify-content-center
                     .col-12
-                        h3(data-animate-type="fade in") Выберите капсулу:
+                        h3(data-animate-type="fade in")=i18n.market.choseCapsule
                         .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
                             each product, name in filterByKeys(products, products_categories['capsules'])
                                 +product_item(name, product)
                 .row.justify-content-center
                     .col-12
-                        h3(data-animate-type="fade in") Выберите дополнительные аксесуары:
+                        h3(data-animate-type="fade in")=i18n.market.choseOptions
                         .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
                             each product, name in filterByKeys(products, products_categories['options'])
                                 +product_item(name, product)
 
-        #shopping_cart.container-fluid.one-page.shopping-cart__page.gradient-page
-            +page_header("Корзина")
+        #shopping_cart.container-fluid.one-page.shopping-cart__page
+            +page_header(i18n.shoppingCart.header)
             .container
-                .row.justify-content-center(data-animate-type="fade up")
+                .row.justify-content-center
                     .col-lg-6.col-md-10.col-sm-12
                         table.ui.celled.unstackable.table.shopping-cart__wrapper
                             thead.shopping-cart__header
                                 tr
                                     th.shopping-cart__number_cell #
-                                    th.shopping-cart__item-name_cell(colspan=2) Наименование
-                                    th.shopping-cart__price_cell Цена
+                                    th.shopping-cart__item-name_cell(colspan=2)=i18n.shoppingCart.name
+                                    th.shopping-cart__price_cell=i18n.shoppingCart.price
                             tbody.shopping-cart__body
                                 tr.shopping-cart__empty-handler
-                                    td(colspan=4) Ваша корзина пуста.
+                                    td(colspan=4)=i18n.shoppingCart.empty
                                         |
                                         |
-                                        a(href='#market') К покупкам!
+                                        a(href='#market')=i18n.shoppingCart.goToMarket
                                 template.d-none(data-product-template='desktop')
                                     tr(data-product-id='data-template-id')
                                         td.middle.aligned.shopping-cart__number_cell data-template-index
@@ -217,7 +222,7 @@ html
                                                     .sub.header Подзаголовок
                                         td.middle.aligned.shopping-cart__actions_cell
                                             button.small.ui.red.icon.button.shopping-cart__action(
-                                                data-tooltip='Убрать из корзины' data-inverted
+                                                data-tooltip=i18n.shoppingCart.remove data-inverted
                                                 data-request-function='removeFromCart'
                                                 data-function-argument='data-template-id'
                                             )
@@ -233,7 +238,7 @@ html
                                                     .sub.header Подзаголовок
                                         td.middle.aligned.shopping-cart__actions_cell
                                             button.small.ui.red.icon.button.shopping-cart__action(
-                                                data-tooltip='Убрать из корзины' data-inverted
+                                                data-tooltip=i18n.shoppingCart.remove data-inverted
                                                 data-request-function='removeFromCart'
                                                 data-function-argument='data-template-id'
                                             )
@@ -242,26 +247,37 @@ html
                                             span.shopping-cart__price data-template-price
                             tfoot.shopping-cart__footer
                                 tr.shopping-cart__footer-row
-                                    th.shopping-cart__result-title-cell(colspan=3) Итого
+                                    th.shopping-cart__result-title-cell(colspan=3)=i18n.shoppingCart.result
                                     th.shopping-cart__result-price-cell 0
 
 
-        #clients.container-fluid.one-page.clients__page
+        #clients.container-fluid.one-page.gradient-page.clients__page
             +page_header("Клиенты")
             //.container
             .owl-carousel.owl-theme.clients__carousel
                 each client in clients
                     .item.clients__item
                         img.owl-lazy.clients__image(data-src="img/photos/" + client.image)
-                        .clients__description-wrapper
-                            .clients__title=client.title
-                            .clients__description.d-none.d-lg-block=client.description
+                        .container.clients__container
+                            .row
+                                .col-md-6.d-md-flex.d-none.clients__video-button-wrapper.align-middle
+                                    if (client.video)
+                                        .clients__video-button(data-video=client.video)
+                                            i.video.play.icon
+                                .col-md-6.col-sm-12.clients__description-wrapper
+                                    a.clients__title(href=client.link)=client.title
+                                    .clients__description.d-none.d-lg-block=client.description
+                                    .clients__date.d-lg-flex.d-none=localeDate(new Date(client.date))
+
+
             .container
                 .row
                     each client, index in clients
                         .item.clients__client
                             .clients__client-image-wrapper(data-index=index)
                                 img.clients__client-image(src="img/" + client.icon)
+        .ui.modal
+            .ui.embed
 
         #gallery.container-fluid.one-page.gallery__page
             +page_header("Галерея")
@@ -277,7 +293,7 @@ html
                     p «Капсула времени» — первое в России агентство посланий во времени.
                     p 117216 г. Москва ул Старокочаловская д1 к2. Филиал «Точка» Публичного акционерного общества «Ханты-Мансийский банк Открытие»
                     p ТОЧКА ПАО БАНКА «ФК ОТКРЫТИЕ» !{br}
-                        | PC: 40802810205500000055 !{br}
+                        | РС: 40802810205500000055 !{br}
                         | КС: 30101810845250000999 !{br}
                         | БИК: 044525999
                 .col-lg-3.footer__col
