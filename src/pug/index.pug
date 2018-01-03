@@ -1,7 +1,7 @@
 include functions.js.pug
 
 mixin product_item(name, product)
-    .item.ui.card.product__wrapper(data-product-id=name)
+    .item.ui.card.product__wrapper(data-product-id=name itemscope itemtype="http://schema.org/Product")
         .ui.image(data-behavior-dimmer, data-thumbnail-id=name)
             if(product.label)
                 .product__label(class=labels[product.label].color)
@@ -13,21 +13,24 @@ mixin product_item(name, product)
                         h2.ui.icon.header
                             i.zoom.icon
             img.thumbnail(
+            itemprop="image"
             src='img/thumbnails/' + product.images[0],
-            alt=product.description
+            alt=I18N(product.description)
             )
-        .content
-            .header.product__title=product.title
-            .ui.labeled.button.product__price-button-group(tabindex='0')
+        .content.product__content
+            .header.product__title(itemprop="name")=I18N(product.title)
+            meta(itemprop="description" content=I18N(product.description))
+            .ui.labeled.button.product__price-button-group(tabindex='0' itemprop="offers" itemscope itemtype="http://schema.org/Offer")
+                meta(itemprop="priceCurrency" content="RUB")
                 .ui.primary.button.product__buy-button(
-                data-request-function='addToCart'
-                data-function-argument=name
-                data-product-id=name
+                    data-request-function='addToCart'
+                    data-function-argument=name
+                    data-product-id=name
                 )
                     span.product__buy-button_add=I18N("product.addToCart")
                     span.product__buy-button_goto
                         a(href='#shopping_cart')=I18N("product.order")
-                span.ui.basic.primary.left.pointing.label.product__price
+                span.ui.basic.primary.left.pointing.label.product__price(itemprop="price" content=product.price)
                     =product.price > 0 ? product.price + ` ${I18N("product.currency")}` : I18N("product.free")
 
 mixin page_header(title)
@@ -43,6 +46,7 @@ html
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
         link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
+        script(src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js" async)
     body#kapsula
         #introduction.container-fluid.one-page.introduction__page.gradient-page
             #header.container-fluid.menu-header__wrapper
@@ -102,7 +106,7 @@ html
             .owl-carousel.owl-theme.events__carousel
                 each event in events
                     .item.events__item
-                        img.owl-lazy.events__image(data-src="img/events/" + event.image)
+                        img.owl-lazy.events__image(data-src="img/photos/" + event.image)
                         h3.events__title=I18N(event.title)
                         div.events__description-block
                             span.events__description-text=I18N(event.description)
@@ -110,7 +114,7 @@ html
 
 
         #adventages.container-fluid.one-page.adventages__page
-            +page_header(I18N("adventages.header"))
+            +page_header(I18N("advantages.header"))
             .container
                 .row.justify-content-center
                     .col-md-10.col-sm-12
@@ -122,7 +126,7 @@ html
                                             .col-3.text-center
                                                 h3.ui.icon.header
                                                     i(class=advantage.icon + ' icon')
-                                            .col-9.advantages__text=advantage.description
+                                            .col-9.advantages__text=I18N(advantage.description)
                             if advantages.length % 2 === 1
                                 .col-lg-6.d-lg-flex.d-none.row
 
@@ -185,7 +189,7 @@ html
             +page_header(I18N("shoppingCart.header"))
             .container
                 .row.justify-content-center
-                    .col-lg-6.col-md-10.col-sm-12
+                    .col-lg-6.col-md-12
                         table.ui.celled.unstackable.table.shopping-cart__wrapper
                             thead.shopping-cart__header
                                 tr
@@ -195,9 +199,9 @@ html
                             tbody.shopping-cart__body
                                 tr.shopping-cart__empty-handler
                                     td(colspan=4)=I18N("shoppingCart.empty")
-                                    |
-                                    |
-                                    a(href='#market')=I18N("shoppingCart.goToMarket")
+                                        |
+                                        |
+                                        a(href='#market')=I18N("shoppingCart.goToMarket")
                                 template.d-none(data-product-template='desktop')
                                     tr(data-product-id='data-template-id')
                                         td.middle.aligned.shopping-cart__number_cell data-template-index
@@ -208,7 +212,7 @@ html
                                                 data-thumbnail-id='data-template-id'
                                                 )
                                                 .content data-template-title
-                                                    .sub.header Подзаголовок
+                                                    //.sub.header data-template-description         //TODO: Добавить подзаголовок
                                         td.middle.aligned.shopping-cart__actions_cell
                                             button.small.ui.red.icon.button.shopping-cart__action(
                                                 data-tooltip=I18N("shoppingCart.remove") data-inverted
@@ -224,7 +228,7 @@ html
                                         td.shopping-cart__product-name_cell
                                             h4.ui.image.header
                                                 .content data-template-title
-                                                    .sub.header Подзаголовок
+                                                    //.sub.header data-template-description         //TODO: Добавить подзаголовок
                                         td.middle.aligned.shopping-cart__actions_cell
                                             button.small.ui.red.icon.button.shopping-cart__action(
                                                 data-request-function='removeFromCart'
@@ -239,8 +243,73 @@ html
                                     th.shopping-cart__result-price-cell 0
 
 
+                    .col-lg-6.col-md-12
+                        .ui.steps.mini.process-order__steps
+                            .step.active(data-step="delivery")
+                                i.truck.icon
+                                .content
+                                    .title=I18N('processOrder.delivery')
+                            .step.disabled(data-step="payment")
+                                i.payment.icon
+                                .content
+                                    .title=I18N('processOrder.payment')
+                            .step.disabled(data-step="confirm")
+                                i.info.icon
+                                .content
+                                    .title=I18N('processOrder.info')
+                        .owl-carousel.owl-theme.process-order__carousel
+                            .item.process-order__carousel-item
+                                .ui.segment
+                                    .ui.form.process-order__form.process-order__delivery
+                                        .container
+                                            .row
+                                                .col-12.field.process-order__city_field
+                                                    label=I18N('processOrder.city')
+                                                    select.ui.search.dropdown.process-order__city(name="city")
+                                                        option=I18N('processOrder.choseCity')
+                                                        each city, index in cities
+                                                            option(value=index)=city.name
+                                                .col-8.field
+                                                    label=I18N('processOrder.street.label')
+                                                    input(type="text" placeholder=I18N('processOrder.street.placeholder') name="street")
+                                                .col-4.field
+                                                    label=I18N('processOrder.house.label')
+                                                    input(type="text" placeholder=I18N('processOrder.house.placeholder') name="street")
+                                                .col-12.field
+                                                    label=I18N('processOrder.comment.label')
+                                                    textarea(rows="3" placeholder=I18N('processOrder.comment.placeholder'))
+                                                .col-12.field
+                                                    button.ui.primary.button.process-order__button-next=I18N('processOrder.next')
+                                                        i.chevron.right.icon
+
+                            .item.process-order__carousel-item
+                                .ui.segment
+                                    form.ui.form.process-order__form.process-order__payment(onsubmit="pay(this); return false;")
+                                        input(type="hidden" name="terminalkey" value="TinkoffBankTest")
+                                        input(type="hidden" name="frame" value="true")
+                                        input(type="hidden" name="language" value="ru")
+                                        input.process-order__payment__amount(type="hidden" name="amount" required)
+                                        input(type="hidden" name="order" value="asdfasdffq3f3ferfef")
+                                        input.process-order__payment__description(type="hidden" name="description")
+                                        .container
+                                            .row
+                                                .col-12.field
+                                                    label=I18N('processOrder.fullName.label')
+                                                    input(type="text" placeholder=I18N('processOrder.fullName.placeholder') name="name" required)
+                                                .col-12.field
+                                                    label=I18N('processOrder.email.label')
+                                                    input(type="email" placeholder=I18N('processOrder.email.placeholder') name="email" required)
+                                                .col-12.field
+                                                    label=I18N('processOrder.tel.label')
+                                                    input(type="tel" placeholder=I18N('processOrder.tel.label') name="phone" required)
+                                                .col-12.field
+                                                    button.ui.red.button.process-order__button-prev
+                                                        i.chevron.left.icon
+                                                        |
+                                                        =I18N('processOrder.back')
+                                                    input.ui.primary.button.process-order__button-next(type="submit" value=I18N('processOrder.pay'))
         #clients.container-fluid.one-page.gradient-page.clients__page
-            +page_header("Клиенты")
+            +page_header(I18N('clients.header'))
             //.container
             .owl-carousel.owl-theme.clients__carousel
                 each client in clients
@@ -268,18 +337,24 @@ html
             .ui.embed
 
         #gallery.container-fluid.one-page.gallery__page
-            +page_header("Галерея")
+            +page_header(I18N('gallery.header'))
             .owl-carousel.owl-theme.gallery__carousel
+                - const eventsImages = events.reduce((arr, i) => [...arr, i.image], [])
                 each photo, index in gallery
                     .item.gallery__item
-                        img.owl-lazy.gallery__image(data-src="img/thumbnails/" + photo.image data-thumbnail-index=index)
+                        - let useThumb = eventsImages.indexOf(photo.image) === -1
+                        img.owl-lazy.gallery__image(
+                            data-src= (useThumb ? "img/thumbnails/" : "img/photos/") + photo.image
+                            data-thumbnail-index=index
+                        )
 
-        #contacts.container-fluid.one-page.footer__page.gradient-page
+        #contacts.container-fluid.one-page.footer__page.gradient-page(itemscope itemtype="http://schema.org/Organization")
             .row.justify-content-center
                 .col-lg-3.col-md-4.col-sm-12.flex-last.flex-md-unordered.footer__col
-                    img.footer__logo(src='img/logo.svg', alt='')
-                    p «Капсула времени» — первое в России агентство посланий во времени.
-                    p 117216 г. Москва ул Старокочаловская д1 к2. Филиал «Точка» Публичного акционерного общества «Ханты-Мансийский банк Открытие»
+                    img.footer__logo(src='img/logo.svg', alt='' itemprop="logo")
+                    p «
+                        span(itemprop="name") Капсула времени
+                        | » — первое в России агентство посланий во времени.
                     p ТОЧКА ПАО БАНКА «ФК ОТКРЫТИЕ» !{br}
                         | РС: 40802810205500000055 !{br}
                         | КС: 30101810845250000999 !{br}
@@ -287,14 +362,22 @@ html
                 .col-lg-3.col-md-4.col-sm-6.col-12.footer__col
                     h3.footer__header.text-center.text-sm-left
                         i.phone.icon
-                        span.content Контактная информация
-                    p г. Челябинск, Проспект Победы, дом 160.
-                    p г. Санкт-Петербург. Набережная обводного канала, дом 138 (Красный треугольник).
-                    p +7 (499) 375-83-08
+                        span.content=I18N('contacts.contacts')
+                    p(itemprop="address")=I18N('contacts.chel')
+                    p(itemprop="address")=I18N('contacts.spb')
+                    p(itemprop="telephone" content="84993758308") +7 (499) 375-83-08
                 .col-lg-3.col-md-4.col-sm-6.col-12.footer__col
                     h3.footer__header.text-center.text-sm-left
                         i.share.alternate.icon
-                        span.content Мы в соц. сетях
+                        span.content=I18N('contacts.social')
+                    a.ui.facebook.icon.button(href="https://www.facebook.com/1kapsulavremeni")
+                        i.facebook.icon
+                    a.ui.vk.icon.button(href="https://vk.com/1ruskapsula")
+                        i.vk.icon
+                    a.ui.instagram.icon.button(href="https://www.instagram.com/1kapsulavremeni/")
+                        i.instagram.icon
+                    a.ui.youtube.icon.button(href="https://www.youtube.com/channel/UCaKYUJzg-bt2uNq-_H0FyqA")
+                        i.youtube.icon
 
 
 

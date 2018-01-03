@@ -1,8 +1,8 @@
 {
   "capsule-safe": {
-    "title": "Капсула-сейф",
+    "title": "product.capsuleSafe.title",
     "label": "new",
-    "description": "",
+    "description": "product.capsuleSafe.description",
     "images": [
       "vip3.jpg",
       "vip4.jpg",
@@ -18,9 +18,9 @@
     "price": 27000
   },
   "capsule-titanium": {
-    "title": "Титановая капсула",
+    "title": "product.capsuleTitanium.title",
     "label": "hit",
-    "description": "",
+    "description": "product.capsuleTitanium.description",
     "images": [
       "t35-1.jpg",
       "t35-2.jpg",
@@ -29,9 +29,9 @@
     "price": 12000
   },
   "capsule-gold": {
-    "title": "Капсула \"GOLD\"",
+    "title": "product.capsuleGold.title",
     "label": null,
-    "description": "",
+    "description": "product.capsuleGold.description",
     "price": 10000,
     "images": [
       "l35-1.jpg",
@@ -40,22 +40,53 @@
     ]
   },
   "engraving": {
-    "title": "Гравировка",
-    "label": null,
-    "description": "",
+    "title": "product.engraving.title",
+    "label": "hit",
+    "description": "product.engraving.description",
     "price": 0,
     "images": [
       "engraving1.jpg",
-      "engraving2.jpg"
+      "engraving2.jpg",
+      "engraving3.jpg"
     ]
   },
   "case": {
-    "title": "Футляр",
+    "title": "product.case.title",
     "label": null,
-    "description": "",
+    "description": "product.case.description",
     "price": 3500,
     "images": [
-      "case1.jpg"
+      "case1.jpg",
+      "case2.jpg",
+      "case3.jpg",
+      "case4.jpg"
+    ]
+  },
+  "ball": {
+    "title": "product.ball.title",
+    "label": null,
+    "description": "product.ball.description",
+    "price": 1400,
+    "images": [
+      "dop_ball.jpg"
+    ]
+  },
+  "plate": {
+    "title": "product.plate.title",
+    "label": null,
+    "description": "product.plate.description",
+    "price": 15000,
+    "images": [
+      "plate.jpg"
+    ]
+  },
+  "delivery": {
+    "title": "product.delivery.title",
+    "label": null,
+    "description": "product.delivery.description",
+    "price": 0,
+    "images": [
+      "delivery.jpg"
     ]
   }
 }

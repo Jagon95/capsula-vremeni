@@ -1,0 +1,18 @@
+{
+  "lang": "ru",
+  "waypoint": {
+    "pageSettings": {
+      "offset": "130%"
+    },
+    "animationSettings": {
+      "offset": "70%"
+    }
+  },
+  "transitionSettings": {
+    "duration": 700
+  },
+  "images": {
+    "srcBase": "img/photos",
+    "thumbSrcBase": "img/thumbnails"
+  }
+}

@@ -78,7 +78,9 @@
     ],
     "options": [
       "engraving",
-      "case"
+      "case",
+      "ball",
+      "plate"
     ]
   },
   "events": [

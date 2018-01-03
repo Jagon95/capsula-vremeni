@@ -1,7 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const config = {
+const isProd = process.env.NODE_ENV === 'production ';
+
+let config = {
     entry: {
         main: "./src/js/main.js",
     },
@@ -28,13 +30,7 @@ const config = {
             },
             {
                 test: /\.json/,
-                use: 'raw-loader'
-            }
-        ],
-        loaders: [
-            {
-                // test: /\.json$/,
-                // loader: 'json-loader'
+                use: 'json-loader'
             }
         ]
     },
@@ -42,7 +38,6 @@ const config = {
         modules: [path.resolve(__dirname, "src"), "node_modules", path.resolve(__dirname, "tmp")],
         alias: {
             'waypoints': 'waypoints/lib/jquery.waypoints.js',
-            // 'semantic-ui': 'semantic-ui/dist/semantic.js',
             'semantic': "semantic-ui/dist",
             'bootstrap': "bootstrap/js/dist"
         }
@@ -55,13 +50,18 @@ const config = {
             Util: 'exports-loader?Util!bootstrap/util',
             PhotoSwipe: 'photoswipe',
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js'
-        }),
-        // new webpack.optimize.UglifyJsPlugin({
-        //     sourceMap: true,
-        //     parallel: 4,
-        // })
+        })
     ],
     // devtool: "source-map"
 };
+
+if(isProd) {
+    config.plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
+            parallel: 4,
+        })
+    )
+}
 
 module.exports = config;

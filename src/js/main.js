@@ -7,13 +7,19 @@ import 'semantic/components/transition';
 import 'semantic/components/dimmer';
 import 'semantic/components/modal';
 import 'semantic/components/embed';
+import 'semantic/components/dropdown';
 import './embedSources';
-import _products from '../data/product';
-import _imageSizes from 'image_sizes.json';
+import products from '../data/product';
+import _imageSizes from 'image_sizes';
 import _photos from 'data/photos';
+import cities from 'data/cities';
+import settings from 'data/settings';
+import {product as productI18n} from 'data/i18n';
 
-const products = JSON.parse(_products);
-const imageSizes = JSON.parse(_imageSizes).reduce(function (obj, item) {
+const i18n = {
+    product: productI18n
+};
+const imageSizes = _imageSizes.reduce(function (obj, item) {
     obj[item.name] = item;
     return obj;
 }, {});
@@ -49,16 +55,10 @@ function processImageItems(items, src, msrc) {
     }, []);
 }
 
-const transitionSettings = {duration: 700};
-const waypointAnimationSettings = {offset: '70%'};
-const waypointPageSettings = {
-    offset: '130%'
-};
-
 function addListiners(wrapper, context) {
     $('[data-thumbnail-id]', wrapper).css('cursor', 'pointer').click(function () {
         let productId = $(this).data('thumbnailId');
-        let items = processImageItems(products[productId]['images'], 'img/photos', 'img/thumbnails');
+        let items = processImageItems(products[productId]['images'], settings.images.srcBase, settings.images.thumbSrcBase);
         openPhotoSwipe(items);
     });
     $('[data-request-function]', wrapper).click(function () {
@@ -82,26 +82,26 @@ $(document).ready(function () {
                 bleed: 50
             });
             this.destroy();
-        }, waypointPageSettings);
+        }, settings.waypoint.pageSettings);
 
         $('[data-animate-type]').css('visibility', 'hidden').waypoint(function () {
             let el = $(this.element);
-            el.transition(el.data('animateType'), transitionSettings);
+            el.transition(el.data('animateType'), settings.transitionSettings);
             this.destroy();
-        }, waypointAnimationSettings);
+        }, settings.waypoint.animationSettings);
 
         $('[data-animate-indexed]').css('visibility', 'hidden').waypoint(function () {
             let el = $(this.element);
             let offset = el.data('animate-indexed');
             if (offset <= .25) {
-                el.transition('fade left', transitionSettings);
+                el.transition('fade left', settings.transitionSettings);
             } else if (offset < .75) {
-                el.transition('fade up', transitionSettings);
+                el.transition('fade up', settings.transitionSettings);
             } else {
-                el.transition('fade right', transitionSettings);
+                el.transition('fade right', settings.transitionSettings);
             }
             this.destroy();
-        }, waypointAnimationSettings);
+        }, settings.waypoint.animationSettings);
 
         $('.events__page:first').removeClass('d-none').waypoint(function () {
             console.log('init Events');
@@ -124,7 +124,7 @@ $(document).ready(function () {
                 }
             });
             this.destroy();
-        }, waypointPageSettings);
+        }, settings.waypoint.pageSettings);
 
     }
 
@@ -219,7 +219,111 @@ $(document).ready(function () {
         switchTo(activeTab);
         addListiners(this.element, requests);
         this.destroy();
-    }, waypointPageSettings);
+    }, settings.waypoint.pageSettings);
+
+
+
+    const productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`, this.element).html();
+    $('[data-product-template]').remove();
+    // let cartCounter = 0;
+    let cartItems = [];
+
+    function get(obj, i) {
+        return i.split('.').reduce((o, i) => o[i], obj);
+    }
+
+    function I18N(index) {
+        return get(i18n, index);
+    }
+
+    function translateFields(obj, fields) {
+        fields.forEach((i) => {
+            obj[i] = I18N(obj[i])
+        })
+    }
+
+    for(let key of Object.keys(products)) {
+        translateFields(products[key], ['title', 'description']);
+    }
+
+    function updatePaymentDescription() {
+        $('.process-order__payment__description').attr('value', cartItems.reduce((res, i) => res.concat(products[i]['title']), []).join(', '));
+    }
+
+    function addToCart(id) {
+        const requests = {
+            addToCart,
+            removeFromCart
+        };
+        if (cartItems.indexOf(id) !== -1) {
+            return;
+        }
+        if (cartItems.length === 0) {
+            // $('.shopping-cart__empty-handler').addClass('transition hidden');
+            $('.shopping-cart__empty-handler').transition('fade out', {duration: 0});
+            // $('.shopping-cart__empty-handler').hide();
+        }
+        cartItems.push(id);
+        $(`.product__buy-button[data-product-id="${id}"]`).addClass('active');
+        let product = products[id];
+        let templateData = {
+            ...product,
+            file: settings.images.thumbSrcBase + '/' + product.images[0],
+            index: cartItems.length,
+            id
+        };
+        let template = productTemplate.replace(/data-template-(\w+)/ig, (match, field) => templateData[field]);
+        let newElement = $('<div>').html(template).children();
+        $('.shopping-cart__body').append(newElement);
+        updatePaymentDescription();
+        updateResultPrice();
+        newElement.transition('fade in', {
+            duration: 700,
+            onComplete: function () {
+                addListiners(newElement, requests);
+            }
+        });
+    }
+
+    let shoppingCart = $('.shopping-cart__page:first');
+
+    function removeFromCart(id) {
+        let index = cartItems.indexOf(id);
+        if (index === -1) {
+            return;
+        }
+        cartItems.splice(index, 1);
+        $(`.product__buy-button[data-product-id="${id}"]`).removeClass('active');
+        updatePaymentDescription();
+        shoppingCart.find(`[data-product-id=${id}]`).transition('fade', {
+            onComplete: function () {
+                this.remove();
+                updateCartIndexes();
+                updateResultPrice();
+                if (cartItems.length === 0) {
+                    $('.shopping-cart__empty-handler').transition('fade in');
+                }
+            }
+        });
+    }
+
+    function updateResultPrice() {
+        let resEl = $('.shopping-cart__result-price-cell');
+        let res = cartItems.reduce((sum, productId) => {
+            return sum + products[productId]['price'];
+        }, 0);
+        resEl.html(res);
+        $('.process-order__payment__amount').attr('value', res);
+    }
+
+    function updateCartIndexes() {
+        let counter = 0;
+        let indexCells = $('.shopping-cart__body .shopping-cart__number_cell').each(function () {
+            $(this).html(++counter);
+        })
+    }
+
+
 
     $('.market__page:first').waypoint(function () {
 
@@ -249,76 +353,6 @@ $(document).ready(function () {
             removeFromCart
         };
         console.log('init Market');
-        const productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`).html();
-        $('[data-product-template]').remove();
-        // let cartCounter = 0;
-        let cartItems = [];
-
-        function addToCart(id) {
-            if (cartItems.indexOf(id) !== -1) {
-                return;
-            }
-            if (cartItems.length === 0) {
-                // $('.shopping-cart__empty-handler').addClass('transition hidden');
-                $('.shopping-cart__empty-handler').transition('fade out', {duration: 0});
-                // $('.shopping-cart__empty-handler').hide();
-            }
-            cartItems.push(id);
-            $(`.product__buy-button[data-product-id="${id}"]`).addClass('active');
-            let product = products[id];
-            let templateData = {
-                ...product,
-                file: 'img/thumbnails/' + product.images[0],
-                index: cartItems.length,
-                id
-            };
-            let template = productTemplate.replace(/data-template-(\w+)/ig, (match, field) => templateData[field]);
-            let newElement = $('<div>').html(template).children();
-            $('.shopping-cart__body').append(newElement);
-            updateResultPrice();
-            newElement.transition('fade in', {
-                duration: 700,
-                onComplete: function () {
-                    addListiners(newElement, requests);
-                }
-            });
-        }
-
-        let shoppingCart = $('.shopping-cart__page:first');
-
-        function removeFromCart(id) {
-            let index = cartItems.indexOf(id);
-            if (index === -1) {
-                return;
-            }
-            cartItems.splice(index, 1);
-            $(`.product__buy-button[data-product-id="${id}"]`).removeClass('active');
-            shoppingCart.find(`[data-product-id=${id}]`).transition('fade', {
-                onComplete: function () {
-                    this.remove();
-                    updateCartIndexes();
-                    updateResultPrice();
-                    if (cartItems.length === 0) {
-                        $('.shopping-cart__empty-handler').transition('fade in');
-                    }
-                }
-            });
-        }
-
-        function updateResultPrice() {
-            let resEl = $('.shopping-cart__result-price-cell');
-            let res = cartItems.reduce((sum, productId) => {
-                return sum + products[productId]['price'];
-            }, 0);
-            resEl.html(res);
-        }
-
-        function updateCartIndexes() {
-            let counter = 0;
-            let indexCells = $('.shopping-cart__body .shopping-cart__number_cell').each(function () {
-                $(this).html(++counter);
-            })
-        }
 
         // $('.product__buy-button').click(function (e) {
         //     let el = $(this);
@@ -328,7 +362,55 @@ $(document).ready(function () {
 
         addListiners(this.element, requests);
         this.destroy();
-    }, waypointPageSettings);
+    }, settings.waypoint.pageSettings);
+
+    shoppingCart.waypoint(function () {
+        const stepTo = (s) => {
+            let steps = $('.process-order__steps', this.element);
+            let step = $(`.step[data-step="${s}"]`, steps);
+            steps.find('.step').removeClass('disabled active completed');
+            step.prevAll('.step').addClass('completed');
+            step.addClass('active');
+            step.nextAll('.step').addClass('disabled');
+        };
+
+        let processCrousel = $('.process-order__carousel', this.element).owlCarousel({
+            items: 1,
+            mouseDrag: false,
+            touchDrag: false,
+            dots: false
+        });
+        let cityId = null;
+        $('.process-order__delivery .process-order__button-next').click(() => {
+            let cityIndex = parseInt($('.process-order__city select', this.element).val());
+            if(!Number.isInteger(cityIndex)) {
+                $('.process-order__city_field').addClass('error').one('click', function () {
+                    $(this).removeClass('error');
+                });
+                return
+            }
+            products['currentDelivery'] = {
+                ...products['delivery'],
+                price: cities[cityIndex]['price']
+            };
+            if(cityIndex !== cityId) {
+                removeFromCart('currentDelivery');
+                addToCart('currentDelivery');
+                cityId = cityIndex;
+            }
+            stepTo('payment');
+            processCrousel.trigger('next.owl.carousel');
+        });
+
+        $('.process-order__payment .process-order__button-prev').click(() => {
+            stepTo('delivery');
+            processCrousel.trigger('prev.owl.carousel');
+            return false;
+        });
+
+        $('.process-order__city', this.element).dropdown();
+        this.destroy();
+    }, settings.waypoint.pageSettings);
 
     $('.clients__page:first').waypoint(function () {
         console.log('init Clients');
@@ -399,11 +481,12 @@ $(document).ready(function () {
         });
 
         this.destroy();
-    }, waypointPageSettings);
+    }, settings.waypoint.pageSettings);
 
     $('.gallery__page:first').waypoint(function () {
         console.log('init Gallery');
-        $('.gallery__carousel', this.element).owlCarousel({
+        let gallery =  $('.gallery__carousel', this.element);
+        gallery.owlCarousel({
             margin: 10,
             autoWidth: true,
             responsive: {
@@ -420,15 +503,18 @@ $(document).ready(function () {
                     items: 5
                 }
             }
-        });
+        }).css('visibility', 'hidden').transition('fade in', settings.transitionSettings);
 
-        const items = processImageItems(JSON.parse(_photos)
-            .reduce((r, photo) => [...r, photo.image], []), 'img/photos', 'img/thumbnails');
-
+        let isDragged;
+        const items = processImageItems(_photos.reduce((r, photo) => [...r, photo.image], []), settings.images.srcBase, settings.images.thumbSrcBase);
+        gallery.on('drag.owl.carousel', (e) => isDragged = true)
+            .on('dragged.owl.carousel', (e) => setTimeout(() => {isDragged = false}, 100));
         $('.gallery__image').click(function () {
-            openPhotoSwipe(items, $(this).data('thumbnailIndex'));
+            if(!isDragged) {
+                openPhotoSwipe(items, $(this).data('thumbnailIndex'));
+            }
         });
 
         this.destroy();
-    }, waypointPageSettings);
+    }, settings.waypoint.pageSettings);
 });

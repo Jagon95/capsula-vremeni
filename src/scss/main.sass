@@ -199,7 +199,7 @@ h3
       size: 16px
       weight: 600
     &title
-      +font(1.1)
+      +header(.7)
     &buy-button
       flex-grow: 1
       &_goto
@@ -346,6 +346,19 @@ h3
         color: #fff
     &date
       align-self: flex-end
+
+  .process-order__
+    &steps
+      width: 100%
+    &carousel
+      .owl-stage, .owl-item
+        width: 100%
+      &-item
+        margin-right: 2px
+    &city .menu.transition
+      max-height: 16rem
+    &button-next
+      float: right
 
   .owl-item.animated .clients__video-button
     pointer-events: none

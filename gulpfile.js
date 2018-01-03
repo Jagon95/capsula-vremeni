@@ -87,19 +87,14 @@ gulp.task('babel', () => {
 });
 
 gulp.task('pug', () => {
-    // imageSize.record({
-    //     path: 'build/img/photos/*.jpg',
-    //     output: "src/image_sizes.json",
-    //     breakpointDelimiter: '/'
-    // });
-
-    gulp.src('src/pug/**/*.pug')
+    gulp.src('src/pug/index.pug')
         .pipe(data(() => require('./src/data/data.json')))
         .pipe(data(() => {
             return {
-                products: require('./src/data/product.json'),
-                gallery: require('./src/data/photos.json'),
-                i18n: require('./src/data/i18n.json')
+                products: require('./src/data/product'),
+                gallery: require('./src/data/photos'),
+                i18n: require('./src/data/i18n'),
+                cities: require('./src/data/cities')
             };
         }))
         .pipe(pug({
@@ -137,7 +132,7 @@ gulp.task('images', () => {
             width: 300,
             height: 300,
             upscale: false,
-            crop: true,
+            crop: false,
             gravity: 'North'
         }), cores))
         .pipe(parallel(imagemin(imageminConfig), cores))
@@ -148,7 +143,7 @@ gulp.task('images', () => {
     streams.push(gulp.src(photosThumbnails, {cwd: './img/photos/'})
         .pipe(changed('build/img/thumbnails'))
         .pipe(parallel(imageResize({
-            height: 450,
+            height: 350,
             upscale: false,
             crop: false
         }), cores))
@@ -196,7 +191,24 @@ gulp.task('images', () => {
         .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('./build/')));
 
-    streams.push(gulp.src(['img/**/*.{jpg,jpeg,png}', ...exclude(clientsImages), ...exclude(clientsIcons), '!img/events/*.*'], {base: '.'})
+    const eventsImages = data.events.reduce((r, event) => [...r, event.image], []);
+    streams.push(gulp.src(eventsImages, {
+        cwd: './img/photos',
+        base: '.'
+    })
+        .pipe(changed('build/img/events'))
+        .pipe(parallel(imageResize({
+            height: 800,
+            upscale: false,
+            crop: false,
+        }), cores))
+        .pipe(parallel(imagemin(imageminConfig), cores))
+        .pipe(gulp.dest('build')));
+
+    streams.push(gulp.src([
+        'img/**/*.{jpg,jpeg,png}',
+        ...exclude([].concat(clientsImages, clientsIcons, eventsImages))
+    ], {base: '.'})
         .pipe(changed('./build/'))
         .pipe(parallel(imageResize({
             width: 1920,
@@ -206,16 +218,6 @@ gulp.task('images', () => {
         }), cores))
         .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('./build/')));
-
-    streams.push(gulp.src(['img/events/*.*'])
-        .pipe(changed('build/img/events'))
-        .pipe(parallel(imageResize({
-            height: 800,
-            upscale: false,
-            crop: false,
-        }), cores))
-        .pipe(parallel(imagemin(imageminConfig), cores))
-        .pipe(gulp.dest('build/img/events')));
 
     let promises = streams.map(mkPromise);
     Promise.all(promises).then(() => {
@@ -260,4 +262,4 @@ gulp.task('set-dev', dev.task);
 gulp.task('set-prod', prod.task);
 
 gulp.task('default', sequence('set-dev', 'pug', 'build-css', 'connect', 'watch'));
-gulp.task('build', sequence('set-prod', 'pug', /*'build-js',*/ ['copy', 'images'], 'image-size', 'build-css'));
+gulp.task('build', sequence('set-prod', 'pug', ['copy', 'images'], 'build-css'));
