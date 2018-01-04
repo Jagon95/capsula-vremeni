@@ -34,11 +34,10 @@ mixin product_item(name, product)
                     =product.price > 0 ? product.price + ` ${I18N("product.currency")}` : I18N("product.free")
 
 mixin page_header(title)
-    h2.page-header(data-animate-type="fade in")= title
+    h2.page-header= title
 
 doctype html
 html
-    f()
     head
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
@@ -87,8 +86,8 @@ html
 
         #about_capsule.container-fluid.one-page.about-capsule__page
             +page_header(I18N("aboutCapsule.header"))
-            .container(data-animate-type="fade up")
-                .row.justify-content-center.animated
+            .container
+                .row.justify-content-center
                     .col-md-10.col-sm-12
                         h3=I18N("aboutCapsule.description")
                 .row.justify-content-center
@@ -101,7 +100,7 @@ html
                                     i(class=item.icon + ' icon')
                                     .content.about-capsule__text=I18N(item.text)
 
-        #events.container-fluid.one-page.events__page.gradient-page.d-none
+        #events.container-fluid.one-page.events__page.gradient-page
             +page_header(I18N("events.header"))
             .owl-carousel.owl-theme.events__carousel
                 each event in events
@@ -118,7 +117,7 @@ html
             .container
                 .row.justify-content-center
                     .col-md-10.col-sm-12
-                        .row.justify-content-center.advantages__wrapper(data-animate-type="fade up")
+                        .row.advantages__wrapper
                             each advantage, index in advantages
                                 .col-lg-6.col-md-12.row.advantages__item
                                     .container-fluid
@@ -127,14 +126,12 @@ html
                                                 h3.ui.icon.header
                                                     i(class=advantage.icon + ' icon')
                                             .col-9.advantages__text=I18N(advantage.description)
-                            if advantages.length % 2 === 1
-                                .col-lg-6.d-lg-flex.d-none.row
 
         .container-fluid.d-none.titanium-capsule-parallax
 
         #capsule_content.container-fluid.one-page.capsule-content__page
             +page_header(I18N("capsuleContent.header"))
-            .container(data-animate-type="fade up")
+            .container
                 .row.justify-content-center
                     .col-md-10.col-sm-12
                         h3=I18N("capsuleContent.description")
@@ -146,7 +143,7 @@ html
                         .row.justify-content-center.d-none.d-md-flex.tab-controllers
                             - var index = 0
                             each item, tab in tabs
-                                .col-xl-2.col-md-3.col-sm-4(data-animate-indexed=((index++) / (Object.keys(tabs).length - 1)))
+                                .col-xl-2.col-md-3.col-sm-4
                                     .ui.raised.link.fluid.card.card-tab-switcher__wrapper(
                                         data-request-function='switchTo'
                                         data-function-argument=tab
@@ -156,7 +153,7 @@ html
                                             img.ui.centered.medium.image(src='img/' + item.image)
                                         .content.center.aligned.card-tab-switcher__title-wrapper
                                             p.card-tab-switcher__title=I18N(item.title)
-                        .row.justify-content-center(data-animate-type="fade up")
+                        .row.justify-content-center
                             .col-lg-10.col-md-12.tab-page__wrapper
                                 .ui.blue.segment.container.tabs.tab-page__container
                                     each item, tab in tabs
@@ -174,14 +171,14 @@ html
             .container
                 .row.justify-content-center
                     .col-12
-                        h3(data-animate-type="fade in")=I18N("market.choseCapsule")
-                        .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
+                        h3=I18N("market.choseCapsule")
+                        .owl-carousel.owl-theme.market__carousel
                             each product, name in filterByKeys(products, products_categories['capsules'])
                                 +product_item(name, product)
                 .row.justify-content-center
                     .col-12
-                        h3(data-animate-type="fade in")=I18N("market.choseOptions")
-                        .owl-carousel.owl-theme.market__carousel(data-animate-type="fade up")
+                        h3=I18N("market.choseOptions")
+                        .owl-carousel.owl-theme.market__carousel
                             each product, name in filterByKeys(products, products_categories['options'])
                                 +product_item(name, product)
 
@@ -363,10 +360,10 @@ html
                     h3.footer__header.text-center.text-sm-left
                         i.phone.icon
                         span.content=I18N('contacts.contacts')
-                    p(itemprop="address")=I18N('contacts.chel')
-                    p(itemprop="address")=I18N('contacts.spb')
+                    p(itemprop="address")=I18N('contacts.address.chel')
+                    p(itemprop="address")=I18N('contacts.address.spb')
                     p(itemprop="telephone" content="84993758308") +7 (499) 375-83-08
-                .col-lg-3.col-md-4.col-sm-6.col-12.footer__col
+                .col-lg-3.col-md-4.col-sm-6.col-12.footer__col.text-center.text-sm-left
                     h3.footer__header.text-center.text-sm-left
                         i.share.alternate.icon
                         span.content=I18N('contacts.social')

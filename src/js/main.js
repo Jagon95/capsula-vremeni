@@ -74,6 +74,12 @@ function addListiners(wrapper, context) {
 
 
 $(document).ready(function () {
+    function refreshWaypoints() {
+        setTimeout(() => {
+            Waypoint.refreshAll();
+        }, 10);
+    }
+
     if (!isMobile()) {
         $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(function () {
             $(this.element).parallax({
@@ -83,25 +89,6 @@ $(document).ready(function () {
             });
             this.destroy();
         }, settings.waypoint.pageSettings);
-
-        $('[data-animate-type]').css('visibility', 'hidden').waypoint(function () {
-            let el = $(this.element);
-            el.transition(el.data('animateType'), settings.transitionSettings);
-            this.destroy();
-        }, settings.waypoint.animationSettings);
-
-        $('[data-animate-indexed]').css('visibility', 'hidden').waypoint(function () {
-            let el = $(this.element);
-            let offset = el.data('animate-indexed');
-            if (offset <= .25) {
-                el.transition('fade left', settings.transitionSettings);
-            } else if (offset < .75) {
-                el.transition('fade up', settings.transitionSettings);
-            } else {
-                el.transition('fade right', settings.transitionSettings);
-            }
-            this.destroy();
-        }, settings.waypoint.animationSettings);
 
         $('.events__page:first').removeClass('d-none').waypoint(function () {
             console.log('init Events');
@@ -121,7 +108,8 @@ $(document).ready(function () {
                     1280: {
                         items: 3
                     }
-                }
+                },
+                onInitialized: refreshWaypoints
             });
             this.destroy();
         }, settings.waypoint.pageSettings);
@@ -283,6 +271,7 @@ $(document).ready(function () {
                 addListiners(newElement, requests);
             }
         });
+        refreshWaypoints();
     }
 
     let shoppingCart = $('.shopping-cart__page:first');
@@ -305,6 +294,7 @@ $(document).ready(function () {
                 }
             }
         });
+        refreshWaypoints();
     }
 
     function updateResultPrice() {
@@ -345,7 +335,8 @@ $(document).ready(function () {
                 992: {
                     items: 5
                 }
-            }
+            },
+            onInitialized: refreshWaypoints
         });
 
         const requests = {
@@ -378,7 +369,8 @@ $(document).ready(function () {
             items: 1,
             mouseDrag: false,
             touchDrag: false,
-            dots: false
+            dots: false,
+            onInitialized: refreshWaypoints
         });
         let cityId = null;
         $('.process-order__delivery .process-order__button-next').click(() => {
@@ -423,7 +415,8 @@ $(document).ready(function () {
             video:true,
             autoplay: true,
             autoplayTimeout: 4000,
-            animateOut: 'fadeOut'
+            animateOut: 'fadeOut',
+            onInitialized: refreshWaypoints
         });
 
         const calculateImageOffset = ($el) => {
@@ -489,21 +482,9 @@ $(document).ready(function () {
         gallery.owlCarousel({
             margin: 10,
             autoWidth: true,
-            responsive: {
-                0: {
-                    items: 1
-                },
-                576: {
-                    items: 2
-                },
-                768: {
-                    items: 4
-                },
-                992: {
-                    items: 5
-                }
-            }
-        }).css('visibility', 'hidden').transition('fade in', settings.transitionSettings);
+            lazyLoad: true,
+            onInitialized: refreshWaypoints
+        });
 
         let isDragged;
         const items = processImageItems(_photos.reduce((r, photo) => [...r, photo.image], []), settings.images.srcBase, settings.images.thumbSrcBase);
@@ -514,7 +495,6 @@ $(document).ready(function () {
                 openPhotoSwipe(items, $(this).data('thumbnailIndex'));
             }
         });
-
         this.destroy();
     }, settings.waypoint.pageSettings);
 });
