@@ -9,6 +9,8 @@ const unCss = require('postcss-uncss');
 const csso = require('postcss-csso');
 const cssnano = require('cssnano');
 const discardFont = require('postcss-discard-font-face');
+const jpegRecompress = require('imagemin-jpeg-recompress');
+const svgo = require('imagemin-svgo');
 const loadPlugins = require('gulp-load-plugins')({
     rename: {
         'gulp-environments': 'env',
@@ -123,14 +125,20 @@ gulp.task('images', () => {
     const exclude = (array) => {
         return array.map((i) => `!**/${i}`);
     };
-
     const imageminConfig = [
-        imagemin.jpegtran({progressive: true}),
+        jpegRecompress({
+            loops:10,
+            min: 40,
+            max: 75,
+            quality:'high',
+            accurate: true,
+            strip: true
+        }),
         imagemin.optipng({optimizationLevel: 5}),
-        imagemin.svgo({
+        // SVG
+        svgo({
             plugins: [
-                {removeViewBox: true},
-                {cleanupIDs: false}
+                {removeViewBox: false}
             ]
         })
     ];
@@ -210,7 +218,7 @@ gulp.task('images', () => {
         cwd: './img/photos',
         base: '.'
     })
-        .pipe(changed('build/img/events'))
+        .pipe(changed('./build/'))
         .pipe(parallel(imageResize({
             height: 800,
             upscale: false,
