@@ -27,7 +27,8 @@ mixin product_item(name, product)
                     data-function-argument=name
                     data-product-id=name
                 )
-                    span.product__buy-button_add=I18N("product.addToCart")
+                    span.product__buy-button_add.d-none.d-lg-inline=I18N("product.addToCart")
+                    i.product__buy-button_add.d-inline-none.d-lg-none.shop.icon
                     span.product__buy-button_goto
                         a(href='#shopping_cart')=I18N("product.order")
                 span.ui.basic.primary.left.pointing.label.product__price(itemprop="price" content=product.price)
@@ -43,9 +44,12 @@ html
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
         title=I18N("head.title")
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
-        link(href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet")
         script(src="js/script.js" async)
         script(src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js" async)
+        each size in settings.images.favicon.apple.sizes
+            link(rel="apple-touch-icon" sizes=size href=settings.images.favicon.apple.path + settings.images.favicon.apple.name.replace('{{size}}', size))
+        each size in settings.images.favicon.favicon.sizes
+            link(rel="icon" type="image/png" sizes=size, href=settings.images.favicon.favicon.path + settings.images.favicon.favicon.name.replace('{{size}}', size))
     body#kapsula
         #introduction.container-fluid.one-page.introduction__page.gradient-page
             #header.container-fluid.menu-header__wrapper
@@ -100,7 +104,7 @@ html
                                     i(class=item.icon + ' icon')
                                     .content.about-capsule__text=I18N(item.text)
 
-        #events.container-fluid.one-page.events__page.gradient-page
+        #events.container-fluid.one-page.events__page.d-none.gradient-page
             +page_header(I18N("events.header"))
             .owl-carousel.owl-theme.events__carousel
                 each event in events
@@ -168,7 +172,7 @@ html
 
         #market.container-fluid.one-page.gradient-page.market__page
             +page_header(I18N("market.header"))
-            .container
+            .container-md-fluid.container
                 .row.justify-content-center
                     .col-12
                         h3=I18N("market.choseCapsule")
@@ -184,9 +188,9 @@ html
 
         #shopping_cart.container-fluid.one-page.shopping-cart__page
             +page_header(I18N("shoppingCart.header"))
-            .container
+            .container-md-fluid.container
                 .row.justify-content-center
-                    .col-lg-6.col-md-12
+                    .col-lg-6.col-md-12.shopping-cart__column
                         table.ui.celled.unstackable.table.shopping-cart__wrapper
                             thead.shopping-cart__header
                                 tr
@@ -240,8 +244,8 @@ html
                                     th.shopping-cart__result-price-cell 0
 
 
-                    .col-lg-6.col-md-12
-                        .ui.steps.mini.process-order__steps
+                    .col-lg-6.col-md-12.shopping-cart__column.process-order__wrapper
+                        .ui.steps.mini.process-order__steps.d-none.d-md-inline-flex
                             .step.active(data-step="delivery")
                                 i.truck.icon
                                 .content
@@ -281,7 +285,7 @@ html
 
                             .item.process-order__carousel-item
                                 .ui.segment
-                                    form.ui.form.process-order__form.process-order__payment(onsubmit="pay(this); return false;")
+                                    form.ui.form.process-order__form.process-order__payment
                                         input(type="hidden" name="terminalkey" value="TinkoffBankTest")
                                         input(type="hidden" name="frame" value="true")
                                         input(type="hidden" name="language" value="ru")
@@ -300,7 +304,7 @@ html
                                                     label=I18N('processOrder.tel.label')
                                                     input(type="tel" placeholder=I18N('processOrder.tel.label') name="phone" required)
                                                 .col-12.field
-                                                    button.ui.red.button.process-order__button-prev
+                                                    .ui.red.button.process-order__button-prev
                                                         i.chevron.left.icon
                                                         |
                                                         =I18N('processOrder.back')
@@ -367,13 +371,13 @@ html
                     h3.footer__header.text-center.text-sm-left
                         i.share.alternate.icon
                         span.content=I18N('contacts.social')
-                    a.ui.facebook.icon.button(href="https://www.facebook.com/1kapsulavremeni")
+                    a.ui.big.facebook.icon.button.footer__social-button(href="https://www.facebook.com/1kapsulavremeni")
                         i.facebook.icon
-                    a.ui.vk.icon.button(href="https://vk.com/1ruskapsula")
+                    a.ui.big.vk.icon.button.footer__social-button(href="https://vk.com/1ruskapsula")
                         i.vk.icon
-                    a.ui.instagram.icon.button(href="https://www.instagram.com/1kapsulavremeni/")
+                    a.ui.big.instagram.icon.button.footer__social-button(href="https://www.instagram.com/1kapsulavremeni/")
                         i.instagram.icon
-                    a.ui.youtube.icon.button(href="https://www.youtube.com/channel/UCaKYUJzg-bt2uNq-_H0FyqA")
+                    a.ui.big.youtube.icon.button.footer__social-button(href="https://www.youtube.com/channel/UCaKYUJzg-bt2uNq-_H0FyqA")
                         i.youtube.icon
 
 

@@ -26,11 +26,12 @@ gulp.task('connect', () => {
 });
 
 gulp.task('reloader', () => {
-    connect.reload();
+    gulp.src('build')
+        .pipe(connect.reload());
 });
 
 gulp.task('watch', (() => {
-    // gulp.watch(['src/js/**/*.js'], ['build-js']);
+    gulp.watch(['build/js/**/*.js'], ['reloader']);
     gulp.watch(['src/scss/**/*.sass', 'src/scss/**/*.scss'], ['build-css']);
     gulp.watch(['src/pug/**/*.pug'], ['pug']);
 }));
@@ -74,18 +75,6 @@ gulp.task('purify-css', () => {
         .pipe(gulp.dest('tmp/css'));
 });
 
-
-gulp.task('babel', () => {
-    gulp.src('src/js/main.js')
-        .pipe(babel({
-            presets: ['env', 'stage-3']
-        }))
-        .pipe(rename({
-            prefix: 'babel-'
-        }))
-        .pipe(gulp.dest('tmp/js'));
-});
-
 gulp.task('pug', () => {
     gulp.src('src/pug/index.pug')
         .pipe(data(() => require('./src/data/data.json')))
@@ -94,7 +83,8 @@ gulp.task('pug', () => {
                 products: require('./src/data/product'),
                 gallery: require('./src/data/photos'),
                 i18n: require('./src/data/i18n'),
-                cities: require('./src/data/cities')
+                cities: require('./src/data/cities'),
+                settings: require('./src/data/settings')
             };
         }))
         .pipe(pug({
@@ -126,7 +116,7 @@ gulp.task('images', () => {
     let streams = [];
     let products = require('./src/data/product.json');
     let productsThumbnails = Object.values(products).reduce((r, a) => [...r, ...a.images], []);
-    streams.push(gulp.src(productsThumbnails, {cwd: './img/photos/'})
+    gulp.src(productsThumbnails, {cwd: './img/photos/'})
         .pipe(changed('build/img/thumbnails'))
         .pipe(parallel(imageResize({
             width: 300,
@@ -136,11 +126,11 @@ gulp.task('images', () => {
             gravity: 'North'
         }), cores))
         .pipe(parallel(imagemin(imageminConfig), cores))
-        .pipe(gulp.dest('build/img/thumbnails')));
+        .pipe(gulp.dest('build/img/thumbnails'));
 
     let photos = require('./src/data/photos.json');
     let photosThumbnails = photos.reduce((r, photo) => [...r, photo.image], []);
-    streams.push(gulp.src(photosThumbnails, {cwd: './img/photos/'})
+    gulp.src(photosThumbnails, {cwd: './img/photos/'})
         .pipe(changed('build/img/thumbnails'))
         .pipe(parallel(imageResize({
             height: 350,
@@ -148,7 +138,7 @@ gulp.task('images', () => {
             crop: false
         }), cores))
         .pipe(parallel(imagemin(imageminConfig), cores))
-        .pipe(gulp.dest('build/img/thumbnails')));
+        .pipe(gulp.dest('build/img/thumbnails'));
 
     const data = require('./src/data/data.json');
     const clientsImages = data.clients.reduce((r, client) => [...r, client.image], []);
@@ -207,7 +197,8 @@ gulp.task('images', () => {
 
     streams.push(gulp.src([
         'img/**/*.{jpg,jpeg,png}',
-        ...exclude([].concat(clientsImages, clientsIcons, eventsImages))
+        ...exclude([].concat(clientsImages, clientsIcons, eventsImages)),
+        '!img/favicon/*.*'
     ], {base: '.'})
         .pipe(changed('./build/'))
         .pipe(parallel(imageResize({
@@ -218,6 +209,11 @@ gulp.task('images', () => {
         }), cores))
         .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('./build/')));
+
+    gulp.src('img/favicon/*.*')
+        .pipe(changed('./build/img/favicon'))
+        .pipe(gulp.dest('./build/img/favicon'));
+
 
     let promises = streams.map(mkPromise);
     Promise.all(promises).then(() => {

@@ -15,6 +15,12 @@ import _photos from 'data/photos';
 import cities from 'data/cities';
 import settings from 'data/settings';
 import {product as productI18n} from 'data/i18n';
+import Raven from 'raven-js';
+Raven
+    .config('https://5f8a5a89b1294f0dab6dbdd0039d349d@sentry.io/267051', {
+        shouldSendCallback: false
+    })
+    .install();
 
 const i18n = {
     product: productI18n
@@ -72,13 +78,242 @@ function addListiners(wrapper, context) {
     }
 }
 
+function refreshWaypoints() {
+    setTimeout(() => {
+        Waypoint.refreshAll();
+    }, 10);
+}
 
-$(document).ready(function () {
-    function refreshWaypoints() {
-        setTimeout(() => {
-            Waypoint.refreshAll();
-        }, 10);
+function prepareData() {
+    function get(obj, i) {
+        return i.split('.').reduce((o, i) => o[i], obj);
     }
+
+    function I18N(index) {
+        return get(i18n, index);
+    }
+
+    function translateFields(obj, fields) {
+        fields.forEach((i) => {
+            obj[i] = I18N(obj[i])
+        })
+    }
+
+    for(let key of Object.keys(products)) {
+        translateFields(products[key], ['title', 'description']);
+    }
+}
+
+class ShoppingCart {
+    /**
+     *
+     * @param {jquery} $el
+     */
+    constructor($el) {
+        this.wrapper = $el;
+        this._initUi();
+        this.productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`, this.wrapper).html();
+        $('[data-product-template]').remove();
+        this.items = [];
+        this.result = 0;
+    }
+
+    getResult() {
+        return this.result;
+    }
+
+    getItems() {
+        return this.items;
+    }
+
+    _initUi() {
+        this.ui = {
+            emptyHandler: $('.shopping-cart__empty-handler', this.wrapper),
+            body: $('.shopping-cart__body', this.wrapper),
+            result: $('.shopping-cart__result-price-cell', this.wrapper)
+        }
+    }
+
+    addProduct(id) {
+        const requests = {
+            addToCart: this.addProduct,
+            removeFromCart: this.removeProduct
+        };
+        if (this.items.indexOf(id) !== -1) {
+            return;
+        }
+        if (this.items.length === 0) {
+            // $('.shopping-cart__empty-handler').addClass('transition hidden');
+            this.ui.emptyHandler.transition('fade out', {duration: 0});
+            // $('.shopping-cart__empty-handler').hide();
+        }
+        this.items.push(id);
+        $(`.product__buy-button[data-product-id="${id}"]`).addClass('active');  //todo: remove
+        let product = products[id];
+        let templateData = {
+            ...product,
+            file: settings.images.thumbSrcBase + '/' + product.images[0],
+            index: this.items.length,
+            id
+        };
+        let template = this.productTemplate.replace(/data-template-(\w+)/ig, (match, field) => templateData[field]);
+        let newElement = $('<div>').html(template).children();
+        this.ui.body.append(newElement);
+        this._updateResult();
+        newElement.transition('fade in', {
+            duration: 700,
+            onComplete: function () {
+                addListiners(newElement, requests);
+            }
+        });
+        refreshWaypoints();
+    }
+
+    removeProduct(id) {
+        let index = this.items.indexOf(id);
+        if (index === -1) {
+            return;
+        }
+        this.items.splice(index, 1);
+        $(`.product__buy-button[data-product-id="${id}"]`).removeClass('active');   //todo: remove
+        let productEl = this.ui.body.find(`[data-product-id=${id}]`);
+        productEl.transition('fade', {
+            onComplete: () => {
+                productEl.remove();
+                this._updateIndexes();
+                this._updateResult();
+                if (this.items.length === 0) {
+                    this.ui.emptyHandler.transition('fade in');
+                }
+            }
+        });
+        refreshWaypoints();
+    }
+
+    _updateResult() {
+        let res = this.items.reduce((sum, productId) => {
+            return sum + products[productId]['price'];
+        }, 0);
+        this.ui.result.html(res);
+        this.result = res;
+    }
+
+    _updateIndexes() {
+        let counter = 0;
+        this.ui.body.find('.shopping-cart__number_cell').each(function () {
+            $(this).html(++counter);
+        })
+    }
+}
+
+class Order {
+    constructor($el) {
+        this.wrapper = $el;
+        this._initUi();
+        this.cityId = null;
+        this.shoppingCart = null;
+        this.steps = ['delivery', 'payment', 'confirm'];
+        this.currentStep = this.ui.steps.find('.step.active:first').data('step') || this.steps[0];
+
+        this.ui.carousel.owlCarousel({
+            items: 1,
+            mouseDrag: false,
+            touchDrag: false,
+            dots: false,
+            onInitialized: refreshWaypoints
+        });
+        this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
+        this.ui.stepBackButton.click(this.stepBack.bind(this));
+        this.ui.paymentForm.submit(this.processPayment.bind(this));
+        this.ui.cityesSelector.dropdown();
+    }
+
+    _initUi() {
+        this.ui = {
+            steps: $('.process-order__steps', this.wrapper),
+            carousel: $('.process-order__carousel', this.wrapper),
+            deliveryForm: $('.process-order__delivery', this.wrapper),
+            processDeliveryButton: $('.process-order__delivery .process-order__button-next', this.wrapper),
+            cityesSelector: $('.process-order__city', this.wrapper),
+            stepBackButton: $('.process-order__button-prev', this.wrapper),
+            paymentDescription: $('.process-order__payment__description', this.wrapper),
+            paymentForm: $('.process-order__payment', this.wrapper),
+            // processPaymentButton: $('.process-order__payment .process-order__button-next', this.wrapper),
+        };
+    }
+
+    /**
+     *
+     * @param {ShoppingCart} cart
+     */
+    setShoppingCart(cart){
+        this.shoppingCart = cart;
+    }
+
+    _getStep(s) {
+        return this.ui.steps.find(`.step[data-step="${s}"]`);
+    }
+
+    stepBack() {
+        if(this.steps.indexOf(this.currentStep) > 0) {
+            let prevStepId = this.steps.indexOf(this.currentStep) - 1;
+            this.stepTo(this.steps[prevStepId]);
+        }
+    }
+
+    stepNext() {
+        if(this.steps.indexOf(this.currentStep) !== this.steps.length - 1) {
+            let nextStepId = this.steps.indexOf(this.currentStep) + 1;
+            this.stepTo(this.steps[nextStepId]);
+        }
+    }
+
+    stepTo(s) {
+        if (!this.steps.includes(s)) {
+            return
+        }
+        let step = this._getStep(s);
+        this.ui.steps.find('.step').removeClass('disabled active completed');
+        step.prevAll('.step').addClass('completed');
+        step.addClass('active');
+        step.nextAll('.step').addClass('disabled');
+        this.ui.carousel.trigger('to.owl.carousel', this.steps.indexOf(s));
+        this.currentStep = s;
+    }
+
+    processDelivery() {
+        let cityIndex = parseInt(this.ui.cityesSelector.val());
+        if(!Number.isInteger(cityIndex)) {
+            $('.process-order__city_field', this.ui.deliveryForm).addClass('error').one('click', function () {
+                $(this).removeClass('error');
+            });
+            return
+        }
+        products['currentDelivery'] = {
+            ...products['delivery'],
+            price: cities[cityIndex]['price'],
+            title: products['delivery']['title'] + " в " + cities[cityIndex]['name'] //todo i18n
+        };
+        if(cityIndex !== this.cityId) {
+            this.shoppingCart.removeProduct('currentDelivery');
+            this.shoppingCart.addProduct('currentDelivery');
+            this.cityId = cityIndex;
+        }
+        this.stepNext();
+    }
+
+    processPayment(e) {
+        this.ui.paymentForm.find('.process-order__payment__amount').attr('value', this.shoppingCart.getResult());
+        this.ui.paymentForm.find('.process-order__payment__description').attr('value',
+            this.shoppingCart.getItems().reduce((res, i) => res.concat(products[i]['title']), []).join(', '));
+        console.log(e);
+        pay(e.target);
+        return false;
+    }
+}
+
+function startApp() {
+    prepareData();
 
     if (!isMobile()) {
         $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(function () {
@@ -92,7 +327,7 @@ $(document).ready(function () {
 
         $('.events__page:first').removeClass('d-none').waypoint(function () {
             console.log('init Events');
-            $('.events__carousel', this.element).owlCarousel({
+            $('.events__carousel', this.element).owlCarousel({      //todo move images to center
                 autoheight: true,
                 loop: true,
                 autoplay: true,
@@ -139,7 +374,7 @@ $(document).ready(function () {
         let requests = {
             switchTo
         };
-        console.log('init Capsule content');
+        console.log('init Capsule content');                                    //todo: remove this hell and replace to carousel
         let controls = $('.card-tab-switcher__wrapper', this.element);
         let tabs = $('.tab-page__content', this.element);
         let tabContainer = $('.tabs-container', this.element);
@@ -209,114 +444,9 @@ $(document).ready(function () {
         this.destroy();
     }, settings.waypoint.pageSettings);
 
-
-
-    const productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`, this.element).html();
-    $('[data-product-template]').remove();
-    // let cartCounter = 0;
-    let cartItems = [];
-
-    function get(obj, i) {
-        return i.split('.').reduce((o, i) => o[i], obj);
-    }
-
-    function I18N(index) {
-        return get(i18n, index);
-    }
-
-    function translateFields(obj, fields) {
-        fields.forEach((i) => {
-            obj[i] = I18N(obj[i])
-        })
-    }
-
-    for(let key of Object.keys(products)) {
-        translateFields(products[key], ['title', 'description']);
-    }
-
-    function updatePaymentDescription() {
-        $('.process-order__payment__description').attr('value', cartItems.reduce((res, i) => res.concat(products[i]['title']), []).join(', '));
-    }
-
-    function addToCart(id) {
-        const requests = {
-            addToCart,
-            removeFromCart
-        };
-        if (cartItems.indexOf(id) !== -1) {
-            return;
-        }
-        if (cartItems.length === 0) {
-            // $('.shopping-cart__empty-handler').addClass('transition hidden');
-            $('.shopping-cart__empty-handler').transition('fade out', {duration: 0});
-            // $('.shopping-cart__empty-handler').hide();
-        }
-        cartItems.push(id);
-        $(`.product__buy-button[data-product-id="${id}"]`).addClass('active');
-        let product = products[id];
-        let templateData = {
-            ...product,
-            file: settings.images.thumbSrcBase + '/' + product.images[0],
-            index: cartItems.length,
-            id
-        };
-        let template = productTemplate.replace(/data-template-(\w+)/ig, (match, field) => templateData[field]);
-        let newElement = $('<div>').html(template).children();
-        $('.shopping-cart__body').append(newElement);
-        updatePaymentDescription();
-        updateResultPrice();
-        newElement.transition('fade in', {
-            duration: 700,
-            onComplete: function () {
-                addListiners(newElement, requests);
-            }
-        });
-        refreshWaypoints();
-    }
-
-    let shoppingCart = $('.shopping-cart__page:first');
-
-    function removeFromCart(id) {
-        let index = cartItems.indexOf(id);
-        if (index === -1) {
-            return;
-        }
-        cartItems.splice(index, 1);
-        $(`.product__buy-button[data-product-id="${id}"]`).removeClass('active');
-        updatePaymentDescription();
-        shoppingCart.find(`[data-product-id=${id}]`).transition('fade', {
-            onComplete: function () {
-                this.remove();
-                updateCartIndexes();
-                updateResultPrice();
-                if (cartItems.length === 0) {
-                    $('.shopping-cart__empty-handler').transition('fade in');
-                }
-            }
-        });
-        refreshWaypoints();
-    }
-
-    function updateResultPrice() {
-        let resEl = $('.shopping-cart__result-price-cell');
-        let res = cartItems.reduce((sum, productId) => {
-            return sum + products[productId]['price'];
-        }, 0);
-        resEl.html(res);
-        $('.process-order__payment__amount').attr('value', res);
-    }
-
-    function updateCartIndexes() {
-        let counter = 0;
-        let indexCells = $('.shopping-cart__body .shopping-cart__number_cell').each(function () {
-            $(this).html(++counter);
-        })
-    }
-
-
+    const shoppingCart = new ShoppingCart($('.shopping-cart__wrapper:first'));
 
     $('.market__page:first').waypoint(function () {
-
         $(".market__carousel", this.element).owlCarousel({
             stagePadding: 50,
             margin: 10,
@@ -340,12 +470,12 @@ $(document).ready(function () {
         });
 
         const requests = {
-            addToCart,
-            removeFromCart
+            addToCart: shoppingCart.addProduct.bind(shoppingCart),
+            removeFromCart: shoppingCart.removeProduct.bind(shoppingCart)
         };
         console.log('init Market');
 
-        // $('.product__buy-button').click(function (e) {
+        // $('.product__buy-button').click(function (e) {       //todo better button click
         //     let el = $(this);
         //     el.addClass('active').off('click');
         //     addToCart(el.data('productId'));
@@ -355,52 +485,9 @@ $(document).ready(function () {
         this.destroy();
     }, settings.waypoint.pageSettings);
 
-    shoppingCart.waypoint(function () {
-        const stepTo = (s) => {
-            let steps = $('.process-order__steps', this.element);
-            let step = $(`.step[data-step="${s}"]`, steps);
-            steps.find('.step').removeClass('disabled active completed');
-            step.prevAll('.step').addClass('completed');
-            step.addClass('active');
-            step.nextAll('.step').addClass('disabled');
-        };
-
-        let processCrousel = $('.process-order__carousel', this.element).owlCarousel({
-            items: 1,
-            mouseDrag: false,
-            touchDrag: false,
-            dots: false,
-            onInitialized: refreshWaypoints
-        });
-        let cityId = null;
-        $('.process-order__delivery .process-order__button-next').click(() => {
-            let cityIndex = parseInt($('.process-order__city select', this.element).val());
-            if(!Number.isInteger(cityIndex)) {
-                $('.process-order__city_field').addClass('error').one('click', function () {
-                    $(this).removeClass('error');
-                });
-                return
-            }
-            products['currentDelivery'] = {
-                ...products['delivery'],
-                price: cities[cityIndex]['price']
-            };
-            if(cityIndex !== cityId) {
-                removeFromCart('currentDelivery');
-                addToCart('currentDelivery');
-                cityId = cityIndex;
-            }
-            stepTo('payment');
-            processCrousel.trigger('next.owl.carousel');
-        });
-
-        $('.process-order__payment .process-order__button-prev').click(() => {
-            stepTo('delivery');
-            processCrousel.trigger('prev.owl.carousel');
-            return false;
-        });
-
-        $('.process-order__city', this.element).dropdown();
+    $('.shopping-cart__page:first').waypoint(function () {
+        const order = new Order($('.process-order__wrapper:first'));
+        order.setShoppingCart(shoppingCart);
         this.destroy();
     }, settings.waypoint.pageSettings);
 
@@ -480,6 +567,8 @@ $(document).ready(function () {
         console.log('init Gallery');
         let gallery =  $('.gallery__carousel', this.element);
         gallery.owlCarousel({
+            autoplay: true,
+            autoplayTimeout: 3000,
             margin: 10,
             autoWidth: true,
             lazyLoad: true,
@@ -488,8 +577,8 @@ $(document).ready(function () {
 
         let isDragged;
         const items = processImageItems(_photos.reduce((r, photo) => [...r, photo.image], []), settings.images.srcBase, settings.images.thumbSrcBase);
-        gallery.on('drag.owl.carousel', (e) => isDragged = true)
-            .on('dragged.owl.carousel', (e) => setTimeout(() => {isDragged = false}, 100));
+        gallery.on('drag.owl.carousel', (e) => setTimeout(() => {isDragged = true}, 220))
+            .on('dragged.owl.carousel', (e) => setTimeout(() => {isDragged = false}, 220));
         $('.gallery__image').click(function () {
             if(!isDragged) {
                 openPhotoSwipe(items, $(this).data('thumbnailIndex'));
@@ -497,4 +586,10 @@ $(document).ready(function () {
         });
         this.destroy();
     }, settings.waypoint.pageSettings);
+}
+
+$(document).ready(() => {
+    Raven.context(function () {
+        startApp();
+    });
 });

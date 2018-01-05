@@ -13,6 +13,18 @@
   },
   "images": {
     "srcBase": "img/photos",
-    "thumbSrcBase": "img/thumbnails"
+    "thumbSrcBase": "img/thumbnails",
+    "favicon": {
+      "apple": {
+        "sizes": ["57x57", "60x60", "72x72", "76x76", "114x114", "120x120", "144x144", "152x152", "180x180"],
+        "path": "/img/favicon/",
+        "name": "apple-icon-{{size}}.png"
+      },
+      "favicon": {
+        "sizes": ["32x32", "96x96", "16x16", "192x192"],
+        "path": "/img/favicon/",
+        "name": "favicon-{{size}}.png"
+      }
+    }
   }
 }
