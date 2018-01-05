@@ -9,17 +9,15 @@ import 'semantic/components/modal';
 import 'semantic/components/embed';
 import 'semantic/components/dropdown';
 import './embedSources';
-import products from '../data/product';
+import products from 'data/product';
 import _imageSizes from 'image_sizes';
 import _photos from 'data/photos';
 import cities from 'data/cities';
-import settings from 'data/settings';
 import {product as productI18n} from 'data/i18n';
+import pay from 'exports-loader?pay!./tinkoff'
 import Raven from 'raven-js';
 Raven
-    .config('https://5f8a5a89b1294f0dab6dbdd0039d349d@sentry.io/267051', {
-        shouldSendCallback: false
-    })
+    .config(settings.sentry.id, settings.sentry.options)
     .install();
 
 const i18n = {
@@ -81,6 +79,7 @@ function addListiners(wrapper, context) {
 function refreshWaypoints() {
     setTimeout(() => {
         Waypoint.refreshAll();
+        $(document).trigger('resize');
     }, 10);
 }
 
@@ -136,8 +135,7 @@ class ShoppingCart {
 
     addProduct(id) {
         const requests = {
-            addToCart: this.addProduct,
-            removeFromCart: this.removeProduct
+            removeFromCart: this.removeProduct.bind(this)
         };
         if (this.items.indexOf(id) !== -1) {
             return;
@@ -220,12 +218,14 @@ class Order {
             mouseDrag: false,
             touchDrag: false,
             dots: false,
-            onInitialized: refreshWaypoints
+            onInitialized: () => {
+                refreshWaypoints();
+                this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
+                this.ui.stepBackButton.click(this.stepBack.bind(this));
+                this.ui.paymentForm.submit(this.processPayment.bind(this));
+                this.ui.citiesSelector.dropdown();
+            }
         });
-        this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
-        this.ui.stepBackButton.click(this.stepBack.bind(this));
-        this.ui.paymentForm.submit(this.processPayment.bind(this));
-        this.ui.cityesSelector.dropdown();
     }
 
     _initUi() {
@@ -234,7 +234,7 @@ class Order {
             carousel: $('.process-order__carousel', this.wrapper),
             deliveryForm: $('.process-order__delivery', this.wrapper),
             processDeliveryButton: $('.process-order__delivery .process-order__button-next', this.wrapper),
-            cityesSelector: $('.process-order__city', this.wrapper),
+            citiesSelector: $('.process-order__city', this.wrapper),
             stepBackButton: $('.process-order__button-prev', this.wrapper),
             paymentDescription: $('.process-order__payment__description', this.wrapper),
             paymentForm: $('.process-order__payment', this.wrapper),
@@ -282,7 +282,7 @@ class Order {
     }
 
     processDelivery() {
-        let cityIndex = parseInt(this.ui.cityesSelector.val());
+        let cityIndex = parseInt(this.ui.citiesSelector.val());
         if(!Number.isInteger(cityIndex)) {
             $('.process-order__city_field', this.ui.deliveryForm).addClass('error').one('click', function () {
                 $(this).removeClass('error');
@@ -316,38 +316,65 @@ function startApp() {
     prepareData();
 
     if (!isMobile()) {
-        $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(function () {
-            $(this.element).parallax({
-                imageSrc: 'img/IMG_1713.jpg',
-                speed: .7,
-                bleed: 50
-            });
-            this.destroy();
-        }, settings.waypoint.pageSettings);
+        $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(Raven.wrap(function () {
+            if(!this.isCalled) {
+                this.isCalled = true;
+                $(this.element).parallax({
+                    imageSrc: 'img/IMG_1713.jpg',
+                    speed: .7,
+                    bleed: 50
+                });
+                this.destroy();
+            }
+        }), settings.waypoint.pageSettings);
 
-        $('.events__page:first').removeClass('d-none').waypoint(function () {
-            console.log('init Events');
-            $('.events__carousel', this.element).owlCarousel({      //todo move images to center
-                autoheight: true,
-                loop: true,
-                autoplay: true,
-                autoplayTimeout: 4000,
-                lazyLoad: true,
-                responsive: {
-                    0: {
-                        items: 1
+        $('.events__page:first').removeClass('d-none').waypoint(Raven.wrap(function () {
+            if(!this.isCalled) {
+                this.isCalled = true;
+                console.log('init Events');
+                const carousel = $('.events__carousel', this.element).owlCarousel({      //todo move images to center
+                    loop: true,
+                    autoplay: true,
+                    autoplayTimeout: 4000,
+                    lazyLoad: true,
+                    responsive: {
+                        0: {
+                            items: 1
+                        },
+                        768: {
+                            items: 2
+                        },
+                        1280: {
+                            items: 3
+                        }
                     },
-                    768: {
-                        items: 2
-                    },
-                    1280: {
-                        items: 3
+                    onInitialized: refreshWaypoints
+                });
+
+                const calculateImageOffset = ($el, items) => {
+                    if ($el.width() / $(document).width() * items > 1.2) {
+                        $el.css('transform', `translateX(${($(document).width() / items - $el.width()) / 2}px)`)
+                    } else {
+                        $el.css('transform', '');
                     }
-                },
-                onInitialized: refreshWaypoints
-            });
-            this.destroy();
-        }, settings.waypoint.pageSettings);
+                };
+
+                carousel.on('loaded.owl.lazy', (event) => {
+                    calculateImageOffset(event.element, event.page.size);
+                    console.log(event);
+                });
+
+                carousel.on('resize.owl.carousel', function (event) {
+                    let $el = $(this);
+                    $el.find('.clients__image[src]').each(function () {
+                        calculateImageOffset($(this), event.page.size);
+                    });
+                });
+
+
+                this.destroy();
+            }
+        }), settings.waypoint.pageSettings);
 
     }
 
@@ -358,234 +385,210 @@ function startApp() {
             clone: 'header--clone',
             stick: 'header--stick',
             unstick: 'header--unstick'
+        },
+        onInit: function () {
+            $(this.elem).add(this.clonedElem).find('.menu-header__toggler').click(function () {
+                $(this).siblings('.menu-header__menu-wrapper').collapse('toggle');
+            });
+            $(this.elem).add(this.clonedElem).find('.menu-header__link').click(function () {
+                $(this).closest('.menu-header__menu-wrapper').collapse('hide');
+            });
         }
     });
 
-    $('.menu-header__toggler').click(function () {
-        const isClone = $(this).is('.header--clone');
-        $(`${isClone ? '.header--clone' : ''} .menu-header__menu-wrapper`).collapse('toggle');
-    });
-
-    $('.menu-header__link').click(function () {
-        $(this).closest('.menu-header__menu-wrapper').collapse('hide');
-    });
-
-    $('.capsule-content__page:first').waypoint(function () {
-        let requests = {
-            switchTo
-        };
-        console.log('init Capsule content');                                    //todo: remove this hell and replace to carousel
-        let controls = $('.card-tab-switcher__wrapper', this.element);
-        let tabs = $('.tab-page__content', this.element);
-        let tabContainer = $('.tabs-container', this.element);
-        let tabsArray = Array.from(tabs, (tab) => {
-            return $(tab).data('tab');
-        });
-        let activeTab = tabsArray[0];
-
-        function switchTo(tab) {
-            let _showTab = () => {
-                tabs.filter(`[data-tab="${tab}"]`).transition('fade in', {
-                    onComplete: () => {
-                        // $(window).trigger('resize').trigger('scroll');
-                    }
-                });
-            };
-            if (tabs.filter(':visible').length > 0) {
-                tabs.filter(':visible').transition('fade out', {
-                    onComplete: () => {
-                        _showTab();
-                    }
-                });
-            } else {
-                _showTab();
-            }
-            controls.filter('.blue').removeClass('blue');
-            controls.filter(`[data-tab="${tab}"]`).addClass('blue');
-            activeTab = tab;
-        }
-
-        function switchNext() {
-            let nextIndex = (tabsArray.indexOf(activeTab) + 1) % tabsArray.length;
-            switchTo(tabsArray[nextIndex]);
-        }
-
-        let timerId;
-
-        function startSwitcher() {
-            console.log('start Tabswither');
-            clearInterval(timerId);
-            timerId = setInterval(switchNext, 4e3);
-        }
-
-        function stopSwitcher() {
-            console.log('stop Tabswither');
-            clearInterval(timerId);
-        }
-
-        setTimeout(() => {
-            tabContainer.waypoint(function (direction) {
-                if (direction === 'down') {
-                    startSwitcher();
-                } else if (direction === 'up') {
-                    stopSwitcher();
+    $('.capsule-content__page:first').waypoint(Raven.wrap(function () {
+        if(!this.isCalled) {
+            this.isCalled = true;
+            console.log('init Capsule content');
+            const $el = $(this.element);
+            const switchers = $('.card-tab-switcher__wrapper', this.element)
+            const carousel = $('.tab-page__carousel', this.element).owlCarousel({
+                items: 1,
+                loop: true,
+                mouseDrag: false,
+                dots: true,
+                autoplay: true,
+                autoplayTimeout: 4000,
+                animateOut: 'fadeOut',
+                onInitialized: function (e) {
+                    refreshWaypoints();
+                    switchers.filter(`[data-index=0]`).addClass('blue');
+                    switchers.click(function () {
+                        const $this = $(this);
+                        // switchers.removeClass('blue');
+                        // $this.addClass('blue');
+                        carousel.trigger('to.owl.carousel', $this.data('index'));
+                    });
+                },
+                onChanged: function (e) {
+                    switchers.removeClass('blue');
+                    const currentIndex = (e.item.index - 3 + e.item.count) % e.item.count;
+                    switchers.filter(`[data-index=${currentIndex}]`).addClass('blue');
                 }
-            }, {offset: '100%'});
-            tabContainer.waypoint(function (direction) {
-                if (direction === 'down') {
-                    stopSwitcher();
-                } else if (direction === 'up') {
-                    startSwitcher();
-                }
-            }, {offset: -100});
-        });
-        switchTo(activeTab);
-        addListiners(this.element, requests);
-        this.destroy();
-    }, settings.waypoint.pageSettings);
+            });
+            this.destroy();
+        }
+    }), settings.waypoint.pageSettings);
 
     const shoppingCart = new ShoppingCart($('.shopping-cart__wrapper:first'));
 
-    $('.market__page:first').waypoint(function () {
-        $(".market__carousel", this.element).owlCarousel({
-            stagePadding: 50,
-            margin: 10,
-            autoWidth: true,
-            autoheight: true,
-            responsive: {
-                0: {
-                    items: 1
+    $('.market__page:first').waypoint(Raven.wrap(function () {
+        if(!this.isCalled) {
+            this.isCalled = true;
+            console.log('init Market');
+            const requests = {
+                addToCart: shoppingCart.addProduct.bind(shoppingCart),
+                removeFromCart: shoppingCart.removeProduct.bind(shoppingCart)
+            };
+
+            $(".market__carousel", this.element).owlCarousel({
+                stagePadding: 50,
+                margin: 10,
+                autoWidth: true,
+                autoheight: true,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    576: {
+                        items: 2
+                    },
+                    768: {
+                        items: 4
+                    },
+                    992: {
+                        items: 5
+                    }
                 },
-                576: {
-                    items: 2
-                },
-                768: {
-                    items: 4
-                },
-                992: {
-                    items: 5
+                onInitialized: function () {
+                    refreshWaypoints();
+                    addListiners(this.$element, requests);
                 }
-            },
-            onInitialized: refreshWaypoints
-        });
-
-        const requests = {
-            addToCart: shoppingCart.addProduct.bind(shoppingCart),
-            removeFromCart: shoppingCart.removeProduct.bind(shoppingCart)
-        };
-        console.log('init Market');
-
-        // $('.product__buy-button').click(function (e) {       //todo better button click
-        //     let el = $(this);
-        //     el.addClass('active').off('click');
-        //     addToCart(el.data('productId'));
-        // });
-
-        addListiners(this.element, requests);
-        this.destroy();
-    }, settings.waypoint.pageSettings);
-
-    $('.shopping-cart__page:first').waypoint(function () {
-        const order = new Order($('.process-order__wrapper:first'));
-        order.setShoppingCart(shoppingCart);
-        this.destroy();
-    }, settings.waypoint.pageSettings);
-
-    $('.clients__page:first').waypoint(function () {
-        console.log('init Clients');
-        let carousel = $('.clients__carousel', this.element).owlCarousel({
-            items: 1,
-            loop: true,
-            lazyLoad: true,
-            mouseDrag: false,
-            dots: isMobile(),
-            video:true,
-            autoplay: true,
-            autoplayTimeout: 4000,
-            animateOut: 'fadeOut',
-            onInitialized: refreshWaypoints
-        });
-
-        const calculateImageOffset = ($el) => {
-            if($el.width() / $(document).width() > 1.2) {
-                $el.css('transform', `translateX(${($(document).width() - $el.width()) / 2}px)`)
-            } else {
-                $el.css('transform', '');
-            }
-        };
-
-        carousel.on('loaded.owl.lazy', (event) => {
-            calculateImageOffset(event.element);
-        });
-
-        carousel.on('resize.owl.carousel', function(event) {
-            let $el = $(this);
-            $el.find('.clients__image[src]').each(function () {
-                calculateImageOffset($(this));
-            });
-        });
-
-        let toggles = $('.clients__client-image-wrapper');
-
-        if(!isMobile()) {
-            toggles.click(function () {
-                let el = $(this);
-                carousel.trigger('to.owl.carousel', el.data('index'));
-                toggles.removeClass('active');
-                el.addClass('active');
             });
 
-            carousel.on('changed.owl.carousel', function (event) {
-                toggles.removeClass('active');
-                toggles.filter(`[data-index=${event.item.index-3}]`).addClass('active');
-            });
+            // $('.product__buy-button').click(function (e) {       //todo better button click
+            //     let el = $(this);
+            //     el.addClass('active').off('click');
+            //     addToCart(el.data('productId'));
+            // });
 
-            toggles.filter('[data-index=0]').addClass('active');
-        } else {
-            toggles.remove();
+            this.destroy();
         }
+    }), settings.waypoint.pageSettings);
 
-        $('.clients__video-button', this.element).click(function () {
-            let $this = $(this);
-            $('.ui.modal').modal({
-                onHide: function () {
-                    $('.ui.embed').embed('destroy')
+    $('.shopping-cart__page:first').waypoint(Raven.wrap(function () {
+        if(!this.isCalled) {
+            this.isCalled = true;
+            const order = new Order($('.process-order__wrapper:first'));
+            order.setShoppingCart(shoppingCart);
+            this.destroy();
+        }
+    }), settings.waypoint.pageSettings);
+
+    $('.clients__page:first').waypoint(Raven.wrap(function () {
+        if(!this.isCalled) {
+            this.isCalled = true;
+            console.log('init Clients');
+            let carousel = $('.clients__carousel', this.element).owlCarousel({
+                items: 1,
+                loop: true,
+                lazyLoad: true,
+                mouseDrag: false,
+                dots: isMobile(),
+                autoplay: true,
+                autoplayTimeout: 4000,
+                animateOut: 'fadeOut',
+                onInitialized: refreshWaypoints
+            });
+
+            const calculateImageOffset = ($el) => {
+                if ($el.width() / $(document).width() > 1.2) {
+                    $el.css('transform', `translateX(${($(document).width() - $el.width()) / 2}px)`)
+                } else {
+                    $el.css('transform', '');
                 }
-            }).modal('show');
-            if($('.ui.embed').embed('get url')) {
-                $('.ui.embed').embed('change', $this.data('video').source, $this.data('video').id);
+            };
+
+            carousel.on('loaded.owl.lazy', (event) => {
+                calculateImageOffset(event.element);
+            });
+
+            carousel.on('resize.owl.carousel', function (event) {
+                let $el = $(this);
+                $el.find('.clients__image[src]').each(function () {
+                    calculateImageOffset($(this));
+                });
+            });
+
+            let toggles = $('.clients__client-image-wrapper');
+
+            if (!isMobile()) {
+                toggles.click(function () {
+                    let el = $(this);
+                    carousel.trigger('to.owl.carousel', el.data('index'));
+                    toggles.removeClass('active');
+                    el.addClass('active');
+                });
+
+                carousel.on('changed.owl.carousel', function (event) {
+                    toggles.removeClass('active');
+                    toggles.filter(`[data-index=${event.item.index - 3}]`).addClass('active');
+                });
+
+                toggles.filter('[data-index=0]').addClass('active');
             } else {
-                $('.ui.embed').embed($this.data('video'));
+                toggles.remove();
             }
-            console.log($this.data('video'));
-        });
 
-        this.destroy();
-    }, settings.waypoint.pageSettings);
+            $('.clients__video-button', this.element).click(function () {
+                let $this = $(this);
+                $('.ui.modal').modal({
+                    onHide: function () {
+                        $('.ui.embed').embed('destroy')
+                    }
+                }).modal('show');
+                if ($('.ui.embed').embed('get url')) {
+                    $('.ui.embed').embed('change', $this.data('video').source, $this.data('video').id);
+                } else {
+                    $('.ui.embed').embed($this.data('video'));
+                }
+                console.log($this.data('video'));
+            });
 
-    $('.gallery__page:first').waypoint(function () {
-        console.log('init Gallery');
-        let gallery =  $('.gallery__carousel', this.element);
-        gallery.owlCarousel({
-            autoplay: true,
-            autoplayTimeout: 3000,
-            margin: 10,
-            autoWidth: true,
-            lazyLoad: true,
-            onInitialized: refreshWaypoints
-        });
+            this.destroy();
+        }
+    }), settings.waypoint.pageSettings);
 
-        let isDragged;
-        const items = processImageItems(_photos.reduce((r, photo) => [...r, photo.image], []), settings.images.srcBase, settings.images.thumbSrcBase);
-        gallery.on('drag.owl.carousel', (e) => setTimeout(() => {isDragged = true}, 220))
-            .on('dragged.owl.carousel', (e) => setTimeout(() => {isDragged = false}, 220));
-        $('.gallery__image').click(function () {
-            if(!isDragged) {
-                openPhotoSwipe(items, $(this).data('thumbnailIndex'));
-            }
-        });
-        this.destroy();
-    }, settings.waypoint.pageSettings);
+    $('.gallery__page:first').waypoint(Raven.wrap(function () {
+        if(!this.isCalled) {
+            this.isCalled = true;
+            console.log('init Gallery');
+            let gallery = $('.gallery__carousel', this.element);
+            gallery.owlCarousel({
+                autoplay: true,
+                autoplayTimeout: 3000,
+                margin: 10,
+                autoWidth: true,
+                lazyLoad: true,
+                onInitialized: refreshWaypoints
+            });
+
+            let isDragged;
+            const items = processImageItems(_photos.reduce((r, photo) => [...r, photo.image], []), settings.images.srcBase, settings.images.thumbSrcBase);
+            gallery.on('drag.owl.carousel', (e) => setTimeout(() => {
+                isDragged = true
+            }, 220))
+                .on('dragged.owl.carousel', (e) => setTimeout(() => {
+                    isDragged = false
+                }, 220));
+            $('.gallery__image').click(function () {
+                if (!isDragged) {
+                    openPhotoSwipe(items, $(this).data('thumbnailIndex'));
+                }
+            });
+            this.destroy();
+        }
+    }), settings.waypoint.pageSettings);
 }
 
 $(document).ready(() => {

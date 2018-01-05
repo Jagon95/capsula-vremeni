@@ -4,6 +4,11 @@ const parallel = require('concurrent-transform');
 const os = require('os');
 const path = require('path');
 const moduleImporter = require('sass-module-importer');
+const autoprefixer = require('autoprefixer');
+const unCss = require('postcss-uncss');
+const csso = require('postcss-csso');
+const cssnano = require('cssnano');
+const discardFont = require('postcss-discard-font-face');
 const loadPlugins = require('gulp-load-plugins')({
     rename: {
         'gulp-environments': 'env',
@@ -36,62 +41,81 @@ gulp.task('watch', (() => {
     gulp.watch(['src/pug/**/*.pug'], ['pug']);
 }));
 
-gulp.task('build-css', ['sass'], () => {
-    gulp.src([
-        'tmp/css/main.css'
-    ])
-        .pipe(concat('main.min.css'))
-        .pipe(cssReplaceUrl({
-            replace: ['./../themes/default/assets/fonts', 'fonts']
-        }))
-        .pipe(prod(csso()))
-        .pipe(prod(cleanCss({
-            level: 2
-        })))
-        // .pipe(prod(uncss({
-        //     html: 'http://localhost:1488'
-        // })))
-        .pipe(prod(autoprefixer({browsers: '> 0.3%'})))
-        .pipe(gulp.dest('build/css'))
-        .pipe(dev(connect.reload()));
-});
-
-gulp.task('sass', () => {
-    gulp.src(['src/scss/**/*.sass', 'src/scss/**/*.scss'])
+gulp.task('build-css', () => {
+    gulp.src(['src/scss/main.sass'])
         .pipe(sass({
-            outputStyle: 'expanded',
+            outputStyle: !!prod() ? 'nested' : 'expanded',
             importer: moduleImporter()
         }).on('error', sass.logError))
-        .pipe(gulp.dest('tmp/css'));
-});
+        .pipe(cssReplaceUrl({           // todo: replace with postcss-url
+            replace: ['./../themes/default/assets/fonts', 'fonts']
+        }))
+        .pipe(purifycss(['build/index.html', 'build/js/script.js']))
+        .pipe(prod(postcss([
+            csso({ restructure: false }),
+            autoprefixer({browsers: ['> 0.3%']}),
+            cssnano({
+                preset: ['default', {
+                    discardComments: {
+                        removeAll: true,
+                    },
+                }]
+            })
+        ])))
+        .pipe(rename('main.min.css'))
+        .pipe(gulp.dest('build/css'))
+        .pipe(dev(connect.reload()));
 
-gulp.task('purify-css', () => {
-    gulp.src([
-        'libs/bootstrap/dist/css/bootstrap.css',
-        'libs/semantic/dist/semantic.css'
-    ])
-        .pipe(purifycss(['index.html', 'js/main.js', 'node_modules/semantic-ui/dist/components/transition.js', 'node_modules/semantic-ui/dist/components/dimmer.js']))
-        .pipe(concat('purified.css'))
-        .pipe(gulp.dest('tmp/css'));
+
+    prod(gulp.src(['src/scss/main.sass'])
+        .pipe(sass({
+            importer: moduleImporter()
+        }).on('error', sass.logError))
+        .pipe(rmLines({
+            filters: [/@import[^;]*;/i]
+        }))
+        .pipe(prod(postcss([
+            discardFont(()=>false),
+            unCss({
+                html: 'tmp/firstLoaded.html',
+            }),
+            csso({ restructure: false }),
+            cssnano({
+                preset: ['default', {
+                    discardComments: {
+                        removeAll: true,
+                    },
+                }]
+            })
+        ])))
+        .pipe(rename('firstLoaded.css'))
+        .pipe(gulp.dest('tmp')));
 });
 
 gulp.task('pug', () => {
+
+    const dataObj = Object.assign({}, require('./src/data/data.json'), {
+        products: require('./src/data/product'),
+        gallery: require('./src/data/photos'),
+        i18n: require('./src/data/i18n'),
+        cities: require('./src/data/cities')
+    });
+
     gulp.src('src/pug/index.pug')
-        .pipe(data(() => require('./src/data/data.json')))
-        .pipe(data(() => {
-            return {
-                products: require('./src/data/product'),
-                gallery: require('./src/data/photos'),
-                i18n: require('./src/data/i18n'),
-                cities: require('./src/data/cities'),
-                settings: require('./src/data/settings')
-            };
-        }))
+        .pipe(data(() => dataObj))
         .pipe(pug({
             pretty: !!dev()
         }))
+        .pipe(prod(inlineSource({
+            rootpath: './tmp'
+        })))
         .pipe(gulp.dest('build'))
         .pipe(connect.reload());
+
+    gulp.src('src/pug/firstLoaded.pug')
+        .pipe(data(() => dataObj))
+        .pipe(pug())
+        .pipe(gulp.dest('tmp'))
 });
 
 
@@ -258,4 +282,4 @@ gulp.task('set-dev', dev.task);
 gulp.task('set-prod', prod.task);
 
 gulp.task('default', sequence('set-dev', 'pug', 'build-css', 'connect', 'watch'));
-gulp.task('build', sequence('set-prod', 'pug', ['copy', 'images'], 'build-css'));
+gulp.task('build', sequence('set-prod', 'pug', ['copy', 'images'], 'build-css', 'pug'));

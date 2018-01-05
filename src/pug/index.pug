@@ -43,51 +43,21 @@ html
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
         title=I18N("head.title")
+        <!--[if IE]>
         link(rel="stylesheet" type="text/css" href="css/main.min.css")
+        <![endif]-->
+        link(rel="stylesheet" type="text/css" href="firstLoaded.css" inline)
         script(src="js/script.js" async)
-        script(src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js" async)
-        each size in settings.images.favicon.apple.sizes
-            link(rel="apple-touch-icon" sizes=size href=settings.images.favicon.apple.path + settings.images.favicon.apple.name.replace('{{size}}', size))
-        each size in settings.images.favicon.favicon.sizes
-            link(rel="icon" type="image/png" sizes=size, href=settings.images.favicon.favicon.path + settings.images.favicon.favicon.name.replace('{{size}}', size))
+        each size in favicon.apple.sizes
+            link(rel="apple-touch-icon" sizes=size href=favicon.apple.path + favicon.apple.name.replace('{{size}}', size))
+        each size in favicon.favicon.sizes
+            link(rel="icon" type="image/png" sizes=size, href=favicon.favicon.path + favicon.favicon.name.replace('{{size}}', size))
     body#kapsula
-        #introduction.container-fluid.one-page.introduction__page.gradient-page
-            #header.container-fluid.menu-header__wrapper
-                .container
-                    .navbar.navbar-toggleable-md.navbar-right.navbar-light.menu-header__navbar
-                        button.navbar-toggler.navbar-toggler-right.menu-header__toggler(
-                        type="button")
-                            i.sidebar.icon
-                        a.navbar-brand.menu-header__logo-wrapper(href="#")
-                            img.menu-header__logo(src='img/logo.svg')
-                        .collapse.navbar-collapse.menu-header__menu-wrapper
-                            ul.navbar-nav.menu-header__menu
-                                each item in menuItems
-                                    li.nav-item.menu-header__item
-                                        a.nav-link.menu-header__link(href="#" + item.href)
-                                            i(class=item.icon + ' icon')
-                                            =get(i18n, item.text)
-            .container
-                .row.justify-content-center
-                    .col-xl-4.col-lg-5.col-md-10.col-sm-12
-                        h1
-                            | Капсула Времени, именной подарок
-                    .col-xl-4.col-lg-5.col-md-10.d-none.d-md-block.offset-lg-1
-                        h3
-                            | Более 4 лет производим оригинальные капсулы времени для корпоративных мероприятий и частных торжеств.
-                .row
-                    .col-12
-                        img.ui.fluid.image(src='img/main_new.png')
-                .row.justify-content-center
-                    .col-lg-4.col-md-10.col-sm-12
-                        .ui.primary.button
-                            i.shop.icon
-                            | В КОРЗИНУ
-                    .col-lg-4.col-md-10.d-none.d-md-block.offset-lg-1
-                        p
-                            | Мы делаем Капсулы Времени любых размеров и форм.
+        include introduction
 
-
+        <!--[if !IE]> -->
+        link(rel="stylesheet" type="text/css" href="css/main.min.css" lazyload=1)
+        <!-- <![endif]-->
         #about_capsule.container-fluid.one-page.about-capsule__page
             +page_header(I18N("aboutCapsule.header"))
             .container
@@ -142,16 +112,14 @@ html
             .row.justify-content-center
                 .col-1.d-none.d-lg-block
                     img(src='img/l-bg.png', alt='')
-                .col-10
-                    .container.tabs-container
+                .col-12.col-lg-10
+                    .container-md-fluid.container.tabs-container
                         .row.justify-content-center.d-none.d-md-flex.tab-controllers
                             - var index = 0
                             each item, tab in tabs
-                                .col-xl-2.col-md-3.col-sm-4
+                                .col-2.d-none.d-lg-block
                                     .ui.raised.link.fluid.card.card-tab-switcher__wrapper(
-                                        data-request-function='switchTo'
-                                        data-function-argument=tab
-                                        data-tab=tab
+                                        data-index=index++
                                     )
                                         .image.ui.center.aligned.card-tab-switcher__image-wrapper
                                             img.ui.centered.medium.image(src='img/' + item.image)
@@ -159,13 +127,14 @@ html
                                             p.card-tab-switcher__title=I18N(item.title)
                         .row.justify-content-center
                             .col-lg-10.col-md-12.tab-page__wrapper
-                                .ui.blue.segment.container.tabs.tab-page__container
-                                    each item, tab in tabs
-                                        .row.justify-content-center.tab-page__content.transition.hidden(data-tab=tab)
-                                            .col-lg-4.tab-page__image-wrapper
-                                                .ui.image
-                                                    img.ui.centered.fluid.image(src='img/' + item.image)
-                                            .col-lg-8.tab-page__text=I18N(item.text)
+                                    .owl-carousel.owl-theme.tab-page__carousel
+                                        each item, tab in tabs
+                                            .item.ui.blue.segment.tab-page__container
+                                                .row.justify-content-center.tab-page__content
+                                                    .col-lg-4.tab-page__image-wrapper
+                                                        .ui.image
+                                                            img.ui.centered.fluid.image(src='img/' + item.image)
+                                                    .col-lg-8.tab-page__text=I18N(item.text)
                 .col-1.d-none.d-lg-block.right.floated
                     img(src='img/r-bg.png', style='float: right', alt='')
 

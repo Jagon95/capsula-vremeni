@@ -124,16 +124,22 @@ h3
     &__text
       +font(1.2)
 
-  .tab-page
-    &__content
+  .tab-page__
+    &container
+      margin: 1px
+    &content
       //display: none
       //position: absolute
       left: 2rem
       right: 2rem
-    &__image-wrapper
+    &image-wrapper
       text-align: center
-    &__text
+    &text
       +font(1.1)
+    &carousel
+      .owl-dots
+        +media-breakpoint-up(lg)
+          display: none
 
   .titanium-capsule-parallax
     min-height: 400px
@@ -411,9 +417,3 @@ h3
     transition: all 300ms ease-in-out
   &--stick
     transform: translateY(0%)
-
-.bottom-space
-  height: 1000px
-
-.owl-carousel .owl-stage-outer
-  padding: 1px

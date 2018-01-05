@@ -35,7 +35,7 @@ let config = {
         ]
     },
     resolve: {
-        modules: [path.resolve(__dirname, "src"), "node_modules", path.resolve(__dirname, "tmp")],
+        modules: [path.resolve(__dirname, "src"), "node_modules", path.resolve(__dirname, "tmp"), path.resolve(__dirname, "data")],
         alias: {
             'waypoints': 'waypoints/lib/jquery.waypoints.js',
             'semantic': "semantic-ui/dist",
@@ -49,10 +49,11 @@ let config = {
             "window.jQuery": "jquery",
             Util: 'exports-loader?Util!bootstrap/util',
             PhotoSwipe: 'photoswipe',
-            PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js'
+            PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js',
+            'settings': (isProd ? 'data/prodSettings' : 'data/devSettings')
         })
     ],
-    // devtool: "source-map"
+    devtool: isProd && "hidden-source-map"
 };
 
 if(isProd) {
