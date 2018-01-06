@@ -16,15 +16,6 @@ h3
   padding: 8px 0 18px
   margin: 0
 
-//#menu
-//  text-align: right
-//
-//#menu .list>a.item > .content,
-//#header .logo
-//  line-height: 50px
-//  text-align: center
-//  font-size: 20px
-
 =gradient-page
   background: #f4f4f4
   background: linear-gradient(to bottom, #f4f4f4 0%, #ebebeb 71%, #f9f9f9 100%)
@@ -72,10 +63,6 @@ h3
       padding: 0
     &logo
       height: 3rem
-      filter: grayscale(100%)
-      transition: all 0.5s ease
-      &:hover
-        filter: grayscale(0)
     +media-breakpoint-down(md)
       &logo-wrapper
         text-align: center
@@ -118,11 +105,22 @@ h3
     border-bottom: 1px solid rgba(0, 0, 0, .1)
     border-top: 1px solid rgba(0, 0, 0, .1)
 
-  .introduction__page
-    padding-top: 0
-  .about-capsule
-    &__text
+  .introduction__
+    &page
+      padding-top: 0
+    &image-wrapper
+      +media-breakpoint-up(lg)
+        margin: 3.5rem auto 2.5rem
+      +media-breakpoint-down(md)
+        margin: 2.5rem auto 1.5rem
+  .about-capsule__
+    &text
       +font(1.2)
+    &embed
+      +media-breakpoint-up(lg)
+        margin: 2.5rem auto
+      +media-breakpoint-down(md)
+        margin: 1.5rem auto
 
   .tab-page__
     &container
@@ -382,9 +380,10 @@ h3
     opacity: 0
 
   .gallery__
-    &image
+    &image, &page .owl-stage-outer
       height: 30vh
       width: auto
+
 
   .footer__
     &page

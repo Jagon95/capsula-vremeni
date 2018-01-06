@@ -6,6 +6,7 @@
       "name": "apple-icon-{{size}}.png"
     },
     "favicon": {
+      "ico": "favicon.ico",
       "sizes": ["32x32", "96x96", "16x16", "192x192"],
       "path": "/img/favicon/",
       "name": "favicon-{{size}}.png"
@@ -165,6 +166,10 @@
     {
       "icon": "heart outline",
       "description": "advantages.individual"
+    },
+    {
+      "icon": "trademark",
+      "description": "advantages.longTime"
     }
   ],
   "clients": [

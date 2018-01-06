@@ -1,4 +1,6 @@
-import 'imports-loader?jQuery=jquery!owl.carousel';
+import 'babel-polyfill';
+import 'picturefill';
+import 'imports-loader?jQuery=>$!owl.carousel';
 import 'jquery-parallax.js';
 import 'waypoints';
 import Headhesive from 'headhesive';
@@ -19,6 +21,43 @@ import Raven from 'raven-js';
 Raven
     .config(settings.sentry.id, settings.sentry.options)
     .install();
+
+$.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function(images) {
+    const owl = this;
+
+    function onLoadImg(e) {
+        this.attr('src', e.target.src);
+        this.css('opacity', 1);
+        owl.leave('pre-loading');
+        !owl.is('pre-loading') && !owl.is('initializing') && owl.refresh();
+    }
+
+    function loadImg($el) {
+        owl.enter('pre-loading');
+        return $(new Image()).attr('src', $el.attr('src') || $el.attr('data-src') || $el.attr('data-src-retina'));
+    }
+
+    function loadAfter ($el, $prev) {
+        if($prev.offset().left + $prev.width() < $(window).width()) {
+            loadImg($el).one('load', $.proxy(onLoadImg, $el));
+        } else {
+            owl.$element.one('translated.owl.carousel resized.owl.carousel', () => loadAfter($el, $prev));
+        }
+    }
+
+    images.slice(0, owl.settings.items).each($.proxy(function(i, element) {
+        let $el = $(element);
+        loadImg($el).one('load', $.proxy(onLoadImg, $el));
+    }));
+
+    for(let i = owl.settings.items; i < images.length; ++i){
+        let $el = $(images.get(i));
+        let $prev = $(images.get(i - 1));
+        $prev.one('load', () => {
+            loadAfter($el, $prev);
+        });
+    }
+};
 
 const i18n = {
     product: productI18n
@@ -84,6 +123,11 @@ function refreshWaypoints() {
 }
 
 function prepareData() {
+    if (!settings.logging && console) {
+        console.log = function(){};
+    }
+
+
     function get(obj, i) {
         return i.split('.').reduce((o, i) => o[i], obj);
     }
@@ -319,10 +363,16 @@ function startApp() {
         $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(Raven.wrap(function () {
             if(!this.isCalled) {
                 this.isCalled = true;
+                let $el = $(this.element);
+                // $('<div>').html($el.find('titanium-capsule-parallax__template').remove());
+                $($el.find('.titanium-capsule-parallax__template', $el).remove().html()).appendTo($el.find('.titanium-capsule-parallax__wrapper'));
+                $el.find('img').on('load', () => {
+                    $(window).trigger('resize')
+                });
                 $(this.element).parallax({
-                    imageSrc: 'img/IMG_1713.jpg',
                     speed: .7,
-                    bleed: 50
+                    bleed: 50,
+                    sliderSelector: '>.titanium-capsule-parallax__wrapper',
                 });
                 this.destroy();
             }
@@ -332,7 +382,7 @@ function startApp() {
             if(!this.isCalled) {
                 this.isCalled = true;
                 console.log('init Events');
-                const carousel = $('.events__carousel', this.element).owlCarousel({      //todo move images to center
+                const carousel = $('.events__carousel', this.element).owlCarousel({
                     loop: true,
                     autoplay: true,
                     autoplayTimeout: 4000,
@@ -351,7 +401,7 @@ function startApp() {
                     onInitialized: refreshWaypoints
                 });
 
-                const calculateImageOffset = ($el, items) => {
+                const calculateImageOffset = ($el, items) => {      //todo remove duplication
                     if ($el.width() / $(document).width() * items > 1.2) {
                         $el.css('transform', `translateX(${($(document).width() / items - $el.width()) / 2}px)`)
                     } else {
@@ -394,6 +444,12 @@ function startApp() {
                 $(this).closest('.menu-header__menu-wrapper').collapse('hide');
             });
         }
+    });
+
+    $('.about-capsule__embed:first').embed({
+        id: "wa2f1Bkq0_0",
+        source: "youtube",
+        placeholder: './img/photos/video_placeholder.jpg'
     });
 
     $('.capsule-content__page:first').waypoint(Raven.wrap(function () {
@@ -565,6 +621,20 @@ function startApp() {
             console.log('init Gallery');
             let gallery = $('.gallery__carousel', this.element);
             gallery.owlCarousel({
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    768: {
+                        items: 3
+                    },
+                    1280: {
+                        items: 4
+                    },
+                    1900: {
+                        items: 5
+                    }
+                },
                 autoplay: true,
                 autoplayTimeout: 3000,
                 margin: 10,

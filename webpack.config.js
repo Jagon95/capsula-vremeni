@@ -1,7 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
-
+const mergeObj = require('object-assign-deep');
 const isProd = process.env.NODE_ENV === 'production ';
+console.log((isProd ? "production" : "development") + " mode");
+const commonSettings = require('./src/data/commonSettings');
+const additionalSettings = (isProd ? require('./src/data/prodSettings') : require('./src/data/devSettings'));
+const settings = mergeObj({}, commonSettings, additionalSettings);
 
 let config = {
     entry: {
@@ -44,19 +48,21 @@ let config = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery',
-            "window.jQuery": "jquery",
+            $: 'jquery/dist/jquery.slim.js',
+            jQuery: 'jquery/dist/jquery.slim.js',
+            "window.jQuery": "jquery/dist/jquery.slim.js",
             Util: 'exports-loader?Util!bootstrap/util',
             PhotoSwipe: 'photoswipe',
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js',
-            'settings': (isProd ? 'data/prodSettings' : 'data/devSettings')
-        })
+        }),
+        new webpack.DefinePlugin({
+            'settings': JSON.stringify(settings)
+        }),
     ],
     devtool: isProd && "hidden-source-map"
 };
 
-if(isProd) {
+if (isProd) {
     config.plugins.push(
         new webpack.optimize.UglifyJsPlugin({
             sourceMap: true,

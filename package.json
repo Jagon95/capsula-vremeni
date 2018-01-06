@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "gulp build && SET NODE_ENV=production && webpack"
+    "build": "gulp build && SET NODE_ENV=production && webpack -p"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +16,6 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
-    "bootstrap": "^4.0.0-alpha.6",
     "concurrent-transform": "^1.0.0",
     "cssnano": "^4.0.0-rc.2",
     "exports-loader": "^0.6.4",
@@ -39,13 +38,13 @@
     "gulp-pug": "^3.3.0",
     "gulp-purifycss": "^0.2.0",
     "gulp-rename": "^1.2.2",
+    "gulp-responsive": "^2.8.0",
     "gulp-rm-lines": "0.0.9",
     "gulp-sass": "^3.1.0",
     "gulp-sequence": "^0.4.6",
     "gulp-stream-to-promise": "^0.1.0",
     "gulp-uglify": "^3.0.0",
     "gulp-uglifyjs": "^0.6.2",
-    "i": "^0.3.6",
     "image-size": "^0.6.2",
     "image-size-export": "^0.1.0",
     "imagemin-jpeg-recompress": "^5.1.0",
@@ -54,7 +53,7 @@
     "imports-loader": "^0.7.1",
     "json-loader": "^0.5.7",
     "merge-stream": "^1.0.1",
-    "npm": "^5.6.0",
+    "object-assign-deep": "^0.3.1",
     "popper.js": "^1.12.9",
     "postcss-csso": "^3.0.0",
     "postcss-discard-font-face": "^3.0.0",
@@ -68,11 +67,14 @@
     "webpack": "^3.10.0"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "bootstrap": "^4.0.0-alpha.6",
     "headhesive": "^1.2.4",
     "jquery": "^3.2.1",
-    "jquery-parallax.js": "^1.5.0",
+    "jquery-parallax.js": "git://github.com/pixelcog/parallax.js.git#v2.0.0-alpha",
     "owl.carousel": "^2.2.0",
     "photoswipe": "^4.1.2",
+    "picturefill": "^3.0.2",
     "raven-js": "^3.21.0",
     "semantic-ui": "^2.2.13",
     "waypoints": "^4.0.1"

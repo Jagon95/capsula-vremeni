@@ -1,3 +1,4 @@
+require('babel-polyfill');
 const gulp = require('gulp');
 const imageSize = require('image-size-export');
 const parallel = require('concurrent-transform');
@@ -11,18 +12,22 @@ const cssnano = require('cssnano');
 const discardFont = require('postcss-discard-font-face');
 const jpegRecompress = require('imagemin-jpeg-recompress');
 const svgo = require('imagemin-svgo');
+const mergeObj = require('object-assign-deep');
 const loadPlugins = require('gulp-load-plugins')({
     rename: {
         'gulp-environments': 'env',
         'gulp-stream-to-promise': 'mkPromise'
     }
 });
-
 Object.assign(global, loadPlugins);
 
 const dev = env.development;
 const prod = env.production;
 
+
+const commonSettings = require('./src/data/commonSettings');
+const additionalSettings = (!!prod() ? require('./src/data/prodSettings') : require('./src/data/devSettings'));
+const settings = mergeObj({}, commonSettings, additionalSettings);
 
 gulp.task('connect', () => {
     connect.server({
@@ -52,7 +57,7 @@ gulp.task('build-css', () => {
         .pipe(cssReplaceUrl({           // todo: replace with postcss-url
             replace: ['./../themes/default/assets/fonts', 'fonts']
         }))
-        .pipe(purifycss(['build/index.html', 'build/js/script.js']))
+        .pipe(prod(purifycss(['build/index.html', 'build/js/script.js'])))
         .pipe(prod(postcss([
             csso({ restructure: false }),
             autoprefixer({browsers: ['> 0.3%']}),
@@ -69,29 +74,40 @@ gulp.task('build-css', () => {
         .pipe(dev(connect.reload()));
 
 
-    prod(gulp.src(['src/scss/main.sass'])
-        .pipe(sass({
-            importer: moduleImporter()
-        }).on('error', sass.logError))
-        .pipe(rmLines({
-            filters: [/@import[^;]*;/i]
-        }))
-        .pipe(prod(postcss([
-            discardFont(()=>false),
-            unCss({
-                html: 'tmp/firstLoaded.html',
-            }),
-            csso({ restructure: false }),
-            cssnano({
-                preset: ['default', {
-                    discardComments: {
-                        removeAll: true,
-                    },
-                }]
-            })
-        ])))
-        .pipe(rename('firstLoaded.css'))
-        .pipe(gulp.dest('tmp')));
+    if(prod()){
+        const dataObj = Object.assign({}, require('./src/data/data.json'), {
+            i18n: require('./src/data/i18n'),
+            settings: settings
+        });
+
+        mkPromise(gulp.src('src/pug/firstLoaded.pug')
+            .pipe(data(() => dataObj))
+            .pipe(pug())
+            .pipe(gulp.dest('tmp')))
+        .then(gulp.src(['src/scss/main.sass'])
+            .pipe(sass({
+                importer: moduleImporter()
+            }).on('error', sass.logError))
+            .pipe(rmLines({
+                filters: [/@import[^;]*;/i]
+            }))
+            .pipe(prod(postcss([
+                discardFont(()=>false),
+                unCss({
+                    html: 'tmp/firstLoaded.html',
+                }),
+                csso({ restructure: false }),
+                cssnano({
+                    preset: ['default', {
+                        discardComments: {
+                            removeAll: true,
+                        },
+                    }]
+                })
+            ])))
+            .pipe(rename('firstLoaded.css'))
+            .pipe(gulp.dest('tmp')));
+    }
 });
 
 gulp.task('pug', () => {
@@ -100,7 +116,8 @@ gulp.task('pug', () => {
         products: require('./src/data/product'),
         gallery: require('./src/data/photos'),
         i18n: require('./src/data/i18n'),
-        cities: require('./src/data/cities')
+        cities: require('./src/data/cities'),
+        settings: settings
     });
 
     gulp.src('src/pug/index.pug')
@@ -113,11 +130,6 @@ gulp.task('pug', () => {
         })))
         .pipe(gulp.dest('build'))
         .pipe(connect.reload());
-
-    gulp.src('src/pug/firstLoaded.pug')
-        .pipe(data(() => dataObj))
-        .pipe(pug())
-        .pipe(gulp.dest('tmp'))
 });
 
 
@@ -143,9 +155,35 @@ gulp.task('images', () => {
         })
     ];
 
-    const cores = os.cpus().length;
-
+    const cores = os.cpus().length - 1;
     let streams = [];
+    function getSizeSettings(maxSizes, multiples) {
+        return multiples.reduce((res, multiple) => {
+            return res.concat(Object.entries(maxSizes).map((breakpoint) => {
+                return {
+                    width: breakpoint[1] * multiple,
+                    rename: {
+                        suffix: `-${breakpoint[0]}@${multiple}x`
+                    }
+                }
+            }));
+        }, []);
+    }
+
+    const containerSizeSettings = getSizeSettings(settings.sizes.container, settings.sizes.multiplies);
+    const screenSizeSenntigs = getSizeSettings(settings.sizes.screen, settings.sizes.multiplies);
+
+    gulp.src(['main.{png,jpg}', 'parallax.{png,jpg}'], {cwd: './img/'})
+        .pipe(changed('build/img'))
+        .pipe(responsive({
+            'main.*': containerSizeSettings,
+            'parallax.*': screenSizeSenntigs
+        }).on('error', (e) => {
+            console.log(e.message);
+        }))
+        .pipe(parallel(imagemin(imageminConfig), cores))
+        .pipe(gulp.dest('build/img'));
+
     let products = require('./src/data/product.json');
     let productsThumbnails = Object.values(products).reduce((r, a) => [...r, ...a.images], []);
     gulp.src(productsThumbnails, {cwd: './img/photos/'})
@@ -214,7 +252,7 @@ gulp.task('images', () => {
         .pipe(gulp.dest('./build/')));
 
     const eventsImages = data.events.reduce((r, event) => [...r, event.image], []);
-    streams.push(gulp.src(eventsImages, {
+    streams.push([].gulp.src([].concat(eventsImages, 'video_placeholder.jpg'), {
         cwd: './img/photos',
         base: '.'
     })
@@ -230,7 +268,10 @@ gulp.task('images', () => {
     streams.push(gulp.src([
         'img/**/*.{jpg,jpeg,png}',
         ...exclude([].concat(clientsImages, clientsIcons, eventsImages)),
-        '!img/favicon/*.*'
+        '!img/favicon/*.*',
+        '!img/parallax.jpg',
+        '!img/main.png',
+        '!img/photos/video_placeholder.jpg'
     ], {base: '.'})
         .pipe(changed('./build/'))
         .pipe(parallel(imageResize({

@@ -14,22 +14,14 @@
                                 a.nav-link.menu-header__link(href="#" + item.href)
                                     i(class=item.icon + ' icon')
                                     =get(i18n, item.text)
-    .container
-        .row.justify-content-center
-            .col-xl-4.col-lg-5.col-md-10.col-sm-12
-                h1
-                    | Капсула Времени, именной подарок
-            .col-xl-4.col-lg-5.col-md-10.d-none.d-md-block.offset-lg-1
-                h3
-                    | Более 4 лет производим оригинальные капсулы времени для корпоративных мероприятий и частных торжеств.
+    .container.introduction__image-wrapper
         .row
             .col-12
-                img.ui.fluid.image(src='img/main_new.png')
-        .row.justify-content-center
-            .col-lg-4.col-md-10.col-sm-12
-                .ui.primary.button
-                    i.shop.icon
-                    | В КОРЗИНУ
-            .col-lg-4.col-md-10.d-none.d-md-block.offset-lg-1
-                p
-                    | Мы делаем Капсулы Времени любых размеров и форм.
+                picture.ui.fluid.image
+                    each size in Object.keys(settings.sizes.screen)
+                        -
+                            let srcSet = settings.sizes.multiplies.reduce((res, mul) => {
+                                return Array.prototype.concat(res, `img/main-${size}@${mul}x.png` + ((mul !== 1) ? ` ${mul}x`: ''))
+                            }, []).join(', ')
+                        source(media=`(min-width: ${settings.sizes.container[size]}px)` srcset=srcSet)
+                    img.ui.fluid.image(srcset='img/main-xs@1x.png')

@@ -43,21 +43,15 @@ html
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
         title=I18N("head.title")
-        <!--[if IE]>
-        link(rel="stylesheet" type="text/css" href="css/main.min.css")
-        <![endif]-->
         link(rel="stylesheet" type="text/css" href="firstLoaded.css" inline)
         script(src="js/script.js" async)
+        link(rel="shortcut icon" href=favicon.apple.path + favicon.favicon.ico type="image/x-icon")
         each size in favicon.apple.sizes
             link(rel="apple-touch-icon" sizes=size href=favicon.apple.path + favicon.apple.name.replace('{{size}}', size))
         each size in favicon.favicon.sizes
             link(rel="icon" type="image/png" sizes=size, href=favicon.favicon.path + favicon.favicon.name.replace('{{size}}', size))
     body#kapsula
         include introduction
-
-        <!--[if !IE]> -->
-        link(rel="stylesheet" type="text/css" href="css/main.min.css" lazyload=1)
-        <!-- <![endif]-->
         #about_capsule.container-fluid.one-page.about-capsule__page
             +page_header(I18N("aboutCapsule.header"))
             .container
@@ -73,6 +67,7 @@ html
                                 .item
                                     i(class=item.icon + ' icon')
                                     .content.about-capsule__text=I18N(item.text)
+                .ui.embed.about-capsule__embed
 
         #events.container-fluid.one-page.events__page.d-none.gradient-page
             +page_header(I18N("events.header"))
@@ -101,7 +96,17 @@ html
                                                     i(class=advantage.icon + ' icon')
                                             .col-9.advantages__text=I18N(advantage.description)
 
-        .container-fluid.d-none.titanium-capsule-parallax
+        .container-fluid.d-none.titanium-capsule-parallax(data-aspect-ratio=2.4)
+            .titanium-capsule-parallax__wrapper
+                template.titanium-capsule-parallax__template
+                    picture.ui.fluid.image
+                        each size in Object.keys(settings.sizes.screen)
+                            -
+                                let srcSet = settings.sizes.multiplies.reduce((res, mul) => {
+                                return Array.prototype.concat(res, `img/parallax-${size}@${mul}x.jpg` + ((mul !== 1) ? ` ${mul}x`: ''))
+                                }, []).join(', ')
+                            source(media=`(min-width: ${settings.sizes.container[size]}px)` srcset=srcSet)
+                        img.ui.fluid.image(src='img/parallax-xs@1x.jpg')
 
         #capsule_content.container-fluid.one-page.capsule-content__page
             +page_header(I18N("capsuleContent.header"))
@@ -333,9 +338,10 @@ html
                     h3.footer__header.text-center.text-sm-left
                         i.phone.icon
                         span.content=I18N('contacts.contacts')
+                    p
+                        a(itemprop="telephone" content="84993758308" href="tel:84993758308") +7 (499) 375-83-08
                     p(itemprop="address")=I18N('contacts.address.chel')
                     p(itemprop="address")=I18N('contacts.address.spb')
-                    p(itemprop="telephone" content="84993758308") +7 (499) 375-83-08
                 .col-lg-3.col-md-4.col-sm-6.col-12.footer__col.text-center.text-sm-left
                     h3.footer__header.text-center.text-sm-left
                         i.share.alternate.icon
@@ -352,3 +358,4 @@ html
 
 
         include photoswipe.html
+        link(rel="stylesheet" type="text/css" href="css/main.min.css" lazyload=1)
