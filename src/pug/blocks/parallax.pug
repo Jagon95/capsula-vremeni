@@ -1,0 +1,11 @@
+#parallax.container-fluid.d-none.titanium-capsule-parallax(data-aspect-ratio=2.4)
+    .titanium-capsule-parallax__wrapper
+        template.titanium-capsule-parallax__template
+            picture.ui.fluid.image
+                each size in Object.keys(settings.sizes.screen)
+                    -
+                        let srcSet = settings.sizes.multiplies.reduce((res, mul) => {
+                        return Array.prototype.concat(res, `img/parallax-${size}@${mul}x.jpg` + ((mul !== 1) ? ` ${mul}x`: ''))
+                        }, []).join(', ')
+                    source(media=`(min-width: ${settings.sizes.container[size]}px)` srcset=srcSet)
+                img.ui.fluid.image(src='img/parallax-xs@1x.jpg')

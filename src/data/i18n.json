@@ -147,6 +147,9 @@
     "result": "Итого"
   },
   "processOrder": {
+    "number": "Номер заказа",
+    "description": "Описание",
+    "result": "Сумма",
     "delivery": "Доставка",
     "payment": "Оплата",
     "info": "Информация",

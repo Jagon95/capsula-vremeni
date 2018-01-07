@@ -1,0 +1,25 @@
+#clients.container-fluid.one-page.gradient-page.clients__page
+    +page_header(I18N('clients.header'))
+    //.container
+    .owl-carousel.owl-theme.clients__carousel
+        each client in clients
+            .item.clients__item
+                img.owl-lazy.clients__image(data-src="img/photos/" + client.image)
+                .container.clients__container
+                    .row
+                        .col-md-6.col-sm-12.flex-last.flex-md-unordered.clients__video-button-wrapper.align-middle
+                            if (client.video)
+                                .clients__video-button(data-video=client.video)
+                                    i.video.play.icon
+                        .col-md-6.col-sm-12.clients__description-wrapper
+                            a.clients__title(href=client.link)=I18N(client.title)
+                            .clients__description.d-none.d-lg-block=I18N(client.description)
+                            .clients__date.d-lg-flex.d-none=localeDate(new Date(client.date))
+
+
+    .container
+        .row
+            each client, index in clients
+                .item.clients__client
+                    .clients__client-image-wrapper(data-index=index)
+                        img.clients__client-image(src="img/" + client.icon)

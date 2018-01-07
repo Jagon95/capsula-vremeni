@@ -1,0 +1,31 @@
+#contacts.container-fluid.one-page.footer__page.gradient-page(itemscope itemtype="http://schema.org/Organization")
+    .row.justify-content-center
+        .col-lg-3.col-md-4.col-sm-12.flex-last.flex-md-unordered.footer__col
+            img.footer__logo(src='img/logo.svg', alt='' itemprop="logo")
+            p «
+                span(itemprop="name") Капсула времени
+                | » — первое в России агентство посланий во времени.
+            p ТОЧКА ПАО БАНКА «ФК ОТКРЫТИЕ» !{br}
+                | РС: 40802810205500000055 !{br}
+                | КС: 30101810845250000999 !{br}
+                | БИК: 044525999
+        .col-lg-3.col-md-4.col-sm-6.col-12.footer__col
+            h3.footer__header.text-center.text-sm-left
+                i.phone.icon
+                span.content=I18N('contacts.contacts')
+            p
+                a(itemprop="telephone" content="84993758308" href="tel:84993758308") +7 (499) 375-83-08
+            p(itemprop="address")=I18N('contacts.address.chel')
+            p(itemprop="address")=I18N('contacts.address.spb')
+        .col-lg-3.col-md-4.col-sm-6.col-12.footer__col.text-center.text-sm-left
+            h3.footer__header.text-center.text-sm-left
+                i.share.alternate.icon
+                span.content=I18N('contacts.social')
+            a.ui.big.facebook.icon.button.footer__social-button(href="https://www.facebook.com/1kapsulavremeni")
+                i.facebook.icon
+            a.ui.big.vk.icon.button.footer__social-button(href="https://vk.com/1ruskapsula")
+                i.vk.icon
+            a.ui.big.instagram.icon.button.footer__social-button(href="https://www.instagram.com/1kapsulavremeni/")
+                i.instagram.icon
+            a.ui.big.youtube.icon.button.footer__social-button(href="https://www.youtube.com/channel/UCaKYUJzg-bt2uNq-_H0FyqA")
+                i.youtube.icon

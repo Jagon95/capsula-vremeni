@@ -1,0 +1,14 @@
+#gallery.container-fluid.one-page.gallery__page
+    +page_header(I18N('gallery.header'))
+    .owl-carousel.owl-theme.gallery__carousel
+        - const eventsImages = events.reduce((arr, i) => [...arr, i.image], [])
+        each photo, index in gallery
+            .ui.image.item.gallery__item(data-behavior-dimmer data-thumbnail-index=index)
+                - let useThumb = eventsImages.indexOf(photo.image) === -1
+                img.owl-lazy.gallery__image(
+                data-src=(useThumb ? "img/thumbnails/" : "img/photos/") + photo.image)
+                .ui.inverted.dimmer
+                    .content
+                        .center
+                            h2.ui.icon.header
+                                i.zoom.icon

@@ -15,7 +15,7 @@ import products from 'data/product';
 import _imageSizes from 'image_sizes';
 import _photos from 'data/photos';
 import cities from 'data/cities';
-import {product as productI18n} from 'data/i18n';
+import {product as productI18n, processOrder as orderI18n} from 'data/i18n';
 import pay from 'exports-loader?pay!./tinkoff'
 import Raven from 'raven-js';
 Raven
@@ -60,8 +60,18 @@ $.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function(images)
 };
 
 const i18n = {
-    product: productI18n
+    product: productI18n,
+    order: orderI18n
 };
+
+function get(obj, i) {
+    return i.split('.').reduce((o, i) => o[i], obj);
+}
+
+function I18N(index) {
+    return get(i18n, index);
+}
+
 const imageSizes = _imageSizes.reduce(function (obj, item) {
     obj[item.name] = item;
     return obj;
@@ -104,10 +114,12 @@ function addListiners(wrapper, context) {
         let items = processImageItems(products[productId]['images'], settings.images.srcBase, settings.images.thumbSrcBase);
         openPhotoSwipe(items);
     });
-    $('[data-request-function]', wrapper).click(function () {
-        let el = $(this);
-        context[el.data('requestFunction')](el.data('functionArgument'));
-    });
+    if(context) {
+        $('[data-request-function]', wrapper).click(function () {
+            let el = $(this);
+            context[el.data('requestFunction')](el.data('functionArgument'));
+        });
+    }
     if (!isMobile()) {
         $('[data-behavior-dimmer]', wrapper).dimmer({
             on: 'hover'
@@ -125,15 +137,6 @@ function refreshWaypoints() {
 function prepareData() {
     if (!settings.logging && console) {
         console.log = function(){};
-    }
-
-
-    function get(obj, i) {
-        return i.split('.').reduce((o, i) => o[i], obj);
-    }
-
-    function I18N(index) {
-        return get(i18n, index);
     }
 
     function translateFields(obj, fields) {
@@ -156,7 +159,7 @@ class ShoppingCart {
         this.wrapper = $el;
         this._initUi();
         this.productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`, this.wrapper).html();
-        $('[data-product-template]').remove();
+        $('[data-product-template]')
         this.items = [];
         this.result = 0;
     }
@@ -206,9 +209,9 @@ class ShoppingCart {
             duration: 700,
             onComplete: function () {
                 addListiners(newElement, requests);
+                refreshWaypoints();
             }
         });
-        refreshWaypoints();
     }
 
     removeProduct(id) {
@@ -230,6 +233,10 @@ class ShoppingCart {
             }
         });
         refreshWaypoints();
+    }
+
+    getProductsDescription() {
+        return this.items.reduce((res, i) => res.concat(products[i]['title']), []).join(', ');
     }
 
     _updateResult() {
@@ -257,6 +264,12 @@ class Order {
         this.steps = ['delivery', 'payment', 'confirm'];
         this.currentStep = this.ui.steps.find('.step.active:first').data('step') || this.steps[0];
 
+        const now = new Date();
+        this.number = (now.getDate() / 100).toFixed(2).slice(2) +
+            (now.getMonth() + 1 / 100).toFixed(2).slice(2) +
+            (now.getFullYear() / 100).toFixed(2).slice(3) +
+            '-0' + Math.random().toFixed(5).slice(2, 5);
+
         this.ui.carousel.owlCarousel({
             items: 1,
             mouseDrag: false,
@@ -265,6 +278,7 @@ class Order {
             onInitialized: () => {
                 refreshWaypoints();
                 this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
+                this.ui.deliveryForm.submit(this.processDelivery.bind(this));
                 this.ui.stepBackButton.click(this.stepBack.bind(this));
                 this.ui.paymentForm.submit(this.processPayment.bind(this));
                 this.ui.citiesSelector.dropdown();
@@ -276,12 +290,17 @@ class Order {
         this.ui = {
             steps: $('.process-order__steps', this.wrapper),
             carousel: $('.process-order__carousel', this.wrapper),
-            deliveryForm: $('.process-order__delivery', this.wrapper),
+            deliveryForm: $('.process-order__delivery-form', this.wrapper),
             processDeliveryButton: $('.process-order__delivery .process-order__button-next', this.wrapper),
             citiesSelector: $('.process-order__city', this.wrapper),
             stepBackButton: $('.process-order__button-prev', this.wrapper),
             paymentDescription: $('.process-order__payment__description', this.wrapper),
-            paymentForm: $('.process-order__payment', this.wrapper),
+            paymentAmount: $('.process-order__payment__amount', this.wrapper),
+            paymentForm: $('.process-order__payment-form', this.wrapper),
+            paymentNumber: $('.process-order__payment__number', this.wrapper),
+            confirmNumber: $('.process-order__confirm-number', this.wrapper),
+            confirmDescription: $('.process-order__confirm-description', this.wrapper),
+            confirmResult: $('.process-order__confirm-result', this.wrapper),
             // processPaymentButton: $('.process-order__payment .process-order__button-next', this.wrapper),
         };
     }
@@ -331,7 +350,7 @@ class Order {
             $('.process-order__city_field', this.ui.deliveryForm).addClass('error').one('click', function () {
                 $(this).removeClass('error');
             });
-            return
+            return false
         }
         products['currentDelivery'] = {
             ...products['delivery'],
@@ -344,15 +363,22 @@ class Order {
             this.cityId = cityIndex;
         }
         this.stepNext();
+        return false;
     }
 
     processPayment(e) {
-        this.ui.paymentForm.find('.process-order__payment__amount').attr('value', this.shoppingCart.getResult());
-        this.ui.paymentForm.find('.process-order__payment__description').attr('value',
-            this.shoppingCart.getItems().reduce((res, i) => res.concat(products[i]['title']), []).join(', '));
-        console.log(e);
-        pay(e.target);
+        this.ui.paymentAmount.attr('value', this.shoppingCart.getResult());
+        this.ui.paymentDescription.attr('value', this.shoppingCart.getProductsDescription());
+        this.ui.paymentNumber.attr('value', this.number);
+        pay(e.target, this.successPayment.bind(this), this.successPayment.bind(this));
         return false;
+    }
+
+    successPayment() {
+        this.stepTo('confirm');
+        this.ui.confirmNumber.text(I18N('order.number') + ': ' +  this.number);
+        this.ui.confirmDescription.text(I18N('order.description') + ': ' +  this.shoppingCart.getProductsDescription());
+        this.ui.confirmResult.text(I18N('order.result') + ': ' +  this.shoppingCart.getResult());
     }
 }
 
@@ -364,7 +390,6 @@ function startApp() {
             if(!this.isCalled) {
                 this.isCalled = true;
                 let $el = $(this.element);
-                // $('<div>').html($el.find('titanium-capsule-parallax__template').remove());
                 $($el.find('.titanium-capsule-parallax__template', $el).remove().html()).appendTo($el.find('.titanium-capsule-parallax__wrapper'));
                 $el.find('img').on('load', () => {
                     $(window).trigger('resize')
@@ -537,10 +562,10 @@ function startApp() {
             this.isCalled = true;
             const order = new Order($('.process-order__wrapper:first'));
             order.setShoppingCart(shoppingCart);
+            window.baba = order.successPayment.bind(order);
             this.destroy();
         }
     }), settings.waypoint.pageSettings);
-
     $('.clients__page:first').waypoint(Raven.wrap(function () {
         if(!this.isCalled) {
             this.isCalled = true;
@@ -640,7 +665,10 @@ function startApp() {
                 margin: 10,
                 autoWidth: true,
                 lazyLoad: true,
-                onInitialized: refreshWaypoints
+                onInitialized: function () {
+                    addListiners(this.$element);
+                    refreshWaypoints();
+                }
             });
 
             let isDragged;
@@ -651,7 +679,7 @@ function startApp() {
                 .on('dragged.owl.carousel', (e) => setTimeout(() => {
                     isDragged = false
                 }, 220));
-            $('.gallery__image').click(function () {
+            $('.gallery__item').click(function () {
                 if (!isDragged) {
                     openPhotoSwipe(items, $(this).data('thumbnailIndex'));
                 }

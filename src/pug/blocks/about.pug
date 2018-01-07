@@ -1,0 +1,16 @@
+#about_capsule.container-fluid.one-page.about-capsule__page
+    +page_header(I18N("aboutCapsule.header"))
+    .container
+        .row.justify-content-center
+            .col-md-10.col-sm-12
+                h3=I18N("aboutCapsule.description")
+        .row.justify-content-center
+            .col-lg-8.col-md-10.col-sm-12
+                .ui.relaxed.list.advices
+                    .item
+                        .content.about-capsule__text=I18N("aboutCapsule.listHeader")
+                    each item in adviceItems
+                        .item
+                            i(class=item.icon + ' icon')
+                            .content.about-capsule__text=I18N(item.text)
+        .ui.embed.about-capsule__embed

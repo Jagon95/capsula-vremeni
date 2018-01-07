@@ -1,0 +1,14 @@
+#advantages.container-fluid.one-page.advantages__page
+    +page_header(I18N("advantages.header"))
+    .container
+        .row.justify-content-center
+            .col-md-10.col-sm-12
+                .row.advantages__wrapper
+                    each advantage, index in advantages
+                        .col-lg-6.col-md-12.row.advantages__item
+                            .container-fluid
+                                .row
+                                    .col-3.text-center
+                                        h3.ui.icon.header
+                                            i(class=advantage.icon + ' icon')
+                                    .col-9.advantages__text=I18N(advantage.description)

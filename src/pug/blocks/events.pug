@@ -1,0 +1,11 @@
+#events.container-fluid.one-page.events__page.d-none.gradient-page
+    +page_header(I18N("events.header"))
+    .owl-carousel.owl-theme.events__carousel
+        each event in events
+            .item.events__item
+                img.owl-lazy.events__image(data-src="img/photos/" + event.image)
+                h3.events__title
+                    a(href=event.link)=I18N(event.title)
+                div.events__description-block
+                    span.events__description-text=I18N(event.description)
+                    a.events__link(href=event.link)=I18N("events.more")

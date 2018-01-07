@@ -49,7 +49,7 @@
     },
     {
       "icon": "thumbs outline up",
-      "text": "advices.present"
+      "text": "advices.unusual"
     },
     {
       "icon": "ruble",
@@ -101,49 +101,49 @@
       "title": "events.final.title",
       "description": "events.final.description",
       "image": "graduation.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.september.title",
       "description": "events.september.description",
       "image": "september.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.wedding.title",
       "description": "events.wedding.description",
       "image": "wedding.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.openingNew.title",
       "description": "events.openingNew.description",
       "image": "opening-new.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.director.title",
       "description": "events.director.description",
       "image": "director.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.company.title",
       "description": "events.company.description",
       "image": "company.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.build.title",
       "description": "events.build.description",
       "image": "build.jpg",
-      "link": ""
+      "link": "#"
     },
     {
       "title": "events.birthday.title",
       "description": "events.birthday.description",
       "image": "birthday.jpg",
-      "link": ""
+      "link": "#"
     }
   ],
   "advantages": [

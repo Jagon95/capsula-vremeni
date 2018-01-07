@@ -1,0 +1,132 @@
+#shopping_cart.container-fluid.one-page.shopping-cart__page
+    +page_header(I18N("shoppingCart.header"))
+    .container-md-fluid.container
+        .row.justify-content-center
+            .col-lg-6.col-md-12.shopping-cart__column
+                table.ui.celled.unstackable.table.shopping-cart__wrapper
+                    thead.shopping-cart__header
+                        tr
+                            th.shopping-cart__number_cell #
+                            th.shopping-cart__item-name_cell(colspan=2)=I18N("shoppingCart.name")
+                            th.shopping-cart__price_cell=I18N("shoppingCart.price")
+                    tbody.shopping-cart__body
+                        tr.shopping-cart__empty-handler
+                            td(colspan=4)=I18N("shoppingCart.empty")
+                            |
+                            |
+                            a(href='#market')=I18N("shoppingCart.goToMarket")
+                        script(data-product-template='desktop' type="text/x-template")
+                            tr(data-product-id='data-template-id')
+                                td.middle.aligned.shopping-cart__number_cell data-template-index
+                                td.shopping-cart__product-name_cell
+                                    h4.ui.image.header
+                                        img.ui.medium.bordered.image.shopping-cart__product-image(
+                                        src='data-template-file',
+                                        data-thumbnail-id='data-template-id'
+                                        )
+                                        .content data-template-title
+                                            //.sub.header data-template-description         //TODO: Добавить подзаголовок
+                                td.middle.aligned.shopping-cart__actions_cell
+                                    button.small.ui.red.icon.button.shopping-cart__action(
+                                    data-tooltip=I18N("shoppingCart.remove") data-inverted
+                                    data-request-function='removeFromCart'
+                                    data-function-argument='data-template-id'
+                                    )
+                                        i.icon.trash
+                                td.middle.aligned.shopping-cart__price_cell
+                                    span.shopping-cart__price data-template-price
+                        script(data-product-template='mobile' type="text/x-template")
+                            tr(data-product-id='data-template-id')
+                                td.middle.aligned.shopping-cart__number_cell data-template-index
+                                td.shopping-cart__product-name_cell
+                                    h4.ui.image.header
+                                        .content data-template-title
+                                            //.sub.header data-template-description         //TODO: Добавить подзаголовок
+                                td.middle.aligned.shopping-cart__actions_cell
+                                    button.small.ui.red.icon.button.shopping-cart__action(
+                                    data-request-function='removeFromCart'
+                                    data-function-argument='data-template-id'
+                                    )
+                                        i.icon.trash
+                                td.middle.aligned.shopping-cart__price_cell
+                                    span.shopping-cart__price data-template-price
+                    tfoot.shopping-cart__footer
+                        tr.shopping-cart__footer-row
+                            th.shopping-cart__result-title-cell(colspan=3)=I18N("shoppingCart.result")
+                            th.shopping-cart__result-price-cell 0
+
+
+            .col-lg-6.col-md-12.shopping-cart__column.process-order__wrapper
+                .ui.steps.mini.process-order__steps.d-none.d-md-inline-flex
+                    .step.active(data-step="delivery")
+                        i.truck.icon
+                        .content
+                            .title=I18N('processOrder.delivery')
+                    .step.disabled(data-step="payment")
+                        i.payment.icon
+                        .content
+                            .title=I18N('processOrder.payment')
+                    .step.disabled(data-step="confirm")
+                        i.info.icon
+                        .content
+                            .title=I18N('processOrder.info')
+                .owl-carousel.owl-theme.process-order__carousel
+                    .item.process-order__carousel-item.process-order__delivery
+                        .ui.segment
+                            form.ui.form.process-order__delivery-form
+                                .container
+                                    .row
+                                        .col-12.field.process-order__city_field
+                                            label=I18N('processOrder.city')
+                                            select.ui.search.dropdown.process-order__city(name="city")
+                                                option=I18N('processOrder.choseCity')
+                                                each city, index in cities
+                                                    option(value=index)=city.name
+                                        .col-8.field
+                                            label=I18N('processOrder.street.label')
+                                            input(type="text" placeholder=I18N('processOrder.street.placeholder') name="street")
+                                        .col-4.field
+                                            label=I18N('processOrder.house.label')
+                                            input(type="text" placeholder=I18N('processOrder.house.placeholder') name="street")
+                                        .col-12.field
+                                            label=I18N('processOrder.comment.label')
+                                            textarea(rows="3" placeholder=I18N('processOrder.comment.placeholder'))
+                                        .col-12.field
+                                            button.ui.primary.button.process-order__button-next=I18N('processOrder.next')
+                                            i.chevron.right.icon
+
+                    .item.process-order__carousel-item.process-order__payment
+                        .ui.segment
+                            form.ui.form.process-order__payment-form
+                                input(type="hidden" name="terminalkey" value="TinkoffBankTest")
+                                input(type="hidden" name="frame" value="true")
+                                input(type="hidden" name="language" value="ru")
+                                input.process-order__payment__amount(type="hidden" name="amount" required)
+                                input.process-order__payment__number(type="hidden" name="order" value="asdfasdffq3f3ferfef")
+                                input.process-order__payment__description(type="hidden" name="description")
+                                .container
+                                    .row
+                                        .col-12.field
+                                            label=I18N('processOrder.fullName.label')
+                                            input(type="text" placeholder=I18N('processOrder.fullName.placeholder') name="name" required)
+                                        .col-12.field
+                                            label=I18N('processOrder.email.label')
+                                            input(type="email" placeholder=I18N('processOrder.email.placeholder') name="email" required)
+                                        .col-12.field
+                                            label=I18N('processOrder.tel.label')
+                                            input(type="tel" placeholder=I18N('processOrder.tel.label') name="phone" required)
+                                        .col-12.field
+                                            .ui.red.button.process-order__button-prev
+                                                i.chevron.left.icon
+                                                |
+                                                =I18N('processOrder.back')
+                                            input.ui.primary.button.process-order__button-next(type="submit" value=I18N('processOrder.pay'))
+                    .item.process-order__carousel-item.process-order__confirm
+                        .ui.segment
+                            h2.ui.header
+                                i.smile.icon
+                                .content Поздравляем!
+                                    .sub.header Ваш заказ принят в обработку
+                            p.process-order__confirm-number Номер заказа: 34578
+                            p.process-order__confirm-description Описание заказа: капсула, доставка
+                            p.process-order__confirm-result Сумма: сто нефти

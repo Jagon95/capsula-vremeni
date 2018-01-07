@@ -252,7 +252,7 @@ gulp.task('images', () => {
         .pipe(gulp.dest('./build/')));
 
     const eventsImages = data.events.reduce((r, event) => [...r, event.image], []);
-    streams.push([].gulp.src([].concat(eventsImages, 'video_placeholder.jpg'), {
+    streams.push(gulp.src([].concat(eventsImages, 'video_placeholder.jpg'), {
         cwd: './img/photos',
         base: '.'
     })
@@ -331,4 +331,4 @@ gulp.task('set-dev', dev.task);
 gulp.task('set-prod', prod.task);
 
 gulp.task('default', sequence('set-dev', 'pug', 'build-css', 'connect', 'watch'));
-gulp.task('build', sequence('set-prod', 'pug', ['copy', 'images'], 'build-css', 'pug'));
+gulp.task('build', sequence('set-prod', ['copy', 'images'], 'build-css', 'pug'));
