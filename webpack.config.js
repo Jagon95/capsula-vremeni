@@ -48,9 +48,9 @@ let config = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-            $: 'jquery/dist/jquery.slim.js',
-            jQuery: 'jquery/dist/jquery.slim.js',
-            "window.jQuery": "jquery/dist/jquery.slim.js",
+            $: 'jquery',
+            jQuery: 'jquery',
+            "window.jQuery": "jquery",
             Util: 'exports-loader?Util!bootstrap/util',
             PhotoSwipe: 'photoswipe',
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js',

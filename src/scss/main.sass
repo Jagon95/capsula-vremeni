@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,600&subset=cyrillic')
 
 $primary-color: #2185d0
+$link-color: #1e70bf
 $font-size: 1.2rem
 $line-height: 1.5rem
 
@@ -212,6 +213,7 @@ h3
       size: 16px
       weight: 600
     &title
+      color: $link-color
       +header(.7)
     &buy-button
       flex-grow: 1
@@ -408,6 +410,20 @@ h3
       +header(1)
     &social-button i
       transform: scale(1.5)
+
+
+  .product-description__
+    &wrapper
+      flex-grow: 1
+    &price
+      float: right
+      font:
+        size: 1.5em
+        weight: 600
+
+  [data-tooltip]
+    &::before, &::after
+      transition-delay: .1s
 
 .header
   &--clone

@@ -16,21 +16,29 @@ mixin product_item(name, product)
             alt=I18N(product.description)
             )
         .content.product__content
-            .header.product__title(itemprop="name")=I18N(product.title)
+            a.header.product__title(
+                data-position="top left"
+                itemprop="name"
+                data-tooltip=I18N("market.more")
+                data-inverted
+                href=`#${name}`
+                data-request-function='showDescription'
+                data-function-argument=name
+            )=I18N(product.title)
             meta(itemprop="description" content=I18N(product.description))
             .ui.labeled.button.product__price-button-group(tabindex='0' itemprop="offers" itemscope itemtype="http://schema.org/Offer")
                 meta(itemprop="priceCurrency" content="RUB")
                 .ui.primary.button.product__buy-button(
-                data-request-function='addToCart'
-                data-function-argument=name
-                data-product-id=name
+                    data-request-function='addToCart'
+                    data-function-argument=name
+                    data-product-id=name
                 )
                     span.product__buy-button_add.d-none.d-lg-inline=I18N("product.addToCart")
                     i.product__buy-button_add.d-inline-none.d-lg-none.shop.icon
                     span.product__buy-button_goto
                         a(href='#shopping_cart')=I18N("product.order")
                 span.ui.basic.primary.left.pointing.label.product__price(itemprop="price" content=product.price)
-                    =product.price > 0 ? product.price + ` ${I18N("product.currency")}` : I18N("product.free")
+                    =product.price > 0 ? prettyNumber(product.price) + ` ${I18N("product.currency")}` : I18N("product.free")
 
 mixin page_header(title)
     h2.page-header= title

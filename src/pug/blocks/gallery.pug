@@ -3,6 +3,7 @@
     .owl-carousel.owl-theme.gallery__carousel
         - const eventsImages = events.reduce((arr, i) => [...arr, i.image], [])
         each photo, index in gallery
+            - console.log(photo)
             .ui.image.item.gallery__item(data-behavior-dimmer data-thumbnail-index=index)
                 - let useThumb = eventsImages.indexOf(photo.image) === -1
                 img.owl-lazy.gallery__image(

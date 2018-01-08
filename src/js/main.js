@@ -22,6 +22,8 @@ Raven
     .config(settings.sentry.id, settings.sentry.options)
     .install();
 
+//todo move all this function in another place
+
 $.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function(images) {
     const owl = this;
 
@@ -37,7 +39,7 @@ $.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function(images)
         return $(new Image()).attr('src', $el.attr('src') || $el.attr('data-src') || $el.attr('data-src-retina'));
     }
 
-    function loadAfter ($el, $prev) {
+    function loadAfter ($el, $prev) {               //todo process loading fails
         if($prev.offset().left + $prev.width() < $(window).width()) {
             loadImg($el).one('load', $.proxy(onLoadImg, $el));
         } else {
@@ -65,11 +67,20 @@ const i18n = {
 };
 
 function get(obj, i) {
-    return i.split('.').reduce((o, i) => o[i], obj);
+    try {
+        return i.split('.').reduce((o, i) => o[i], obj);
+    } catch (e) {
+        console.error(e.message, 'required key: ' + i);
+        return '';
+    }
 }
 
 function I18N(index) {
     return get(i18n, index);
+}
+
+function prettyNumber(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 const imageSizes = _imageSizes.reduce(function (obj, item) {
@@ -98,12 +109,16 @@ function openPhotoSwipe(items, index) {
 
 function processImageItems(items, src, msrc) {
     return items.reduce((res, item) => {
-        res.push({
-            src: src + '/' + item,
-            msrc: msrc ? msrc + '/' + item : '',
-            w: imageSizes[item]['width'],
-            h: imageSizes[item]['height']
-        });
+        if(imageSizes.hasOwnProperty(item)) {
+            res.push({
+                src: src + '/' + item,
+                msrc: msrc ? msrc + '/' + item : '',
+                w: imageSizes[item]['width'],
+                h: imageSizes[item]['height']
+            });
+        } else {
+            console.error(item, 'is not exist in imageSizes object');
+        }
         return res;
     }, []);
 }
@@ -159,7 +174,7 @@ class ShoppingCart {
         this.wrapper = $el;
         this._initUi();
         this.productTemplate = $(`[data-product-template=${isMobile() ? 'mobile' : 'desktop'}]`, this.wrapper).html();
-        $('[data-product-template]')
+        $('[data-product-template]');
         this.items = [];
         this.result = 0;
     }
@@ -199,6 +214,7 @@ class ShoppingCart {
             ...product,
             file: settings.images.thumbSrcBase + '/' + product.images[0],
             index: this.items.length,
+            price: prettyNumber(product.price),
             id
         };
         let template = this.productTemplate.replace(/data-template-(\w+)/ig, (match, field) => templateData[field]);
@@ -243,7 +259,7 @@ class ShoppingCart {
         let res = this.items.reduce((sum, productId) => {
             return sum + products[productId]['price'];
         }, 0);
-        this.ui.result.html(res);
+        this.ui.result.html(prettyNumber(res));
         this.result = res;
     }
 
@@ -286,7 +302,7 @@ class Order {
         });
     }
 
-    _initUi() {
+    _initUi() {             //todo refactor this
         this.ui = {
             steps: $('.process-order__steps', this.wrapper),
             carousel: $('.process-order__carousel', this.wrapper),
@@ -301,6 +317,9 @@ class Order {
             confirmNumber: $('.process-order__confirm-number', this.wrapper),
             confirmDescription: $('.process-order__confirm-description', this.wrapper),
             confirmResult: $('.process-order__confirm-result', this.wrapper),
+            confirmTel: $('.process-order__confirm-tel', this.wrapper),
+            confirmAddress: $('.process-order__confirm-addr', this.wrapper),
+            confirmName: $('.process-order__confirm-name', this.wrapper),
             // processPaymentButton: $('.process-order__payment .process-order__button-next', this.wrapper),
         };
     }
@@ -379,6 +398,9 @@ class Order {
         this.ui.confirmNumber.text(I18N('order.number') + ': ' +  this.number);
         this.ui.confirmDescription.text(I18N('order.description') + ': ' +  this.shoppingCart.getProductsDescription());
         this.ui.confirmResult.text(I18N('order.result') + ': ' +  this.shoppingCart.getResult());
+        this.ui.confirmTel.text(I18N('order.confirm.tel') + ': ');
+        this.ui.confirmAddress.text(I18N('order.confirm.address') + ': ');
+        this.ui.confirmName.text(I18N('order.confirm.name') + ': ');
     }
 }
 
@@ -517,11 +539,29 @@ function startApp() {
         if(!this.isCalled) {
             this.isCalled = true;
             console.log('init Market');
+
+            function showModalProductDescription(productId) {
+                let product = products[productId];
+                let $m = $('.product-description__modal');
+                $m.find('.product-description__image').attr('src', settings.images.thumbSrcBase + '/' + product.images[0]);
+                $m.find('.product-description__title').text(product.title);
+                let descItems = product.description.split('\n').map((text) => $('<p>').text(text));
+                $m.find('.product-description__description').empty().append(descItems);
+                $m.find('.product-description__price').text(prettyNumber(product.price) + ' ' + I18N('product.currency'));
+                $m.modal({
+                    onApprove : function() {
+                        shoppingCart.addProduct(productId)
+                    }
+                })
+                    .modal('show')
+                ;
+            }
+
             const requests = {
                 addToCart: shoppingCart.addProduct.bind(shoppingCart),
-                removeFromCart: shoppingCart.removeProduct.bind(shoppingCart)
+                removeFromCart: shoppingCart.removeProduct.bind(shoppingCart),
+                showDescription: showModalProductDescription
             };
-
             $(".market__carousel", this.element).owlCarousel({
                 stagePadding: 50,
                 margin: 10,
@@ -562,7 +602,6 @@ function startApp() {
             this.isCalled = true;
             const order = new Order($('.process-order__wrapper:first'));
             order.setShoppingCart(shoppingCart);
-            window.baba = order.successPayment.bind(order);
             this.destroy();
         }
     }), settings.waypoint.pageSettings);

@@ -173,8 +173,8 @@ gulp.task('images', () => {
     const containerSizeSettings = getSizeSettings(settings.sizes.container, settings.sizes.multiplies);
     const screenSizeSenntigs = getSizeSettings(settings.sizes.screen, settings.sizes.multiplies);
 
-    gulp.src(['main.{png,jpg}', 'parallax.{png,jpg}'], {cwd: './img/'})
-        .pipe(changed('build/img'))
+    prod() && gulp.src(['main.{png,jpg}', 'parallax.{png,jpg}'], {cwd: './img/'})
+        .pipe(changed('./build/img'))
         .pipe(responsive({
             'main.*': containerSizeSettings,
             'parallax.*': screenSizeSenntigs
@@ -265,7 +265,7 @@ gulp.task('images', () => {
         .pipe(parallel(imagemin(imageminConfig), cores))
         .pipe(gulp.dest('build')));
 
-    streams.push(gulp.src([
+    streams.push(gulp.src([                             // todo: drop this exclude selectors
         'img/**/*.{jpg,jpeg,png}',
         ...exclude([].concat(clientsImages, clientsIcons, eventsImages)),
         '!img/favicon/*.*',

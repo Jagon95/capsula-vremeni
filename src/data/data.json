@@ -19,9 +19,9 @@
       "href": "about_capsule"
     },
     {
-      "text": "menuItems.clients",
-      "icon": "users",
-      "href": "clients"
+      "text": "menuItems.market",
+      "icon": "unsorted list",
+      "href": "market"
     },
     {
       "text": "menuItems.contacts",
@@ -91,7 +91,8 @@
     ],
     "options": [
       "engraving",
-      "case",
+      "caseWood",
+      "casePlywood",
       "ball",
       "plate"
     ]

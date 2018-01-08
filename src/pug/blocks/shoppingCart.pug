@@ -12,9 +12,9 @@
                     tbody.shopping-cart__body
                         tr.shopping-cart__empty-handler
                             td(colspan=4)=I18N("shoppingCart.empty")
-                            |
-                            |
-                            a(href='#market')=I18N("shoppingCart.goToMarket")
+                                |
+                                |
+                                a(href='#market')=I18N("shoppingCart.goToMarket")
                         script(data-product-template='desktop' type="text/x-template")
                             tr(data-product-id='data-template-id')
                                 td.middle.aligned.shopping-cart__number_cell data-template-index
@@ -93,7 +93,7 @@
                                             textarea(rows="3" placeholder=I18N('processOrder.comment.placeholder'))
                                         .col-12.field
                                             button.ui.primary.button.process-order__button-next=I18N('processOrder.next')
-                                            i.chevron.right.icon
+                                                i.chevron.right.icon
 
                     .item.process-order__carousel-item.process-order__payment
                         .ui.segment
@@ -125,8 +125,12 @@
                         .ui.segment
                             h2.ui.header
                                 i.smile.icon
+                                                    //todo i18n
                                 .content Поздравляем!
                                     .sub.header Ваш заказ принят в обработку
-                            p.process-order__confirm-number Номер заказа: 34578
-                            p.process-order__confirm-description Описание заказа: капсула, доставка
-                            p.process-order__confirm-result Сумма: сто нефти
+                            p.process-order__confirm-number
+                            p.process-order__confirm-description
+                            p.process-order__confirm-result
+                            p.process-order__confirm-tel
+                            p.process-order__confirm-addr
+                            p.process-order__confirm-name

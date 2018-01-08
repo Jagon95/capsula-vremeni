@@ -23,8 +23,13 @@
     "description": "product.capsuleTitanium.description",
     "images": [
       "t35-1.jpg",
-      "t35-2.jpg",
-      "t35-3.jpg"
+      "titanium_2.jpg",
+      "titanium_3.jpg",
+      "titanium_4.jpg",
+      "titanium_5.jpg",
+      "titanium_6.jpg",
+      "titanium_7.jpg",
+      "titanium_8.jpg"
     ],
     "price": 12000
   },
@@ -35,8 +40,12 @@
     "price": 10000,
     "images": [
       "l35-1.jpg",
-      "l35-2.jpg",
-      "l35-3.jpg"
+      "gold_2.jpg",
+      "gold_3.jpg",
+      "gold_4.jpg",
+      "gold_5.jpg",
+      "gold_6.jpg",
+      "gold_7.jpg"
     ]
   },
   "engraving": {
@@ -50,16 +59,30 @@
       "engraving3.jpg"
     ]
   },
-  "case": {
-    "title": "product.case.title",
+  "caseWood": {
+    "title": "product.caseWood.title",
     "label": null,
-    "description": "product.case.description",
+    "description": "product.caseWood.description",
     "price": 3500,
     "images": [
-      "case1.jpg",
-      "case2.jpg",
-      "case3.jpg",
-      "case4.jpg"
+      "case_wood_1.jpg",
+      "case_wood_2.jpg",
+      "case_wood_3.jpg",
+      "case_wood_plywood_.jpg"
+    ]
+  },
+  "casePlywood": {
+    "title": "product.casePlywood.title",
+    "label": null,
+    "description": "product.casePlywood.description",
+    "price": 3500,
+    "images": [
+      "case_plywood_1.jpg",
+      "case_plywood_2.jpg",
+      "case_plywood_3.jpg",
+      "case_plywood_4.jpg",
+      "case_plywood_5.jpg",
+      "case_wood_plywood_.jpg"
     ]
   },
   "ball": {
@@ -68,7 +91,7 @@
     "description": "product.ball.description",
     "price": 1400,
     "images": [
-      "dop_ball.jpg"
+      "ball.jpg"
     ]
   },
   "plate": {
