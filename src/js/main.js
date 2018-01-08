@@ -208,7 +208,7 @@ class ShoppingCart {
             // $('.shopping-cart__empty-handler').hide();
         }
         this.items.push(id);
-        $(`.product__buy-button[data-product-id="${id}"]`).addClass('active');  //todo: remove
+        $(`.product__price-button-group[data-product-id="${id}"]`).addClass('active');  //todo: remove
         let product = products[id];
         let templateData = {
             ...product,
@@ -236,7 +236,7 @@ class ShoppingCart {
             return;
         }
         this.items.splice(index, 1);
-        $(`.product__buy-button[data-product-id="${id}"]`).removeClass('active');   //todo: remove
+        $(`.product__price-button-group[data-product-id="${id}"]`).removeClass('active');   //todo: remove
         let productEl = this.ui.body.find(`[data-product-id=${id}]`);
         productEl.transition('fade', {
             onComplete: () => {
@@ -297,6 +297,7 @@ class Order {
                 this.ui.deliveryForm.submit(this.processDelivery.bind(this));
                 this.ui.stepBackButton.click(this.stepBack.bind(this));
                 this.ui.paymentForm.submit(this.processPayment.bind(this));
+                this.ui.processPaymentButton.click(this.processPayment.bind(this));
                 this.ui.citiesSelector.dropdown();
             }
         });
@@ -310,6 +311,7 @@ class Order {
             processDeliveryButton: $('.process-order__delivery .process-order__button-next', this.wrapper),
             citiesSelector: $('.process-order__city', this.wrapper),
             stepBackButton: $('.process-order__button-prev', this.wrapper),
+            processPaymentButton: $('.process-order__payment-form .process-order__button-next', this.wrapper),
             paymentDescription: $('.process-order__payment__description', this.wrapper),
             paymentAmount: $('.process-order__payment__amount', this.wrapper),
             paymentForm: $('.process-order__payment-form', this.wrapper),
@@ -320,7 +322,6 @@ class Order {
             confirmTel: $('.process-order__confirm-tel', this.wrapper),
             confirmAddress: $('.process-order__confirm-addr', this.wrapper),
             confirmName: $('.process-order__confirm-name', this.wrapper),
-            // processPaymentButton: $('.process-order__payment .process-order__button-next', this.wrapper),
         };
     }
 
@@ -587,12 +588,6 @@ function startApp() {
                 }
             });
 
-            // $('.product__buy-button').click(function (e) {       //todo better button click
-            //     let el = $(this);
-            //     el.addClass('active').off('click');
-            //     addToCart(el.data('productId'));
-            // });
-
             this.destroy();
         }
     }), settings.waypoint.pageSettings);
@@ -662,15 +657,16 @@ function startApp() {
 
             $('.clients__video-button', this.element).click(function () {
                 let $this = $(this);
-                $('.ui.modal').modal({
+                let $embed = $('.clients__embed');
+                $('.clients__modal').modal({
                     onHide: function () {
-                        $('.ui.embed').embed('destroy')
+                        $embed.embed('destroy')
                     }
                 }).modal('show');
-                if ($('.ui.embed').embed('get url')) {
-                    $('.ui.embed').embed('change', $this.data('video').source, $this.data('video').id);
+                if ($embed.embed('get url')) {
+                    $embed.embed('change', $this.data('video').source, $this.data('video').id);
                 } else {
-                    $('.ui.embed').embed($this.data('video'));
+                    $embed.embed($this.data('video'));
                 }
                 console.log($this.data('video'));
             });

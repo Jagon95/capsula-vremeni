@@ -1,0 +1,26 @@
+=gradient-page
+  background: #f4f4f4
+  background: linear-gradient(to bottom, #f4f4f4 0%, #ebebeb 71%, #f9f9f9 100%)
+  border-bottom: 1px solid rgba(0, 0, 0, .1)
+  border-top: 1px solid rgba(0, 0, 0, .1)
+
+=price-after
+  content: '\00a0руб.'
+
+=col-bottom-margins
+  +media-breakpoint-up(lg)
+    margin-bottom: 1.5rem
+  +media-breakpoint-down(md)
+    margin-bottom: 1rem
+
+=font($multiply)
+  +media-breakpoint-down(md)
+    font-size: $font-size * $multiply * .8
+    line-height: $line-height * $multiply * .8
+  +media-breakpoint-up(lg)
+    font-size: $font-size * $multiply
+    line-height: $line-height * $multiply
+
+=header($multiply)
+  +font(1.5 * $multiply)
+  padding-bottom: 1.5rem * $multiply

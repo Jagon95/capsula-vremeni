@@ -1,0 +1,95 @@
+#kapsula .clients__
+  &carousel .owl-item
+    overflow: hidden
+
+  &item
+    height: 40vw
+    min-height: 30rem
+
+  &image
+    position: absolute
+    height: 100%
+    width: auto
+
+  &client
+    text-align: center
+    width: 20%
+
+  &client-image-wrapper
+    cursor: pointer
+    position: relative
+    box-shadow: rgba(#000, .8) 0 0 1rem
+    overflow: hidden
+    transform: translateY(-50%)
+    border-radius: 50%
+    border: .4rem #fff solid
+    display: inline-block
+    width: 10rem
+    height: 10rem
+    max-width: 15vw
+    max-height: 15vw
+    z-index: 5
+    transition-duration: .3s
+
+    &:hover
+      transform: translateY(-60%)
+
+    &.active
+      border-color: $primary-color
+
+  &client-image
+    height: calc(100% + 2px)
+    width: calc(100% + 2px)
+
+  &container
+    height: 100%
+
+    .row
+      height: 100%
+
+  &video-button-wrapper, &description-wrapper
+    display: flex
+    align-items: center
+    justify-content: center
+
+  &description-wrapper
+    flex-direction: column
+    color: #fff
+
+  &title
+    color: rgba($primary-color, .8)
+    transition-duration: .3s
+    background-color: rgba(#fff, .7)
+    font-weight: 600
+    +header(1.5)
+
+    &:hover
+      color: $primary-color
+      background-color: #fff
+
+  &description
+    +font(1.5)
+    +col-bottom-margins
+
+  &video-button-wrapper
+    text-align: center
+
+  &video-button
+    cursor: pointer
+    transition-duration: .3s
+    color: rgba(#fff, .7)
+    i
+      height: auto
+      width: auto
+      +font(10)
+      line-height: normal !important
+
+    &:hover
+      color: #fff
+
+  &date
+    align-self: flex-end
+
+  .owl-item.animated .clients__video-button
+    pointer-events: none
+    opacity: 0

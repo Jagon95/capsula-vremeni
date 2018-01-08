@@ -23,7 +23,7 @@ Object.assign(global, loadPlugins);
 
 const dev = env.development;
 const prod = env.production;
-
+            //todo handle error in tasks
 
 const commonSettings = require('./src/data/commonSettings');
 const additionalSettings = (!!prod() ? require('./src/data/prodSettings') : require('./src/data/devSettings'));

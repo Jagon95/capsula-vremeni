@@ -1,0 +1,41 @@
+#kapsula .events__
+  &image
+    height: 60vh
+    width: auto
+
+  &title, &description-block
+    transition: .3s ease
+    position: absolute
+    width: 100%
+    background-color: rgba(#FFF, .8)
+    color: rgba(#000, .8)
+
+  &title
+    text-align: center
+    +header(1.2)
+    padding: .5rem
+    top: 0
+
+    &, & a
+      font-weight: 600
+
+  &description-block
+    opacity: 0
+    padding: 1rem 3rem
+    +font(1.2)
+    bottom: 0
+
+  &item
+    overflow: hidden
+
+    &:hover .events__description-block
+      opacity: 1
+
+  &description-text
+    display: block
+    max-height: $font-size * 5
+    overflow: hidden
+    text-overflow: ellipsis
+
+  &link
+    float: right

@@ -1,0 +1,23 @@
+#kapsula .footer__
+  &page
+    padding-bottom: 0
+    +media-breakpoint-down(md)
+      padding:
+        left: 1rem
+        right: 1rem
+
+  &logo
+    max-height: 4rem
+    filter: grayscale(1)
+
+  &col
+    +media-breakpoint-up(lg)
+      margin: 0 3% 3rem
+
+    +col-bottom-margins
+
+  &header, &header i
+    +header(1)
+
+  &social-button i
+    transform: scale(1.5)

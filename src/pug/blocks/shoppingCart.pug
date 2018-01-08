@@ -107,8 +107,8 @@
                                 .container
                                     .row
                                         .col-12.field
-                                            label=I18N('processOrder.fullName.label')
-                                            input(type="text" placeholder=I18N('processOrder.fullName.placeholder') name="name" required)
+                                            label=I18N('processOrder.name.label')
+                                            input(type="text" placeholder=I18N('processOrder.name.placeholder') name="name" required)
                                         .col-12.field
                                             label=I18N('processOrder.email.label')
                                             input(type="email" placeholder=I18N('processOrder.email.placeholder') name="email" required)
@@ -120,7 +120,8 @@
                                                 i.chevron.left.icon
                                                 |
                                                 =I18N('processOrder.back')
-                                            input.ui.primary.button.process-order__button-next(type="submit" value=I18N('processOrder.pay'))
+                                            button.ui.primary.button.process-order__button-next=I18N('processOrder.pay')
+                                                i.chevron.right.icon
                     .item.process-order__carousel-item.process-order__confirm
                         .ui.segment
                             h2.ui.header

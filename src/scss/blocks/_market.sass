@@ -1,0 +1,74 @@
+#kapsula .product__
+  &wrapper
+    margin: 1px
+
+    +media-breakpoint-up(lg)
+      width: 18rem
+
+    +media-breakpoint-down(md)
+      width: 13rem
+
+  &price-button-group
+    display: flex
+    width: 100%
+
+    .product__goto-button
+      display: none
+
+    &.active
+      .product__goto-button
+        display: unset
+
+      .product__buy-button
+        display: none
+
+  &price
+    flex-grow: 1
+    cursor: auto
+
+  &title
+    outline: none
+    color: $link-color
+    +header(.7)
+
+  &buy-button, &goto-button
+    flex-grow: 1
+
+  &buy-button, &goto-button, &price
+    +font(.8)
+    font-weight: 600
+
+  &label
+    +font(.75)
+    position: absolute
+    top: 1rem
+    left: 0
+    z-index: 1
+    color: #fff
+    padding: .2rem .4rem
+    border:
+      width: .1rem
+      style: solid
+      top-right-radius: .3rem
+      bottom-right-radius: .3rem
+      left-width: 0
+
+    &.blue
+      background-color: $blue
+      border-color: rgba(darken($blue, 20), .8)
+
+    &.red
+      background-color: $red
+      border-color: rgba(darken($red, 20), .8)
+
+    i
+      margin: 0 .3rem
+
+#kapsula .product-description__
+    &wrapper
+      flex-grow: 1
+    &price
+      float: right
+      font:
+        size: 1.5em
+        weight: 600

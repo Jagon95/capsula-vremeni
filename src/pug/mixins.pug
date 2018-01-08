@@ -26,17 +26,23 @@ mixin product_item(name, product)
                 data-function-argument=name
             )=I18N(product.title)
             meta(itemprop="description" content=I18N(product.description))
-            .ui.labeled.button.product__price-button-group(tabindex='0' itemprop="offers" itemscope itemtype="http://schema.org/Offer")
+            .ui.labeled.button.product__price-button-group(
+                tabindex='0'
+                itemprop="offers"
+                itemscope
+                itemtype="http://schema.org/Offer"
+                data-product-id=name
+            )
                 meta(itemprop="priceCurrency" content="RUB")
                 .ui.primary.button.product__buy-button(
                     data-request-function='addToCart'
                     data-function-argument=name
-                    data-product-id=name
                 )
-                    span.product__buy-button_add.d-none.d-lg-inline=I18N("product.addToCart")
-                    i.product__buy-button_add.d-inline-none.d-lg-none.shop.icon
-                    span.product__buy-button_goto
-                        a(href='#shopping_cart')=I18N("product.order")
+                    span.d-none.d-lg-inline=I18N("product.addToCart")
+                    i.d-inline-none.d-lg-none.shop.icon
+                a.ui.red.button.product__goto-button(href='#shopping_cart')
+                    span.d-none.d-lg-inline=I18N("product.order")
+                    i.d-inline-none.d-lg-none.check.icon
                 span.ui.basic.primary.left.pointing.label.product__price(itemprop="price" content=product.price)
                     =product.price > 0 ? prettyNumber(product.price) + ` ${I18N("product.currency")}` : I18N("product.free")
 

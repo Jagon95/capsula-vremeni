@@ -1,0 +1,16 @@
+#kapsula
+  .about-capsule__
+    &text
+      +font(1.2)
+
+    &embed
+      +media-breakpoint-up(lg)
+        margin: 2.5rem auto
+      +media-breakpoint-down(md)
+        margin: 1.5rem auto
+
+      .video.play.icon::before
+        color: rgba($link-color, .5)
+
+      .video.play.icon:hover::before
+        color: $link-color
