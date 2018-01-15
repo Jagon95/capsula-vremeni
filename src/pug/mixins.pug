@@ -35,8 +35,7 @@ mixin product_item(name, product)
             )
                 meta(itemprop="priceCurrency" content="RUB")
                 .ui.primary.button.product__buy-button(
-                    data-request-function='addToCart'
-                    data-function-argument=name
+                    data-product-id=name
                 )
                     span.d-none.d-lg-inline=I18N("product.addToCart")
                     i.d-inline-none.d-lg-none.shop.icon

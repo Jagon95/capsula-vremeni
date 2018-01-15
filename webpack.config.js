@@ -19,12 +19,19 @@ let config = {
     module: {
         rules: [
             {
-                test: /main.js/,
+                enforce: "pre",
+                test: /\.js$/,
+                exclude: [/node_modules/, /tinkoff.js/],
+                loader: 'eslint-loader'
+            },
+            {
+                test: /\.js$/,
+                exclude: [/node_modules/, /tinkoff.js/],
                 use: [
                     {
                         loader: "babel-loader",
                         options: {
-                            presets: ['env', 'stage-3']
+                            presets: ['env', 'stage-2']
                         }
                     },
                     {
