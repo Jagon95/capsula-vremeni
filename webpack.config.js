@@ -1,11 +1,22 @@
 const path = require('path');
 const webpack = require('webpack');
 const mergeObj = require('object-assign-deep');
+const i18n = require('./src/data/i18n');
+const JsonPostProcessPlugin = require('json-post-process-webpack-plugin');
 const isProd = process.env.NODE_ENV === 'production ';
 console.log((isProd ? "production" : "development") + " mode");
 const commonSettings = require('./src/data/commonSettings');
 const additionalSettings = (isProd ? require('./src/data/prodSettings') : require('./src/data/devSettings'));
-const settings = mergeObj({}, commonSettings, additionalSettings);
+
+const stringifyRecursive = (obj) => {
+    Object.keys(obj).forEach(key => {
+        if (typeof obj[key] === 'object') obj[key] = stringifyRecursive(obj[key]);
+        else obj[key] = JSON.stringify(obj[key]);
+    });
+    return obj;
+};
+
+const settings = stringifyRecursive(mergeObj({}, commonSettings, additionalSettings));
 
 let config = {
     entry: {
@@ -41,7 +52,11 @@ let config = {
             },
             {
                 test: /\.json/,
-                use: 'json-loader'
+                use:  "json-loader"
+            },
+            {
+                test: /product\.json$/,
+                use: "./src/js/productTranslator"
             }
         ]
     },
@@ -63,8 +78,8 @@ let config = {
             PhotoSwipeUI_Default: 'photoswipe/src/js/ui/photoswipe-ui-default.js',
         }),
         new webpack.DefinePlugin({
-            'settings': JSON.stringify(settings)
-        }),
+            settings
+        })
     ],
     devtool: isProd && "hidden-source-map"
 };

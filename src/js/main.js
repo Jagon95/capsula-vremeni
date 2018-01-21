@@ -1,73 +1,33 @@
 import 'babel-polyfill';
 import 'picturefill';
 import 'imports-loader?jQuery=>$!owl.carousel';
+import './lazyCarousel'
 import 'jquery-parallax.js';
 import 'waypoints';
 import Headhesive from 'headhesive';
 import 'bootstrap/collapse';
-import 'semantic/components/transition';
 import 'semantic/components/dimmer';
 import 'semantic/components/modal';
 import 'semantic/components/embed';
-import 'semantic/components/dropdown';
 import './embedSources';
-import products from 'data/product';
 import _photos from 'data/photos';
-import pay from 'exports-loader?pay!./tinkoff';
 import Raven from 'raven-js';
-import ShoppingCart from 'js/shoppingCart'
-import Order from 'js/Order'
-import help from 'js/helpers'
+import ShoppingCart from 'js/shoppingCart';
+import Order from 'js/order';
+import Market from 'js/market';
+import help from 'js/helpers';
 
 Raven
     .config(settings.sentry.id, settings.sentry.options)
     .install();
 
-$.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function(images) {
-    const owl = this;
-
-    function onLoadImg(e) {
-        this.attr('src', e.target.src);
-        this.css('opacity', 1);
-        owl.leave('pre-loading');
-        !owl.is('pre-loading') && !owl.is('initializing') && owl.refresh();
-    }
-
-    function loadImg($el) {
-        owl.enter('pre-loading');
-        return $(new Image()).attr('src', $el.attr('src')
-            || $el.attr('data-src')
-            || $el.attr('data-src-retina'));
-    }
-
-    function loadAfter($el, $prev) { // todo process loading fails
-        if ($prev.offset().left + $prev.width() < $(window).width()) {
-            loadImg($el).one('load', $.proxy(onLoadImg, $el));
-        } else {
-            owl.$element.one('translated.owl.carousel resized.owl.carousel',
-                () => loadAfter($el, $prev));
-        }
-    }
-
-    images.slice(0, owl.settings.items).each($.proxy(function(i, element) {
-        let $el = $(element);
-        loadImg($el).one('load', $.proxy(onLoadImg, $el));
-    }));
-
-    for (let i = owl.settings.items; i < images.length; ++i) {
-        let $el = $(images.get(i));
-        let $prev = $(images.get(i - 1));
-        $prev.one('load', () => {
-            loadAfter($el, $prev);
-        });
-    }
-};
-
 function startApp() {
-    help.prepareData(products);
+    if (!settings.logging && console) {
+        console.log = () => {};
+    }
 
     if (!help.isMobile()) {
-        $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(Raven.wrap(function() {
+        $('.titanium-capsule-parallax:first').removeClass('d-none').waypoint(Raven.wrap(function () {
             if (!this.isCalled) {
                 this.isCalled = true;
                 let $el = $(this.element);
@@ -85,29 +45,10 @@ function startApp() {
             }
         }), settings.waypoint.pageSettings);
 
-        $('.events__page:first').removeClass('d-none').waypoint(Raven.wrap(function() {
+        $('.events__page:first').removeClass('d-none').waypoint(Raven.wrap(function () {
             if (!this.isCalled) {
                 this.isCalled = true;
                 console.log('init Events');
-                const carousel = $('.events__carousel', this.element).owlCarousel({
-                    loop: true,
-                    autoplay: true,
-                    autoplayTimeout: 4000,
-                    lazyLoad: true,
-                    responsive: {
-                        0: {
-                            items: 1,
-                        },
-                        768: {
-                            items: 2,
-                        },
-                        1280: {
-                            items: 3,
-                        },
-                    },
-                    onInitialized: help.refreshWaypoints,
-                });
-
                 const calculateImageOffset = ($el, items) => { // todo remove duplication
                     if ($el.width() / $(document).width() * items > 1.2) {
                         $el.css('transform', `translateX(${($(document).width()
@@ -117,18 +58,19 @@ function startApp() {
                     }
                 };
 
-                carousel.on('loaded.owl.lazy', (event) => {
-                    calculateImageOffset(event.element, event.page.size);
-                    console.log(event);
-                });
-
-                carousel.on('resize.owl.carousel', function(event) {
-                    let $el = $(this);
-                    $el.find('.clients__image[src]').each(function() {
-                        calculateImageOffset($(this), event.page.size);
-                    });
-                });
-
+                $('.events__carousel', this.element)
+                    .on('initialized.owl.carousel', help.refreshWaypoints)
+                    .on('loaded.owl.lazy', (event) => {
+                        calculateImageOffset(event.element, event.page.size);
+                        console.log(event);
+                    })
+                    .on('resize.owl.carousel', function (event) {
+                        let $el = $(this);
+                        $el.find('.clients__image[src]').each(function () {
+                            calculateImageOffset($(this), event.page.size);
+                        });
+                    })
+                    .owlCarousel(settings.carousel.events);
 
                 this.destroy();
             }
@@ -143,11 +85,11 @@ function startApp() {
             stick: 'header--stick',
             unstick: 'header--unstick',
         },
-        onInit: function() {
-            $(this.elem).add(this.clonedElem).find('.menu-header__toggler').click(function() {
+        onInit: function () {
+            $(this.elem).add(this.clonedElem).find('.menu-header__toggler').click(function () {
                 $(this).siblings('.menu-header__menu-wrapper').collapse('toggle');
             });
-            $(this.elem).add(this.clonedElem).find('.menu-header__link').click(function() {
+            $(this.elem).add(this.clonedElem).find('.menu-header__link').click(function () {
                 $(this).closest('.menu-header__menu-wrapper').collapse('hide');
             });
         },
@@ -159,104 +101,45 @@ function startApp() {
         placeholder: './img/photos/video_placeholder.jpg',
     });
 
-    $('.capsule-content__page:first').waypoint(Raven.wrap(function() {
+    $('.capsule-content__page:first').waypoint(Raven.wrap(function () {
         if (!this.isCalled) {
             this.isCalled = true;
             console.log('init Capsule content');
             const switchers = $('.card-tab-switcher__wrapper', this.element);
-            const carousel = $('.tab-page__carousel', this.element).owlCarousel({
-                items: 1,
-                loop: true,
-                mouseDrag: false,
-                dots: true,
-                autoplay: true,
-                autoplayTimeout: 4000,
-                animateOut: 'fadeOut',
-                onInitialized: function(e) {
+            const carousel = $('.tab-page__carousel', this.element)
+                .on('initialized.owl.carousel', function (e) {
                     help.refreshWaypoints();
                     switchers.filter(`[data-index=0]`).addClass('blue');
-                    switchers.click(function() {
+                    switchers.click(function () {
                         const $this = $(this);
-                        // switchers.removeClass('blue');
-                        // $this.addClass('blue');
                         carousel.trigger('to.owl.carousel', $this.data('index'));
                     });
-                },
-                onChanged: function(e) {
+                })
+                .on('changed.owl.carousel', function (e) {
                     switchers.removeClass('blue');
                     const currentIndex = (e.item.index - 3 + e.item.count) % e.item.count;
                     switchers.filter(`[data-index=${currentIndex}]`).addClass('blue');
-                },
-            });
+                })
+                .owlCarousel(settings.carousel.content);
             this.destroy();
         }
     }), settings.waypoint.pageSettings);
 
-    const shoppingCart = new ShoppingCart($('.shopping-cart__wrapper:first'), products);
+    const shoppingCart = new ShoppingCart($('.shopping-cart__wrapper:first'));
 
-    $('.market__page:first').waypoint(Raven.wrap(function() {           //todo make class
+    $('.market__page:first').waypoint(Raven.wrap(function () {
         if (!this.isCalled) {
             this.isCalled = true;
             console.log('init Market');
-
-            function showModalProductDescription(productId) {
-                let product = products[productId];
-                let $m = $('.product-description__modal');
-                $m.find('.product-description__image').attr('src',
-                    settings.images.thumbSrcBase + '/' + product.images[0]);
-                $m.find('.product-description__title').text(product.title);
-                let descItems = product.description.split('\n').map((text) => $('<p>').text(text));
-                $m.find('.product-description__description').empty().append(descItems);
-                $m.find('.product-description__price').text(help.prettyNumber(product.price)
-                    + ' ' + help.i18N('product.currency'));
-                $m.modal({
-                    onApprove: function() {
-                        shoppingCart.addProduct(product);
-                    },
-                })
-                    .modal('show')
-                ;
-            }
-
-            $('.product__buy-button', this.element).click(function () {
-                let $el = $(this);
-                shoppingCart.addProduct(products[$el.data('productId')])
-            });
-
-            const requests = {      //todo remove this
-                removeFromCart: shoppingCart.removeProduct.bind(shoppingCart),
-                showDescription: showModalProductDescription,
-            };
-            $('.market__carousel', this.element).owlCarousel({
-                stagePadding: 50,
-                margin: 10,
-                autoWidth: true,
-                autoheight: true,
-                responsive: {
-                    0: {
-                        items: 1,
-                    },
-                    576: {
-                        items: 2,
-                    },
-                    768: {
-                        items: 4,
-                    },
-                    992: {
-                        items: 5,
-                    },
-                },
-                onInitialized: function() {
-                    help.refreshWaypoints();
-                    help.addListiners(this.$element, requests);
-                },
-            });
-
+            const market = new Market($(this.element));
+            market.on('addProduct', shoppingCart.addProduct.bind(shoppingCart));
+            shoppingCart.on('addProduct', market.toggleButton.bind(market, true));
+            shoppingCart.on('removeProduct', market.toggleButton.bind(market, false));
             this.destroy();
         }
     }), settings.waypoint.pageSettings);
 
-    $('.shopping-cart__page:first').waypoint(Raven.wrap(function() {
+    $('.shopping-cart__page:first').waypoint(Raven.wrap(function () {
         if (!this.isCalled) {
             this.isCalled = true;
             const order = new Order($('.process-order__wrapper:first'));
@@ -264,22 +147,10 @@ function startApp() {
             this.destroy();
         }
     }), settings.waypoint.pageSettings);
-    $('.clients__page:first').waypoint(Raven.wrap(function() {
+    $('.clients__page:first').waypoint(Raven.wrap(function () {
         if (!this.isCalled) {
             this.isCalled = true;
             console.log('init Clients');
-            let carousel = $('.clients__carousel', this.element).owlCarousel({
-                items: 1,
-                loop: true,
-                lazyLoad: true,
-                mouseDrag: false,
-                dots: help.isMobile(),
-                autoplay: true,
-                autoplayTimeout: 4000,
-                animateOut: 'fadeOut',
-                onInitialized: help.refreshWaypoints,
-            });
-
             const calculateImageOffset = ($el) => {
                 if ($el.width() / $(document).width() > 1.2) {
                     $el.css('transform', `translateX(${($(document).width()
@@ -289,28 +160,32 @@ function startApp() {
                 }
             };
 
-            carousel.on('loaded.owl.lazy', (event) => {
-                calculateImageOffset(event.element);
-            });
-
-            carousel.on('resize.owl.carousel', function() {
-                let $el = $(this);
-                $el.find('.clients__image[src]').each(function() {
-                    calculateImageOffset($(this));
-                });
-            });
+            let carousel = $('.clients__carousel', this.element)
+                .on('initialized.owl.carousel', help.refreshWaypoints)
+                .on('loaded.owl.lazy', (event) => {
+                    calculateImageOffset(event.element);
+                })
+                .on('resize.owl.carousel', function () {
+                    let $el = $(this);
+                    $el.find('.clients__image[src]').each(function () {
+                        calculateImageOffset($(this));
+                    });
+                })
+                .owlCarousel(Object.assign(settings.carousel.clients, {
+                    dots: help.isMobile(),
+                }));
 
             let toggles = $('.clients__client-image-wrapper');
 
             if (!help.isMobile()) {
-                toggles.click(function() {
+                toggles.click(function () {
                     let el = $(this);
                     carousel.trigger('to.owl.carousel', el.data('index'));
                     toggles.removeClass('active');
                     el.addClass('active');
                 });
 
-                carousel.on('changed.owl.carousel', function(event) {
+                carousel.on('changed.owl.carousel', function (event) {
                     toggles.removeClass('active');
                     toggles.filter(`[data-index=${event.item.index - 3}]`).addClass('active');
                 });
@@ -320,11 +195,11 @@ function startApp() {
                 toggles.remove();
             }
 
-            $('.clients__video-button', this.element).click(function() {
+            $('.clients__video-button', this.element).click(function () {
                 let $this = $(this);
                 let $embed = $('.clients__embed');
                 $('.clients__modal').modal({
-                    onHide: function() {
+                    onHide: function () {
                         $embed.embed('destroy');
                     },
                 }).modal('show');
@@ -340,47 +215,30 @@ function startApp() {
         }
     }), settings.waypoint.pageSettings);
 
-    $('.gallery__page:first').waypoint(Raven.wrap(function() {
+    $('.gallery__page:first').waypoint(Raven.wrap(function () {
         if (!this.isCalled) {
             this.isCalled = true;
             console.log('init Gallery');
-            let gallery = $('.gallery__carousel', this.element);
-            gallery.owlCarousel({
-                responsive: {
-                    0: {
-                        items: 1,
-                    },
-                    768: {
-                        items: 3,
-                    },
-                    1280: {
-                        items: 4,
-                    },
-                    1900: {
-                        items: 5,
-                    },
-                },
-                autoplay: true,
-                autoplayTimeout: 3000,
-                margin: 10,
-                autoWidth: true,
-                lazyLoad: true,
-                onInitialized: function() {
-                    help.addListiners(this.$element);
-                    help.refreshWaypoints();
-                },
-            });
 
-            let isDragged;
             const items = help.processImageItems(_photos.reduce((r, photo) => [...r, photo.image], []),
                 settings.images.srcBase, settings.images.thumbSrcBase);
-            gallery.on('drag.owl.carousel', (e) => setTimeout(() => {
-                isDragged = true;
-            }, 220))
+
+            let isDragged;
+            let gallery = $('.gallery__carousel', this.element);
+            gallery
+                .on('initialized.owl.carousel', function () {
+                    help.addListiners(this.$element);
+                    help.refreshWaypoints();
+                })
+                .on('drag.owl.carousel', (e) => setTimeout(() => {
+                    isDragged = true;
+                }, 220))
                 .on('dragged.owl.carousel', (e) => setTimeout(() => {
                     isDragged = false;
-                }, 220));
-            $('.gallery__item').click(function() {
+                }, 220))
+                .owlCarousel(settings.carousel.gallery);
+
+            $('.gallery__item').click(function () {
                 if (!isDragged) {
                     help.openPhotoSwipe(items, $(this).data('thumbnailIndex'));
                 }
@@ -391,7 +249,7 @@ function startApp() {
 }
 
 $(document).ready(() => {
-    Raven.context(function() {
+    Raven.context(function () {
         startApp();
     });
 });

@@ -1,15 +1,16 @@
 import help from 'js/helpers';
+import products from 'data/product'
+import 'semantic/components/transition';
 
-module.exports = class ShoppingCart {
+export default class ShoppingCart {
     /**
      *
      * @param {jquery} $el
-     * @param {array} products
      */
-    constructor($el, products) {
-        this.products = products;
+    constructor($el) {
         this.wrapper = $el;
         this._initUi();
+        this._initEvents();
         this.productTemplate = $(`[data-product-template=${help.isMobile() ? 'mobile' : 'desktop'}]`, this.wrapper).html();
         $('[data-product-template]');
         this.items = [];
@@ -23,27 +24,40 @@ module.exports = class ShoppingCart {
     getItems() {
         return this.items;
     }
-    /*eslint-disable */
+    /*eslint-disable */     //todo make this works
 
     ui = {
         emptyHandler: '.shopping-cart__empty-handler',
         body: '.shopping-cart__body',
         result: '.shopping-cart__result-price-cell',
     };
+
+    events = ['addProduct', 'removeProduct'];
     /*eslint-enable */
 
+    _fireEvent(event, params) {
+        for(let func of this.events[event]) {
+            func(params);
+        }
+    }
+
+    on(event, func) {
+        if(this.events.hasOwnProperty(event)) {
+            this.events[event].push(func);
+        }
+    }
+
     _initUi() {
-        this.ui = {
-            emptyHandler: $('.shopping-cart__empty-handler', this.wrapper),
-            body: $('.shopping-cart__body', this.wrapper),
-            result: $('.shopping-cart__result-price-cell', this.wrapper),
-        };
+        for (let name of Object.keys(this.ui)) {
+            this.ui[name] = $(this.ui[name], this.wrapper);
+        }
+    }
+
+    _initEvents() {
+        this.events = this.events.reduce((res, event) => Object.assign(res, {[event]: []}), {});
     }
 
     addProduct(product) {
-        const requests = {      //todo remove
-            removeFromCart: this.removeProduct.bind(this),
-        };
         if (this.items.indexOf(product.id) !== -1) {
             return;
         }
@@ -51,7 +65,7 @@ module.exports = class ShoppingCart {
             this.ui.emptyHandler.transition('fade out', {duration: 0});
         }
         this.items.push(product.id);
-        $(`.product__price-button-group[data-product-id="${product.id}"]`).addClass('active'); // todo: remove
+        this._fireEvent('addProduct', product.id);
         let templateData = {
             ...product,
             file: settings.images.thumbSrcBase + '/' + product.images[0],
@@ -64,11 +78,18 @@ module.exports = class ShoppingCart {
         this._updateResult();
         newElement.transition('fade in', {
             duration: 700,
-            onComplete: function() {
-                help.addListiners(newElement, requests);
+            onComplete: () => {
+                this._addListinersToProduct(newElement);
                 help.refreshWaypoints();
             },
         });
+    }
+
+    _addListinersToProduct($el) {
+        let delBtn = $el.find('.shopping-cart__delete');
+        delBtn.click(this.removeProduct.bind(this, delBtn.data('productId')));
+
+        help.addListiners($el);
     }
 
     removeProduct(id) {
@@ -77,7 +98,7 @@ module.exports = class ShoppingCart {
             return;
         }
         this.items.splice(index, 1);
-        $(`.product__price-button-group[data-product-id="${id}"]`).removeClass('active'); // todo: remove
+        this._fireEvent('removeProduct', id);
         let productEl = this.ui.body.find(`[data-product-id=${id}]`);
         productEl.transition('fade', {
             onComplete: () => {
@@ -93,12 +114,12 @@ module.exports = class ShoppingCart {
     }
 
     getProductsDescription() {
-        return this.items.reduce((res, i) => res.concat(this.products[i]['title']), []).join(', ');
+        return this.items.reduce((res, i) => res.concat(products[i]['title']), []).join(', ');
     }
 
     _updateResult() {
         let res = this.items.reduce((sum, productId) => {
-            return sum + this.products[productId]['price'];
+            return sum + products[productId]['price'];
         }, 0);
         this.ui.result.html(help.prettyNumber(res));
         this.result = res;

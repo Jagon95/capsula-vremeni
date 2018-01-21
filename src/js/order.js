@@ -1,38 +1,10 @@
 import help from "./helpers";
 import cities from 'data/cities';
 import {delivery} from 'data/product'
+import 'semantic/components/dropdown';
+import pay from 'exports-loader?pay!./tinkoff';
 
-module.exports = class Order {
-    constructor($el) {
-        this.wrapper = $el;
-        this._initUi();
-        this.cityId = null;
-        this.shoppingCart = null;
-        this.steps = ['delivery', 'payment', 'confirm'];
-        this.currentStep = this.ui.steps.find('.step.active:first').data('step') || this.steps[0];
-
-        const now = new Date();
-        this.number = (now.getDate() / 100).toFixed(2).slice(2) +
-            (now.getMonth() + 1 / 100).toFixed(2).slice(2) +
-            (now.getFullYear() / 100).toFixed(2).slice(3) +
-            '-0' + Math.random().toFixed(5).slice(2, 5);
-
-        this.ui.carousel.owlCarousel({
-            items: 1,
-            mouseDrag: false,
-            touchDrag: false,
-            dots: false,
-            onInitialized: () => {
-                help.refreshWaypoints();
-                this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
-                this.ui.deliveryForm.submit(this.processDelivery.bind(this));
-                this.ui.stepBackButton.click(this.stepBack.bind(this));
-                this.ui.paymentForm.submit(this.processPayment.bind(this));
-                this.ui.processPaymentButton.click(this.processPayment.bind(this));
-                this.ui.citiesSelector.dropdown();
-            },
-        });
-    }
+export default class Order {
     /*eslint-disable */
     ui = {
         steps: '.process-order__steps',
@@ -53,6 +25,34 @@ module.exports = class Order {
         confirmAddress: '.process-order__confirm-addr',
         confirmName: '.process-order__confirm-name',
     };
+
+    constructor($el) {
+        this.wrapper = $el;
+        this._initUi();
+        this.cityId = null;
+        this.shoppingCart = null;
+        this.steps = ['delivery', 'payment', 'confirm'];
+        this.currentStep = this.ui.steps.find('.step.active:first').data('step') || this.steps[0];
+
+        const now = new Date();
+        this.number = (now.getDate() / 100).toFixed(2).slice(2) +
+            (now.getMonth() + 1 / 100).toFixed(2).slice(2) +
+            (now.getFullYear() / 100).toFixed(2).slice(3) +
+            '-0' + Math.random().toFixed(5).slice(2, 5);
+
+        this.ui.carousel
+            .on('initialized.owl.carousel', () => {
+                help.refreshWaypoints();
+                this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
+                this.ui.deliveryForm.submit(this.processDelivery.bind(this));
+                this.ui.stepBackButton.click(this.stepBack.bind(this));
+                this.ui.paymentForm.submit(this.processPayment.bind(this));
+                this.ui.processPaymentButton.click(this.processPayment.bind(this));
+                this.ui.citiesSelector.dropdown();
+            })
+            .owlCarousel(settings.carousel.order);
+    }
+
     /*eslint-enable */
 
     _initUi() {
@@ -104,7 +104,7 @@ module.exports = class Order {
         let cityIndex = parseInt(this.ui.citiesSelector.val());
         if (!Number.isInteger(cityIndex)) {
             $('.process-order__city_field', this.ui.deliveryForm).addClass('error')
-                .one('click', function() {
+                .one('click', function () {
                     $(this).removeClass('error');
                 });
             return false;

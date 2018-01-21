@@ -68,19 +68,14 @@ module.exports = {
         }, []);
     },
 
-    addListiners: function(wrapper, context) {
+    addListiners: function(wrapper) {
         $('[data-thumbnail-id]', wrapper).css('cursor', 'pointer').click(function() {
             let productId = $(this).data('thumbnailId');
             let items = module.exports.processImageItems(products[productId]['images'],
                 settings.images.srcBase, settings.images.thumbSrcBase);
             module.exports.openPhotoSwipe(items);
         });
-        if (context) {
-            $('[data-request-function]', wrapper).click(function() {
-                let el = $(this);
-                context[el.data('requestFunction')](el.data('functionArgument'));
-            });
-        }
+
         if (!module.exports.isMobile()) {
             $('[data-behavior-dimmer]', wrapper).dimmer({
                 on: 'hover',
@@ -94,23 +89,4 @@ module.exports = {
             $(document).trigger('resize');
         }, 10);
     },
-
-    prepareData: function() {
-        if (!settings.logging && console) {
-            console.log = function() {
-            };
-        }
-
-        function translateFields(obj, fields) {
-            fields.forEach((i) => {
-                obj[i] = module.exports.i18N(obj[i]);
-            });
-        }
-
-        for (let key of Object.keys(products)) {
-            translateFields(products[key], ['title', 'description']);
-            products[key]['id'] = key;
-        }
-    },
-
 };

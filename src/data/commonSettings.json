@@ -24,7 +24,11 @@
     "thumbSrcBase": "img/thumbnails"
   },
   "sizes": {
-    "multiplies": [1, 1.5, 2],
+    "multiplies": [
+      1,
+      1.5,
+      2
+    ],
     "container": {
       "xl": 1110,
       "md": 690,
@@ -34,6 +38,89 @@
       "xl": 1900,
       "md": 992,
       "xs": 576
+    }
+  },
+  "carousel": {
+    "market": {
+      "stagePadding": 50,
+      "margin": 10,
+      "autoWidth": true,
+      "responsive": {
+        "0": {
+          "items": 1
+        },
+        "576": {
+          "items": 2
+        },
+        "768": {
+          "items": 4
+        },
+        "992": {
+          "items": 5
+        }
+      }
+    },
+    "events": {
+      "loop": true,
+      "autoplay": true,
+      "autoplayTimeout": 4000,
+      "lazyLoad": true,
+      "responsive": {
+        "0": {
+          "items": 1
+        },
+        "768": {
+          "items": 2
+        },
+        "1280": {
+          "items": 3
+        }
+      }
+    },
+    "gallery": {
+      "responsive": {
+        "0": {
+          "items": 1
+        },
+        "768": {
+          "items": 3
+        },
+        "1280": {
+          "items": 4
+        },
+        "1900": {
+          "items": 5
+        }
+      },
+      "autoplay": true,
+      "autoplayTimeout": 3000,
+      "margin": 10,
+      "autoWidth": true,
+      "lazyLoad": true
+    },
+    "content": {
+      "items": 1,
+      "loop": true,
+      "mouseDrag": false,
+      "dots": true,
+      "autoplay": true,
+      "autoplayTimeout": 4000,
+      "animateOut": "fadeOut"
+    },
+    "clients": {
+      "items": 1,
+      "loop": true,
+      "lazyLoad": true,
+      "mouseDrag": false,
+      "autoplay": true,
+      "autoplayTimeout": 4000,
+      "animateOut": "fadeOut"
+    },
+    "order":{
+      "items": 1,
+      "mouseDrag": false,
+      "touchDrag": false,
+      "dots": false
     }
   }
 }

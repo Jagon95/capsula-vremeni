@@ -22,8 +22,7 @@ mixin product_item(name, product)
                 data-tooltip=I18N("market.more")
                 data-inverted
                 href=`#${name}`
-                data-request-function='showDescription'
-                data-function-argument=name
+                data-description-id=name
             )=I18N(product.title)
             meta(itemprop="description" content=I18N(product.description))
             .ui.labeled.button.product__price-button-group(

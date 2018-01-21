@@ -27,11 +27,9 @@
                                         .content data-template-title
                                             //.sub.header data-template-description         //TODO: Добавить подзаголовок
                                 td.middle.aligned.shopping-cart__actions_cell
-                                    button.small.ui.red.icon.button.shopping-cart__action(
+                                    button.small.ui.red.icon.button.shopping-cart__delete(
                                     data-tooltip=I18N("shoppingCart.remove") data-inverted
-                                    data-request-function='removeFromCart'
-                                    data-function-argument='data-template-id'
-                                    )
+                                    data-product-id='data-template-id')
                                         i.icon.trash
                                 td.middle.aligned.shopping-cart__price_cell
                                     span.shopping-cart__price data-template-price
@@ -43,10 +41,7 @@
                                         .content data-template-title
                                             //.sub.header data-template-description         //TODO: Добавить подзаголовок
                                 td.middle.aligned.shopping-cart__actions_cell
-                                    button.small.ui.red.icon.button.shopping-cart__action(
-                                    data-request-function='removeFromCart'
-                                    data-function-argument='data-template-id'
-                                    )
+                                    button.small.ui.red.icon.button.shopping-cart__delete
                                         i.icon.trash
                                 td.middle.aligned.shopping-cart__price_cell
                                     span.shopping-cart__price data-template-price
