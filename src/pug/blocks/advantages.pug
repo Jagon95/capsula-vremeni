@@ -5,10 +5,11 @@
             .col-md-10.col-sm-12
                 .row.advantages__wrapper
                     each advantage, index in advantages
+                        - let adventage = I18N(advantage.description)
                         .col-lg-6.col-md-12.row.advantages__item
                             .container-fluid
                                 .row
                                     .col-2.text-center.advantages__icon-wrapper
                                         .ui.icon.header
                                             i.advantages__icon(class=advantage.icon + ' icon')
-                                    .col-10.advantages__text=I18N(advantage.description)
+                                    .col-10.advantages__text !{adventage}

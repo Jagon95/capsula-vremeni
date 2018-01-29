@@ -4,10 +4,12 @@ include mixins
 doctype html
 html
     head
+        script(src='../js/firstLoaded.js' inline)
         meta(charset="UTF-8")
         meta(name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1")
         title=I18N("head.title")
         link(rel="stylesheet" type="text/css" href="firstLoaded.css" inline)
+        link(rel="stylesheet" type="text/css" href="preloader.css" inline)
         script(src="js/script.js" async)
         link(rel="shortcut icon" href=favicon.apple.path + favicon.favicon.ico type="image/x-icon")
         each size in favicon.apple.sizes

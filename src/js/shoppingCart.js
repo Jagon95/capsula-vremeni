@@ -8,12 +8,13 @@ export default class ShoppingCart {
      * @param {jquery} $el
      */
     constructor($el) {
+        this.disabled = false;
         this.wrapper = $el;
         this._initUi();
         this._initEvents();
         this.productTemplate = $(`[data-product-template=${help.isMobile() ? 'mobile' : 'desktop'}]`, this.wrapper).html();
         $('[data-product-template]');
-        this.items = [];
+        this.items = {};
         this.result = 0;
     }
 
@@ -21,9 +22,6 @@ export default class ShoppingCart {
         return this.result;
     }
 
-    getItems() {
-        return this.items;
-    }
     /*eslint-disable */     //todo make this works
 
     ui = {
@@ -58,18 +56,21 @@ export default class ShoppingCart {
     }
 
     addProduct(product) {
-        if (this.items.indexOf(product.id) !== -1) {
+        if (this.disabled) {
             return;
         }
-        if (this.items.length === 0) {
+        if (this.items.hasOwnProperty(product.id)) {
+            return;
+        }
+        if (Object.keys(this.items).length === 0) {
             this.ui.emptyHandler.transition('fade out', {duration: 0});
         }
-        this.items.push(product.id);
+        this.items[product.id] = product;
         this._fireEvent('addProduct', product.id);
         let templateData = {
             ...product,
             file: settings.images.thumbSrcBase + '/' + product.images[0],
-            index: this.items.length,
+            index: Object.keys(this.items).length,
             price: help.prettyNumber(product.price)
         };
         let template = this.productTemplate.replace(/data-template-(\w+)/ig, (match, field) => templateData[field]);
@@ -93,11 +94,13 @@ export default class ShoppingCart {
     }
 
     removeProduct(id) {
-        let index = this.items.indexOf(id);
-        if (index === -1) {
+        if (this.disabled) {
             return;
         }
-        this.items.splice(index, 1);
+        if (!this.items.hasOwnProperty(id)) {
+            return;
+        }
+        delete this.items[id];
         this._fireEvent('removeProduct', id);
         let productEl = this.ui.body.find(`[data-product-id=${id}]`);
         productEl.transition('fade', {
@@ -105,7 +108,7 @@ export default class ShoppingCart {
                 productEl.remove();
                 this._updateIndexes();
                 this._updateResult();
-                if (this.items.length === 0) {
+                if (Object.keys(this.items).length === 0) {
                     this.ui.emptyHandler.transition('fade in');
                 }
             },
@@ -113,13 +116,17 @@ export default class ShoppingCart {
         help.refreshWaypoints();
     }
 
+    disable() {
+        this.disabled = true;
+    }
+
     getProductsDescription() {
-        return this.items.reduce((res, i) => res.concat(products[i]['title']), []).join(', ');
+        return Object.values(this.items).reduce((res, i) => res.concat(i['title']), []).join(', ');
     }
 
     _updateResult() {
-        let res = this.items.reduce((sum, productId) => {
-            return sum + products[productId]['price'];
+        let res = Object.values(this.items).reduce((sum, product) => {
+            return sum + product['price'];
         }, 0);
         this.ui.result.html(help.prettyNumber(res));
         this.result = res;

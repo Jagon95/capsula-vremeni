@@ -19,20 +19,21 @@ export default class Market {
                 this.wrapper.find('.product__buy-button').click(function () {
                     let $el = $(this);
                     t._fireEvent('addProduct', products[$el.data('productId')]);
-                    // shoppingCart.addProduct(products[$el.data('productId')])
                 });
 
                 help.refreshWaypoints();
                 help.addListiners(this.wrapper);
+                this.wrapper.find('.preloader').transition('fade out');
             })
             .owlCarousel(settings.carousel.market);
     }
 
     toggleButton(active, id) {
+        let target = this.wrapper.find(`.product__price-button-group[data-product-id="${id}"]`);
         if(active) {
-            this.wrapper.find(`.product__price-button-group[data-product-id="${id}"]`).addClass('active');
+            target.addClass('active');
         } else {
-            this.wrapper.find(`.product__price-button-group[data-product-id="${id}"]`).removeClass('active');
+            target.removeClass('active');
         }
     }
 
@@ -67,8 +68,8 @@ export default class Market {
         $m.find('.product-description__price').text(help.prettyNumber(product.price)
             + ' ' + help.i18N('product.currency'));
         $m.modal({
-            onApprove: function() {
-                shoppingCart.addProduct(product);
+            onApprove: () => {
+                this._fireEvent('addProduct', product);
             },
         }).modal('show');
     }

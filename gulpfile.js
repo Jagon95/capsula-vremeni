@@ -69,7 +69,7 @@ gulp.task('build-css', () => {
                 }]
             })
         ])))
-        .pipe(rename('main.min.css'))
+        .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('build/css'))
         .pipe(dev(connect.reload()));
 
@@ -79,6 +79,25 @@ gulp.task('build-css', () => {
             i18n: require('./src/data/i18n'),
             settings: settings
         });
+
+
+        gulp.src(['src/scss/preloader.sass'])
+            .pipe(sass({
+                outputStyle: !!prod() ? 'nested' : 'expanded',
+                importer: moduleImporter()
+            }).on('error', sass.logError))
+            .pipe(prod(postcss([
+                autoprefixer({browsers: ['> 0.3%']}),
+                cssnano({
+                    preset: ['default', {
+                        discardComments: {
+                            removeAll: true,
+                        },
+                    }]
+                })
+            ])))
+            .pipe(gulp.dest('tmp'));
+
 
         mkPromise(gulp.src('src/pug/firstLoaded.pug')
             .pipe(data(() => dataObj))
@@ -98,7 +117,7 @@ gulp.task('build-css', () => {
                 }),
                 csso({ restructure: false }),
                 cssnano({
-                    preset: ['default', {
+                    preset: ['advanced', {
                         discardComments: {
                             removeAll: true,
                         },

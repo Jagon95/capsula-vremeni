@@ -18,6 +18,7 @@ export default class Order {
         paymentAmount: '.process-order__payment__amount',
         paymentForm: '.process-order__payment-form',
         paymentNumber: '.process-order__payment__number',
+        confirmContent: '.process-order__confirm-content',
         confirmNumber: '.process-order__confirm-number',
         confirmDescription: '.process-order__confirm-description',
         confirmResult: '.process-order__confirm-result',
@@ -30,12 +31,13 @@ export default class Order {
         this.wrapper = $el;
         this._initUi();
         this.cityId = null;
+        this.data = {};
         this.shoppingCart = null;
         this.steps = ['delivery', 'payment', 'confirm'];
         this.currentStep = this.ui.steps.find('.step.active:first').data('step') || this.steps[0];
 
         const now = new Date();
-        this.number = (now.getDate() / 100).toFixed(2).slice(2) +
+        this.data['number'] = (now.getDate() / 100).toFixed(2).slice(2) +
             (now.getMonth() + 1 / 100).toFixed(2).slice(2) +
             (now.getFullYear() / 100).toFixed(2).slice(3) +
             '-0' + Math.random().toFixed(5).slice(2, 5);
@@ -47,7 +49,7 @@ export default class Order {
                 this.ui.deliveryForm.submit(this.processDelivery.bind(this));
                 this.ui.stepBackButton.click(this.stepBack.bind(this));
                 this.ui.paymentForm.submit(this.processPayment.bind(this));
-                this.ui.processPaymentButton.click(this.processPayment.bind(this));
+                // this.ui.processPaymentButton.click(this.ui.paymentForm.submit.bind(this.ui.paymentForm));
                 this.ui.citiesSelector.dropdown();
             })
             .owlCarousel(settings.carousel.order);
@@ -115,30 +117,48 @@ export default class Order {
             title: delivery['title'] + ' в ' + cities[cityIndex]['name'], // todo i18n
         };
         if (cityIndex !== this.cityId) {
-            this.shoppingCart.removeProduct('currentDelivery');
+            this.shoppingCart.removeProduct('delivery');
             this.shoppingCart.addProduct(product);
             this.cityId = cityIndex;
         }
+
+        Object.assign(this.data, {
+            comment: this.ui.deliveryForm.find('[name="comment"]').val(),
+            street: this.ui.deliveryForm.find('[name="street"]').val(),
+            house: this.ui.deliveryForm.find('[name="house"]').val(),
+            city: cities[cityIndex]['name'],
+        });
         this.stepNext();
         return false;
     }
 
-    processPayment(e) {
-        this.ui.paymentAmount.attr('value', this.shoppingCart.getResult());
-        this.ui.paymentDescription.attr('value', this.shoppingCart.getProductsDescription());
-        this.ui.paymentNumber.attr('value', this.number);
+    processPayment(e) {     //todo lock shopping cart
+        Object.assign(this.data, {
+            description: this.shoppingCart.getProductsDescription(),
+            result: this.shoppingCart.getResult(),
+            name: this.ui.paymentForm.find('[name="name"]').val(),
+            email: this.ui.paymentForm.find('[name="email"]').val(),
+            phone: this.ui.paymentForm.find('[name="phone"]').val()
+        });
+
+        this.ui.paymentAmount.attr('value', this.data['result']);
+        this.ui.paymentDescription.attr('value', this.data['description']);
+        this.ui.paymentNumber.attr('value', this.data['number']);
         pay(this.ui.paymentForm.get(0), this.successPayment.bind(this), this.successPayment.bind(this));
+
+        this.shoppingCart.disable();
         return false;
     }
 
     successPayment() {
         this.stepTo('confirm');
-        this.ui.confirmNumber.text(help.i18N('order.number') + ': ' + this.number);
-        this.ui.confirmDescription.text(help.i18N('order.description') + ': '
-            + this.shoppingCart.getProductsDescription());
-        this.ui.confirmResult.text(help.i18N('order.result') + ': ' + this.shoppingCart.getResult());
-        this.ui.confirmTel.text(help.i18N('order.confirm.tel') + ': ');
-        this.ui.confirmAddress.text(help.i18N('order.confirm.address') + ': ');
-        this.ui.confirmName.text(help.i18N('order.confirm.name') + ': ');
+        const c = this.ui.confirmContent;
+        c.append($('<p>').append($('<b>').text(help.i18N('order.number') + ': ')).append(this.data['number']));
+        c.append($('<p>').append($('<b>').text(help.i18N('order.description') + ': ')).append(this.data['description']));
+        c.append($('<p>').append($('<b>').text(help.i18N('order.result') + ': ')).append(this.data['result']));
+        c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.tel') + ': ')).append(this.data['phone']));
+        c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.name') + ': ')).append(this.data['name']));
+        c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.address') + ': '))
+            .append(`${this.data['city']}, ${this.data['street']}, ${this.data['house']}`));
     }
 };

@@ -2,10 +2,15 @@ $.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function (images
     const owl = this;
 
     function onLoadImg(e) {
-        this.attr('src', e.target.src);
-        this.css('opacity', 1);
+        if (e.type === 'error') {
+            this.closest('.owl-item').remove();
+        } else {
+            this.attr('src', e.target.src);
+            this.css('opacity', 1);
+        }
         owl.leave('pre-loading');
-        !owl.is('pre-loading') && !owl.is('initializing') && owl.refresh();
+        !owl.is('initializing') && owl.refresh();
+        this.trigger('lazyload-after');
     }
 
     function loadImg($el) {
@@ -15,10 +20,11 @@ $.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function (images
             || $el.attr('data-src-retina'));
     }
 
-    function loadAfter($el, $prev) { // todo process loading fails
+    function loadAfter($el, $prev) {
         if ($prev.offset().left + $prev.width() < $(window).width()) {
-            loadImg($el).one('load', $.proxy(onLoadImg, $el));
+            loadImg($el).one('load error', $.proxy(onLoadImg, $el));
         } else {
+            owl.$element.trigger($.Event('owl.load-visible', {element: owl.$element}));
             owl.$element.one('translated.owl.carousel resized.owl.carousel',
                 () => loadAfter($el, $prev));
         }
@@ -26,14 +32,18 @@ $.fn.owlCarousel.Constructor.prototype.preloadAutoWidthImages = function (images
 
     images.slice(0, owl.settings.items).each($.proxy(function (i, element) {
         let $el = $(element);
-        loadImg($el).one('load', $.proxy(onLoadImg, $el));
+        loadImg($el).one('load error', $.proxy(onLoadImg, $el));
     }));
 
-    for (let i = owl.settings.items; i < images.length; ++i) {
-        let $el = $(images.get(i));
-        let $prev = $(images.get(i - 1));
-        $prev.one('load', () => {
-            loadAfter($el, $prev);
-        });
-    }
+    this.$element.one('initialized.owl.carousel', () => {
+        let $el = $(images.get(owl.settings.items));
+        loadImg($el).one('load error', $.proxy(onLoadImg, $el));
+        for (let i = owl.settings.items + 1; i < images.length; ++i) {
+            let $el = $(images.get(i));
+            let $prev = $(images.get(i - 1));
+            $prev.one('lazyload-after', () => {
+                loadAfter($el, $prev);
+            });
+        }
+    });
 };

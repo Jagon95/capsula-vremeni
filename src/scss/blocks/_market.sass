@@ -1,3 +1,11 @@
+#kapsula .market__
+  &carousel-wrapper
+    +media-breakpoint-up(lg)
+      min-height: 26rem
+
+    +media-breakpoint-down(md)
+      min-height: 19rem
+
 #kapsula .product__
   &wrapper
     margin: 1px
@@ -7,6 +15,17 @@
 
     +media-breakpoint-down(md)
       width: 13rem
+
+  &content
+    display: flex
+    justify-content: space-between
+    flex-direction: column
+
+    +media-breakpoint-up(lg)
+      height: 8rem
+
+    +media-breakpoint-down(md)
+      height: 6rem
 
   &price-button-group
     display: flex

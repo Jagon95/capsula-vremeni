@@ -1,15 +1,18 @@
 #market.container-fluid.one-page.gradient-page.market__page
+    +preloader
     +page_header(I18N("market.header"))
     .container-md-fluid.container
         .row.justify-content-center
             .col-12
                 h3=I18N("market.choseCapsule")
-                .owl-carousel.owl-theme.market__carousel
-                    each product, name in filterByKeys(products, products_categories['capsules'])
-                        +product_item(name, product)
+                .market__carousel-wrapper
+                    .owl-carousel.owl-theme.market__carousel
+                        each product, name in filterByKeys(products, products_categories['capsules'])
+                            +product_item(name, product)
         .row.justify-content-center
             .col-12
                 h3=I18N("market.choseOptions")
-                .owl-carousel.owl-theme.market__carousel
-                    each product, name in filterByKeys(products, products_categories['options'])
-                        +product_item(name, product)
+                .market__carousel-wrapper
+                    .owl-carousel.owl-theme.market__carousel
+                        each product, name in filterByKeys(products, products_categories['options'])
+                            +product_item(name, product)

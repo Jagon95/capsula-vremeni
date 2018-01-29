@@ -1,8 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const mergeObj = require('object-assign-deep');
-const i18n = require('./src/data/i18n');
-const JsonPostProcessPlugin = require('json-post-process-webpack-plugin');
 const isProd = process.env.NODE_ENV === 'production ';
 console.log((isProd ? "production" : "development") + " mode");
 const commonSettings = require('./src/data/commonSettings');

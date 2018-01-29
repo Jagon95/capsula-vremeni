@@ -6,7 +6,6 @@ import 'jquery-parallax.js';
 import 'waypoints';
 import Headhesive from 'headhesive';
 import 'bootstrap/collapse';
-import 'semantic/components/dimmer';
 import 'semantic/components/modal';
 import 'semantic/components/embed';
 import './embedSources';
@@ -63,6 +62,9 @@ function startApp() {
                     .on('loaded.owl.lazy', (event) => {
                         calculateImageOffset(event.element, event.page.size);
                         console.log(event);
+                    })
+                    .one('loaded.owl.lazy',(e) => {
+                        $('.preloader', this.element).transition('fade out');
                     })
                     .on('resize.owl.carousel', function (event) {
                         let $el = $(this);
@@ -161,7 +163,12 @@ function startApp() {
             };
 
             let carousel = $('.clients__carousel', this.element)
-                .on('initialized.owl.carousel', help.refreshWaypoints)
+                .on('initialized.owl.carousel', (e) => {
+                    help.refreshWaypoints();
+                })
+                .one('loaded.owl.lazy',(e) => {
+                    $('.preloader', this.element).transition('fade out');
+                })
                 .on('loaded.owl.lazy', (event) => {
                     calculateImageOffset(event.element);
                 })
@@ -227,6 +234,7 @@ function startApp() {
             let gallery = $('.gallery__carousel', this.element);
             gallery
                 .on('initialized.owl.carousel', function () {
+                    $('.preloader', this.$element).fadeOut('slow', function() {});
                     help.addListiners(this.$element);
                     help.refreshWaypoints();
                 })

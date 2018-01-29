@@ -1,6 +1,7 @@
 import {product as productI18n, processOrder as orderI18n} from 'data/i18n';
 import _imageSizes from 'image_sizes';
 import products from 'data/product';
+import 'semantic/components/dimmer';
 
 const i18n = {
     product: productI18n,

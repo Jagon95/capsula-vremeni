@@ -82,10 +82,10 @@
                                             input(type="text" placeholder=I18N('processOrder.street.placeholder') name="street")
                                         .col-4.field
                                             label=I18N('processOrder.house.label')
-                                            input(type="text" placeholder=I18N('processOrder.house.placeholder') name="street")
+                                            input(type="text" placeholder=I18N('processOrder.house.placeholder') name="house")
                                         .col-12.field
                                             label=I18N('processOrder.comment.label')
-                                            textarea(rows="3" placeholder=I18N('processOrder.comment.placeholder'))
+                                            textarea(rows="3" placeholder=I18N('processOrder.comment.placeholder') name="comment")
                                         .col-12.field
                                             button.ui.primary.button.process-order__button-next=I18N('processOrder.next')
                                                 i.chevron.right.icon
@@ -122,11 +122,6 @@
                             h2.ui.header
                                 i.smile.icon
                                                     //todo i18n
-                                .content Поздравляем!
-                                    .sub.header Ваш заказ принят в обработку
-                            p.process-order__confirm-number
-                            p.process-order__confirm-description
-                            p.process-order__confirm-result
-                            p.process-order__confirm-tel
-                            p.process-order__confirm-addr
-                            p.process-order__confirm-name
+                                .content Ваш заказ принят в обработку
+                                    .sub.header В ближайшее время наш менеджер свяжется с вами
+                            .process-order__confirm-content
