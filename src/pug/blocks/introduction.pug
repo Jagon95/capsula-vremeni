@@ -10,7 +10,7 @@
                 .collapse.navbar-collapse.menu-header__menu-wrapper
                     ul.navbar-nav.menu-header__menu
                         each item in menuItems
-                            li.nav-item.menu-header__item
+                            li.nav-item.menu-header__item(data-menu-item=item.href)
                                 a.nav-link.menu-header__link(href="#" + item.href)
                                     i(class=item.icon + ' icon')
                                     =get(i18n, item.text)

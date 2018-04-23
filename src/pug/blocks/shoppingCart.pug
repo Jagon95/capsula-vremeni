@@ -86,6 +86,7 @@
                                         .col-12.field
                                             label=I18N('processOrder.comment.label')
                                             textarea(rows="3" placeholder=I18N('processOrder.comment.placeholder') name="comment")
+                                        .ui.error.message
                                         .col-12.field
                                             button.ui.primary.button.process-order__button-next=I18N('processOrder.next')
                                                 i.chevron.right.icon
@@ -93,23 +94,21 @@
                     .item.process-order__carousel-item.process-order__payment
                         .ui.segment
                             form.ui.form.process-order__payment-form
-                                input(type="hidden" name="terminalkey" value="TinkoffBankTest")
-                                input(type="hidden" name="frame" value="true")
-                                input(type="hidden" name="language" value="ru")
-                                input.process-order__payment__amount(type="hidden" name="amount" required)
-                                input.process-order__payment__number(type="hidden" name="order" value="asdfasdffq3f3ferfef")
-                                input.process-order__payment__description(type="hidden" name="description")
                                 .container
                                     .row
                                         .col-12.field
                                             label=I18N('processOrder.name.label')
-                                            input(type="text" placeholder=I18N('processOrder.name.placeholder') name="name" required)
+                                            input(type="text" placeholder=I18N('processOrder.name.placeholder') name="name")
                                         .col-12.field
                                             label=I18N('processOrder.email.label')
-                                            input(type="email" placeholder=I18N('processOrder.email.placeholder') name="email" required)
+                                            input(type="email" placeholder=I18N('processOrder.email.placeholder') name="email")
                                         .col-12.field
                                             label=I18N('processOrder.tel.label')
-                                            input(type="tel" placeholder=I18N('processOrder.tel.label') name="phone" required)
+                                            input(type="tel" placeholder=I18N('processOrder.tel.label') name="phone")
+                                        .col-12.field
+                                            .ui.checkbox
+                                                input.hidden(type="checkbox" tabindex="0" name="terms")
+                                                label Cогласие на обработку своих персональных данных
                                         .col-12.field
                                             .ui.red.button.process-order__button-prev
                                                 i.chevron.left.icon

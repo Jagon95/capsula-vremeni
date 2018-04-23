@@ -2,7 +2,10 @@ import help from "./helpers";
 import cities from 'data/cities';
 import {delivery} from 'data/product'
 import 'semantic/components/dropdown';
-import pay from 'exports-loader?pay!./tinkoff';
+import 'semantic/components/form';
+import 'semantic/components/checkbox';
+import 'imports-loader?this=>window!micro-requirejs';
+import Raven from 'raven-js';
 
 export default class Order {
     /*eslint-disable */
@@ -14,17 +17,8 @@ export default class Order {
         citiesSelector: '.process-order__city',
         stepBackButton: '.process-order__button-prev',
         processPaymentButton: '.process-order__payment-form .process-order__button-next',
-        paymentDescription: '.process-order__payment__description',
-        paymentAmount: '.process-order__payment__amount',
         paymentForm: '.process-order__payment-form',
-        paymentNumber: '.process-order__payment__number',
         confirmContent: '.process-order__confirm-content',
-        confirmNumber: '.process-order__confirm-number',
-        confirmDescription: '.process-order__confirm-description',
-        confirmResult: '.process-order__confirm-result',
-        confirmTel: '.process-order__confirm-tel',
-        confirmAddress: '.process-order__confirm-addr',
-        confirmName: '.process-order__confirm-name',
     };
 
     constructor($el) {
@@ -38,19 +32,74 @@ export default class Order {
 
         const now = new Date();
         this.data['number'] = (now.getDate() / 100).toFixed(2).slice(2) +
-            (now.getMonth() + 1 / 100).toFixed(2).slice(2) +
+            ((now.getMonth() + 1) / 100).toFixed(2).slice(2) +
             (now.getFullYear() / 100).toFixed(2).slice(3) +
             '-0' + Math.random().toFixed(5).slice(2, 5);
+
+        this.ui.stepBackButton.click(() => {
+            this.stepBack();
+            this.wrapper.find('.error').removeClass('error');
+            this.wrapper.find('.ui.prompt').remove();
+        });
+        this.wrapper.find('.ui.checkbox').checkbox();
+        this.ui.citiesSelector.dropdown({
+            direction: 'downward'
+        });
+
+        this.ui.deliveryForm.form({
+            fields: {               //todo i18n
+                city: {
+                    rules: [{
+                        type: 'integer',
+                        value: `0..${cities.length}`,
+                        prompt: 'Выберите {name}'
+                    }]
+                },
+            },
+            // inline: true,
+            on: 'blur',
+            onSuccess: this.processDelivery.bind(this)
+        });
+        this.ui.paymentForm.form({
+            fields: {
+                terms: {
+                    rules: [{
+                        type: 'checked',
+                        prompt: 'Необходимо согласиться на обработку персональных данных'
+                    }]
+                },
+                name: {
+                    rules: [{
+                        type: 'empty',
+                        prompt: 'Введите {name}'
+                    }]
+                },
+                email: {
+                    rules: [{
+                        type: 'email',
+                        prompt: 'Введите {name}'
+                    }]
+                },
+                phone: {
+                    rules: [{
+                        type: 'regExp',
+                        value: /^\+?[\d\-\s()]{5,24}$/,
+                        prompt: 'Введите номер телефона в формате +7 123 456 78 90'
+                    }]
+                }
+                // name: 'empty',
+                // email: 'email',
+                // phone: 'regExp[/^\\+?[\\d\\-\\s\\(\\)]{5,24}$/]'
+            },
+            on: 'blur',
+            // inline: true,
+            onSuccess: this.processPayment.bind(this)
+        });
 
         this.ui.carousel
             .on('initialized.owl.carousel', () => {
                 help.refreshWaypoints();
-                this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
-                this.ui.deliveryForm.submit(this.processDelivery.bind(this));
-                this.ui.stepBackButton.click(this.stepBack.bind(this));
-                this.ui.paymentForm.submit(this.processPayment.bind(this));
-                // this.ui.processPaymentButton.click(this.ui.paymentForm.submit.bind(this.ui.paymentForm));
-                this.ui.citiesSelector.dropdown();
+                // this.ui.processDeliveryButton.click(this.processDelivery.bind(this));
             })
             .owlCarousel(settings.carousel.order);
     }
@@ -103,14 +152,8 @@ export default class Order {
     }
 
     processDelivery() {
+        const form = this.ui.deliveryForm;
         let cityIndex = parseInt(this.ui.citiesSelector.val());
-        if (!Number.isInteger(cityIndex)) {
-            $('.process-order__city_field', this.ui.deliveryForm).addClass('error')
-                .one('click', function () {
-                    $(this).removeClass('error');
-                });
-            return false;
-        }
         let product = {
             ...delivery,
             price: cities[cityIndex]['price'],
@@ -121,18 +164,20 @@ export default class Order {
             this.shoppingCart.addProduct(product);
             this.cityId = cityIndex;
         }
+        const address = help.i18N('order.city') + ': ' + cities[cityIndex]['name'] + ', ' +
+            help.i18N('order.street.label') + ': ' + (form.find('[name="street"]').val() || '-') + ', ' +
+            help.i18N('order.house.label')  + ': ' + (form.find('[name="house"]').val()  || '-');
 
         Object.assign(this.data, {
-            comment: this.ui.deliveryForm.find('[name="comment"]').val(),
-            street: this.ui.deliveryForm.find('[name="street"]').val(),
-            house: this.ui.deliveryForm.find('[name="house"]').val(),
-            city: cities[cityIndex]['name'],
+            comment: form.find('[name="comment"]').val(),
+            delivery: address,
         });
-        this.stepNext();
+
+        this.stepTo('payment');
         return false;
     }
 
-    processPayment(e) {     //todo lock shopping cart
+    processPayment() {
         Object.assign(this.data, {
             description: this.shoppingCart.getProductsDescription(),
             result: this.shoppingCart.getResult(),
@@ -141,24 +186,52 @@ export default class Order {
             phone: this.ui.paymentForm.find('[name="phone"]').val()
         });
 
-        this.ui.paymentAmount.attr('value', this.data['result']);
-        this.ui.paymentDescription.attr('value', this.data['description']);
-        this.ui.paymentNumber.attr('value', this.data['number']);
-        pay(this.ui.paymentForm.get(0), this.successPayment.bind(this), this.successPayment.bind(this));
+        $.ajax('action.php?action=order', {
+            method: 'POST',
+            data: this.data
+        }).fail(() => {
+            Raven.captureMessage('Fail to send data to action.php', {
+                level: 'error',
+                extra: this.data
+            });
+        });
+        this.sendPayment();
 
         this.shoppingCart.disable();
         return false;
     }
 
+    sendPayment() {
+        rjs.define( '//static.yandex.net/checkout/ui/v1?yapayui.js', 'yaPayUi');
+        rjs.require(['yaPayUi'], () => {
+            const $checkout = YandexCheckoutUI(123456, {
+                language: 'ru',                 // TODO: move to config
+                domSelector: '.my-selector',
+                amount: this.data.result
+            });
+            $checkout.open();
+
+            $checkout.on('yc_success', () => {
+                this.successPayment();
+            });
+            $checkout.on('yc_error', response => {
+                Raven.captureMessage('Fail to process payment', {
+                    level: 'error',
+                    extra: response
+                });
+            });
+        });
+    }
+
     successPayment() {
-        this.stepTo('confirm');
+        this.stepTo('confirm');         //todo refactor
         const c = this.ui.confirmContent;
         c.append($('<p>').append($('<b>').text(help.i18N('order.number') + ': ')).append(this.data['number']));
         c.append($('<p>').append($('<b>').text(help.i18N('order.description') + ': ')).append(this.data['description']));
-        c.append($('<p>').append($('<b>').text(help.i18N('order.result') + ': ')).append(this.data['result']));
+        c.append($('<p>').append($('<b>').html(help.i18N('order.result') + ': ')).append(help.prettyNumber(this.data['result']) +
+            ' ' + help.i18N('product.currency')));
         c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.tel') + ': ')).append(this.data['phone']));
         c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.name') + ': ')).append(this.data['name']));
-        c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.address') + ': '))
-            .append(`${this.data['city']}, ${this.data['street']}, ${this.data['house']}`));
+        c.append($('<p>').append($('<b>').text(help.i18N('order.confirm.address') + ': ')).append(this.data['delivery']));
     }
 };

@@ -128,6 +128,18 @@ function startApp() {
     }), settings.waypoint.pageSettings);
 
     const shoppingCart = new ShoppingCart($('.shopping-cart__wrapper:first'));
+    const productCounterLabel = $('<div>', {
+        class: 'floating ui blue circular small label'
+    }).hide().appendTo('[data-menu-item=shopping_cart]');
+
+    function updateCounter() {
+        const count = Object.keys(shoppingCart.getItems()).length;
+        if(count > 0) {
+            productCounterLabel.text(count).is(':not(:visible)') && productCounterLabel.transition('fade in');
+        } else {
+            productCounterLabel.transition('fade out');
+        }
+    }
 
     $('.market__page:first').waypoint(Raven.wrap(function () {
         if (!this.isCalled) {
@@ -135,8 +147,16 @@ function startApp() {
             console.log('init Market');
             const market = new Market($(this.element));
             market.on('addProduct', shoppingCart.addProduct.bind(shoppingCart));
-            shoppingCart.on('addProduct', market.toggleButton.bind(market, true));
+            shoppingCart.on('addProduct', id => {
+                market.toggleButton(true, id);
+                updateCounter();
+            });
             shoppingCart.on('removeProduct', market.toggleButton.bind(market, false));
+            shoppingCart.on('removeProduct', id => {
+                market.toggleButton(false, id);
+                updateCounter();
+            });
+            shoppingCart.on('disabled', market.disable.bind(market));
             this.destroy();
         }
     }), settings.waypoint.pageSettings);

@@ -9,21 +9,22 @@ export default class Market {
         const t = this;
 
         $('.market__carousel', this.wrapper)
-            .on('initialized.owl.carousel', () => {
-                this.wrapper.find('.product__title').click(function (e) {
+            .on('initialized.owl.carousel', function () {
+                const $el = $(this);
+                $el.find('.product__title').click(function (e) {
                     let $el = $(this);
                     t.showModalProductDescription($el.data('descriptionId'));
                     e.preventDefault();
                 });
 
-                this.wrapper.find('.product__buy-button').click(function () {
+                $el.find('.product__buy-button').click(function () {
                     let $el = $(this);
                     t._fireEvent('addProduct', products[$el.data('productId')]);
                 });
 
                 help.refreshWaypoints();
-                help.addListiners(this.wrapper);
-                this.wrapper.find('.preloader').transition('fade out');
+                help.addListiners($el);
+                $el.find('.preloader').transition('fade out');
             })
             .owlCarousel(settings.carousel.market);
     }
@@ -35,6 +36,10 @@ export default class Market {
         } else {
             target.removeClass('active');
         }
+    }
+
+    disable() {
+        this.wrapper.find(`.product__price-button-group[data-product-id]`).addClass('disabled');
     }
 
     _fireEvent(event, params) {
@@ -65,7 +70,7 @@ export default class Market {
         $m.find('.product-description__title').text(product.title);
         let descItems = product.description.split('\n').map((text) => $('<p>').text(text));
         $m.find('.product-description__description').empty().append(descItems);
-        $m.find('.product-description__price').text(help.prettyNumber(product.price)
+        $m.find('.product-description__price').html(help.prettyNumber(product.price)
             + ' ' + help.i18N('product.currency'));
         $m.modal({
             onApprove: () => {

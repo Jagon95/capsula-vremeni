@@ -22,6 +22,10 @@ export default class ShoppingCart {
         return this.result;
     }
 
+    getItems() {
+        return this.items;
+    }
+
     /*eslint-disable */     //todo make this works
 
     ui = {
@@ -30,7 +34,7 @@ export default class ShoppingCart {
         result: '.shopping-cart__result-price-cell',
     };
 
-    events = ['addProduct', 'removeProduct'];
+    events = ['addProduct', 'removeProduct', 'disabled'];
     /*eslint-enable */
 
     _fireEvent(event, params) {
@@ -118,6 +122,7 @@ export default class ShoppingCart {
 
     disable() {
         this.disabled = true;
+        this._fireEvent('disabled');
     }
 
     getProductsDescription() {

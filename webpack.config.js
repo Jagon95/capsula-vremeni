@@ -30,12 +30,12 @@ let config = {
             {
                 enforce: "pre",
                 test: /\.js$/,
-                exclude: [/node_modules/, /tinkoff.js/],
+                exclude: [/node_modules/],
                 loader: 'eslint-loader'
             },
             {
                 test: /\.js$/,
-                exclude: [/node_modules/, /tinkoff.js/],
+                exclude: [/node_modules/],
                 use: [
                     {
                         loader: "babel-loader",

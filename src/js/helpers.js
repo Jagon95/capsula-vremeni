@@ -29,7 +29,7 @@ module.exports = {
     },
 
     prettyNumber: function(n) {
-        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '&nbsp');
     },
 
 
@@ -71,8 +71,8 @@ module.exports = {
 
     addListiners: function(wrapper) {
         $('[data-thumbnail-id]', wrapper).css('cursor', 'pointer').click(function() {
-            let productId = $(this).data('thumbnailId');
-            let items = module.exports.processImageItems(products[productId]['images'],
+            const productId = $(this).data('thumbnailId');
+            const items = module.exports.processImageItems(products[productId]['images'],
                 settings.images.srcBase, settings.images.thumbSrcBase);
             module.exports.openPhotoSwipe(items);
         });

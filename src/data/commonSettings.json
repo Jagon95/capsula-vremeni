@@ -104,7 +104,7 @@
       "mouseDrag": false,
       "dots": true,
       "autoplay": true,
-      "autoplayTimeout": 4000,
+      "autoplayTimeout": 5000,
       "animateOut": "fadeOut"
     },
     "clients": {
